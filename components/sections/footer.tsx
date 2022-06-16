@@ -1,5 +1,6 @@
 import React from 'react';
 import type { NextPage } from 'next';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 const StyledFooter = styled.section`
@@ -46,8 +47,16 @@ const Footer: NextPage = () => {
       <span>Let&apos;s talk about your project.</span>
       <span className="email">hello@erkamdemirci.com</span>
       <div>
-        <a>LinkedIn</a>
-        <a>Github</a>
+        <Link href="https://www.linkedin.com/in/erkamdemirci">
+          <a>LinkedIn</a>
+        </Link>
+        <Link href="https://github.com/erkamdemirci">
+          <a>Github</a>
+        </Link>
+
+        <Link href="https://erkamdemirci.notion.site/Erkam-Demirci-ace3e69684604e8ab97071c304ebcb6d">
+          <a>Resume</a>
+        </Link>
       </div>
     </StyledFooter>
   );

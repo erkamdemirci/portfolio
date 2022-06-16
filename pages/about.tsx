@@ -2,18 +2,16 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 
-import HeaderTitle from '../components/sections/header-title';
+import Hi from '../components/sections/hi';
 import Footer from '../components/sections/footer';
-import Me from '../components/sections/me';
 
-const Home: NextPage = () => {
+const About: NextPage = () => {
   return (
     <>
-      <HeaderTitle />
-      <Me />
+      <Hi />
       <Footer />
     </>
   );
 };
 
-export default Home;
+export default About;

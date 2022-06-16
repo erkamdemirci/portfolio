@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 const StyledHeaderTitle = styled.section`
+  transition-duration: 500ms;
   height: calc(100vh - 10rem);
   text-align: center;
   width: 90vw;
@@ -17,8 +18,6 @@ const StyledHeaderTitle = styled.section`
   .ed-header-container {
     align-self: center;
     justify-self: center;
-
-    margin-top: -5rem;
   }
 
   .header-name {
@@ -75,7 +74,7 @@ const StyledHeaderTitle = styled.section`
   }
 
   @media screen and (max-width: 992px) {
-    height: calc(100vh - 5rem);
+    height: calc(100dvh - 5rem);
 
     .header-name {
       h1 {
@@ -120,7 +119,7 @@ const placeholderArr = [
   'Next.js            ',
   'styled-components            ',
   'Javascript            ',
-  'React.js            ',
+  'React Native            ',
   'MongoDB            ',
   'Express.js            '
 ];

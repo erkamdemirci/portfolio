@@ -25,7 +25,7 @@ const StyledNavigation = styled.header`
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 5px;
+    gap: 15px;
 
     a {
       :hover {
@@ -178,6 +178,7 @@ const StyledNavigation = styled.header`
         nav {
           display: flex;
           flex-direction: column;
+          justify-content: center;
 
           ul > li.active {
             color: hsl(8, 95%, 57%);
@@ -185,7 +186,7 @@ const StyledNavigation = styled.header`
 
           ul > li {
             padding: 15px 0;
-            font-size: 1.55rem;
+            font-size: 1.75rem;
           }
         }
       }
@@ -239,19 +240,14 @@ const Navigation: NextPage = () => {
         <div className="ed-navbar-inner">
           <nav className="ed-nav-default">
             <ul>
-              <li className={`nav__link ${router.pathname == '/' ? 'active' : ''}`}>
-                <Link href="#home">
-                  <a onClick={navMenuClickHandler}>Home</a>
+              <li>
+                <Link href="/about">
+                  <a onClick={navMenuClickHandler}>About</a>
                 </Link>
               </li>
               <li>
-                <Link href="#me">
-                  <a onClick={navMenuClickHandler}>Me</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="#footer">
-                  <a onClick={navMenuClickHandler}>Contact</a>
+                <Link href="https://erkamdemirci.notion.site/Erkam-Demirci-ace3e69684604e8ab97071c304ebcb6d">
+                  <a onClick={navMenuClickHandler}>Resume</a>
                 </Link>
               </li>
             </ul>
@@ -297,19 +293,14 @@ const Navigation: NextPage = () => {
             <div className="ed-side-menu__navigation">
               <nav>
                 <ul>
-                  <li className={`nav__link ${router.pathname == '/' ? 'active' : ''}`}>
-                    <Link href="#home">
-                      <a onClick={navMenuClickHandler}>Home</a>
+                  <li>
+                    <Link href="/about">
+                      <a onClick={navMenuClickHandler}>About</a>
                     </Link>
                   </li>
                   <li>
-                    <Link href="#me">
-                      <a onClick={navMenuClickHandler}>Me</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="#footer">
-                      <a onClick={navMenuClickHandler}>Contact</a>
+                    <Link href="https://erkamdemirci.notion.site/Erkam-Demirci-ace3e69684604e8ab97071c304ebcb6d">
+                      <a onClick={navMenuClickHandler}>Resume</a>
                     </Link>
                   </li>
                 </ul>
@@ -337,9 +328,11 @@ const Navigation: NextPage = () => {
               </p>
             </div>
           </div>
-          <div className="nav-logo">
-            <Image src={'/images/ed2.png'} layout={'fill'} objectFit={'contain'} alt="erkamdemirci.com | Freelance Full-Stack Web Developer" />
-          </div>
+          <Link href="/">
+            <a className="nav-logo">
+              <Image src={'/images/ed2.png'} layout={'fill'} objectFit={'contain'} alt="erkamdemirci.com | Freelance Full-Stack Web Developer" />
+            </a>
+          </Link>
           <div className="social-icons">
             <a href="https://www.linkedin.com/in/erkamdemirci">
               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32">

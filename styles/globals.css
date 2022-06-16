@@ -1,51 +1,38 @@
-@font-face {
-  font-family: 'CerebriSansRegular';
-  src: url('../assets/fonts/CerebriSans-Regular.ttf');
-  font-style: normal;
+#__next {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-@font-face {
-  font-family: 'CerebriSansMedium';
-  src: url('../assets/fonts/CerebriSans-Medium.ttf');
-  font-style: normal;
+html {
+  height: 100%;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  font-feature-settings: 'case' 1, 'rlig' 1, 'calt' 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+
+  /* -webkit-text-size-adjust: none; */
+  /* text-size-adjust: none; */
 }
 
-@font-face {
-  font-family: 'CerebriSansLight';
-  src: url('../assets/fonts/CerebriSans-Light.ttf');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'CerebriSansBook';
-  src: url('../assets/fonts/CerebriSans-Book.ttf');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'CerebriSansBold';
-  src: url('../assets/fonts/CerebriSans-Bold.ttf');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'CerebriSansSemiBold';
-  src: url('../assets/fonts/CerebriSans-SemiBold.ttf');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'CerebriSansMedium';
-  src: url('../assets/fonts/CerebriSans-Medium.ttf');
-  font-style: normal;
+html,
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-x: contain;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: 'CerebriSansRegular', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-    Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: #fff;
 }
 
@@ -80,4 +67,51 @@ button {
   border: none;
   text-align: inherit;
   cursor: pointer;
+}
+
+.container,
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+  width: 100%;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container,
+  .container-sm {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container,
+  .container-md,
+  .container-sm {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm {
+    max-width: 90vw;
+  }
 }

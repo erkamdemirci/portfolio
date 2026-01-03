@@ -1,347 +1,281 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import styled from 'styled-components';
-
-import Image from 'next/image';
 import Link from 'next/link';
 
-import { useRouter } from 'next/router';
-
-const StyledNavigation = styled.header`
+const StyledNavigation = styled.header<{ scrolled: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  .container {
-    width: 100%;
-    max-width: 1320px;
+  transition: all 0.3s ease;
+  background: ${({ scrolled }) => (scrolled ? 'rgba(255, 255, 255, 0.9)' : 'transparent')};
+  backdrop-filter: ${({ scrolled }) => (scrolled ? 'blur(20px)' : 'none')};
+  border-bottom: ${({ scrolled }) => (scrolled ? '1px solid rgba(0, 0, 0, 0.06)' : 'none')};
+
+  .nav-container {
+    width: 90%;
+    max-width: 1400px;
     margin: 0 auto;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .nav-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .nav-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #555;
+    text-decoration: none;
+    transition: color 0.2s ease;
     position: relative;
-    height: 3.5rem;
-    aspect-ratio: 2/1;
+
+    &:hover {
+      color: #000;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #000;
+      transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
   }
 
-  .social-icons {
-    display: flex;
+  .nav-cta {
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 15px;
+    padding: 10px 24px;
+    background: #000;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.3s ease;
 
-    a {
-      :hover {
-        svg {
-          fill: hsl(8, 95%, 57%);
-        }
+    &:hover {
+      background: #222;
+      transform: translateY(-2px);
+    }
+  }
+
+  .mobile-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #000;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      span:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+      }
+      span:nth-child(2) {
+        opacity: 0;
+      }
+      span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
       }
     }
   }
 
-  .menu-icon {
-    color: black;
+  .mobile-menu {
     display: none;
-  }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
 
-  nav {
-    height: 100%;
-    display: flex;
-    ul > li {
-      display: flex;
-      align-items: center;
+    &.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-link {
+      font-size: 2rem;
       font-weight: 600;
+      color: #000;
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #667eea;
+      }
+    }
+
+    .mobile-cta {
+      margin-top: 24px;
+      padding: 16px 40px;
+      background: #000;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 100px;
+      text-decoration: none;
+    }
+
+    .mobile-social {
+      display: flex;
+      gap: 24px;
+      margin-top: 48px;
+
       a {
-        cursor: pointer;
-      }
-      :hover {
-        color: hsl(8, 95%, 57%);
-      }
-    }
-  }
-
-  .ed-navbar-inner {
-    width: 100%;
-    height: 10rem;
-    display: flex;
-    align-items: center;
-    padding: 0 30px;
-
-    > * {
-      flex: 1;
-    }
-
-    .ed-nav-default {
-      ul {
+        width: 48px;
+        height: 48px;
         display: flex;
-        gap: 30px;
-      }
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        border-radius: 50%;
+        color: #000;
+        transition: all 0.3s ease;
 
-      ul > li.active {
-        color: hsl(8, 95%, 57%);
-
-        a > span {
-          position: relative;
+        &:hover {
+          background: #000;
+          color: #fff;
         }
-        a > span:after {
-          position: absolute;
-          bottom: -1rem;
-          left: calc(50% - 2.5px);
-          width: 5px;
-          height: 5px;
-          content: '';
-          border-radius: 50%;
-          background-color: red;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          fill: currentColor;
         }
       }
-
-      ul > li {
-        text-transform: uppercase;
-        font-size: 1rem;
-      }
     }
   }
 
-  .ed-side-menu {
-    display: none;
-  }
-
-  @media screen and (max-width: 992px) {
-    .ed-side-menu {
-      display: inline;
-    }
-  }
-
-  @media screen and (max-width: 576px) {
-    .nav-logo {
-      height: 2.25rem;
-      aspect-ratio: 2/1;
+  @media screen and (max-width: 768px) {
+    .nav-container {
+      height: 70px;
     }
 
-    .ed-navbar-inner {
-      padding: 0 5px;
-      justify-content: space-between;
-
-      > * {
-        flex: none;
-      }
-    }
-  }
-
-  @media screen and (max-width: 992px) {
-    .ed-navbar-inner {
-      height: 5rem;
-    }
-
-    .menu-icon {
-      display: inline-block;
-    }
-
-    .ed-nav-default {
+    .nav-links {
       display: none;
     }
 
-    .social-icons {
+    .mobile-toggle {
       display: flex;
-      justify-content: flex-start;
-      svg {
-        width: 35px;
-        height: 35px;
-      }
+      z-index: 101;
     }
 
-    .ed-side-menu {
-      z-index: 100;
-      background-color: white;
-      border-left: 1px solid lightgray;
-      position: fixed;
-      top: 0;
-      right: 0;
+    .mobile-menu {
       display: flex;
-      overflow: auto;
-      height: 100%;
-      width: 100%;
-      max-width: 30rem;
-      padding: 2.125rem 2.0625rem 1.125rem 1.6625rem;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      transform: translateX(100%);
-      transition-duration: 200ms;
-
-      .social-icons {
-        svg {
-          width: 40px;
-          height: 40px;
-        }
-      }
-
-      .ed-side-menu__navigation {
-        flex-grow: 1;
-        nav {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-
-          ul > li.active {
-            color: hsl(8, 95%, 57%);
-          }
-
-          ul > li {
-            padding: 15px 0;
-            font-size: 1.75rem;
-          }
-        }
-      }
-
-      .ed-side-menu__header {
-        display: flex;
-        align-items: center;
-
-        .langs {
-          display: flex;
-          flex-grow: 1;
-          gap: 25px;
-          font-size: 0.875rem;
-          text-transform: uppercase;
-        }
-      }
-
-      .ed-side-menu__footer {
-        font-size: 0.875rem;
-        color: hsl(0, 0%, 60%);
-
-        span  {
-          color: black;
-        }
-      }
-    }
-
-    .ed-side-menu.show {
-      transform: translateX(0);
     }
   }
 `;
 
 const Navigation: NextPage = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  function handleSideMenu(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
 
-    setShowMenu(!showMenu);
-  }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  function navMenuClickHandler() {
-    setShowMenu(!showMenu);
-  }
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <StyledNavigation>
-      <div className="container">
-        <div className="ed-navbar-inner">
-          <nav className="ed-nav-default">
-            <ul>
-              <li>
-                <Link href="/about">
-                  <a onClick={navMenuClickHandler}>About</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="https://erkamdemirci.notion.site/Erkam-Demirci-ace3e69684604e8ab97071c304ebcb6d">
-                  <a onClick={navMenuClickHandler}>Resume</a>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <button onClick={handleSideMenu} className="menu-icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ height: '35px', width: '35px' }}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h8m-8 6h16" />
-            </svg>
-          </button>
-          <div
-            style={{
-              transform: `${showMenu ? 'translateX(0%)' : 'translateX(100%)'}`
-            }}
-            className={`ed-side-menu ${showMenu && 'show'}`}
-          >
-            <div className="ed-side-menu__header">
-              {/* <div className="langs">
-                <a>EN</a>
-                <a>TR</a>
-              </div> */}
-              <div className="langs" />
-              <button onClick={handleSideMenu} className="menu-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{ height: '30px', width: '30px' }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+    <StyledNavigation scrolled={scrolled}>
+      <div className="nav-container">
+        <Link href="/">
+          <a className="nav-logo">ED</a>
+        </Link>
 
-            <div className="ed-side-menu__navigation">
-              <nav>
-                <ul>
-                  <li>
-                    <Link href="/about">
-                      <a onClick={navMenuClickHandler}>About</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="https://erkamdemirci.notion.site/Erkam-Demirci-ace3e69684604e8ab97071c304ebcb6d">
-                      <a onClick={navMenuClickHandler}>Resume</a>
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-
-            <div className="ed-side-menu__footer">
-              <div className="social-icons">
-                <a href="https://www.linkedin.com/in/erkamdemirci">
-                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32">
-                    <path d="M 7.5 5 C 6.132813 5 5 6.132813 5 7.5 L 5 24.5 C 5 25.867188 6.132813 27 7.5 27 L 24.5 27 C 25.867188 27 27 25.867188 27 24.5 L 27 7.5 C 27 6.132813 25.867188 5 24.5 5 Z M 7.5 7 L 24.5 7 C 24.785156 7 25 7.214844 25 7.5 L 25 24.5 C 25 24.785156 24.785156 25 24.5 25 L 7.5 25 C 7.214844 25 7 24.785156 7 24.5 L 7 7.5 C 7 7.214844 7.214844 7 7.5 7 Z M 10.4375 8.71875 C 9.488281 8.71875 8.71875 9.488281 8.71875 10.4375 C 8.71875 11.386719 9.488281 12.15625 10.4375 12.15625 C 11.386719 12.15625 12.15625 11.386719 12.15625 10.4375 C 12.15625 9.488281 11.386719 8.71875 10.4375 8.71875 Z M 19.46875 13.28125 C 18.035156 13.28125 17.082031 14.066406 16.6875 14.8125 L 16.625 14.8125 L 16.625 13.5 L 13.8125 13.5 L 13.8125 23 L 16.75 23 L 16.75 18.3125 C 16.75 17.074219 16.996094 15.875 18.53125 15.875 C 20.042969 15.875 20.0625 17.273438 20.0625 18.375 L 20.0625 23 L 23 23 L 23 17.78125 C 23 15.226563 22.457031 13.28125 19.46875 13.28125 Z M 9 13.5 L 9 23 L 11.96875 23 L 11.96875 13.5 Z"></path>
-                  </svg>
-                </a>
-                <a href="https://github.com/erkamdemirci">
-                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 48 48">
-                    <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 31.66536 35.956939 38.122519 29 40.251953 L 29 35.136719 C 29 33.226635 27.899316 31.588619 26.308594 30.773438 A 10 8 0 0 0 32.4375 18.720703 C 32.881044 17.355414 33.376523 14.960672 32.199219 13.076172 C 29.929345 13.076172 28.464667 14.632086 27.765625 15.599609 A 10 8 0 0 0 24 15 A 10 8 0 0 0 20.230469 15.59375 C 19.529731 14.625773 18.066226 13.076172 15.800781 13.076172 C 14.449711 15.238817 15.28492 17.564557 15.732422 18.513672 A 10 8 0 0 0 21.681641 30.779297 C 20.3755 31.452483 19.397283 32.674042 19.097656 34.15625 L 17.783203 34.15625 C 16.486203 34.15625 15.98225 33.629234 15.28125 32.740234 C 14.58925 31.851234 13.845172 31.253859 12.951172 31.005859 C 12.469172 30.954859 12.144453 31.321484 12.564453 31.646484 C 13.983453 32.612484 14.081391 34.193516 14.650391 35.228516 C 15.168391 36.160516 16.229687 37 17.429688 37 L 19 37 L 19 40.251953 C 12.043061 38.122519 7 31.66536 7 24 C 7 14.593391 14.593385 7 24 7 z"></path>
-                  </svg>
-                </a>
-              </div>
-              <span>hello@erkamdemirci.com</span>
-              <p>
-                © 2022 - All Rights Reserved.
-                <br />
-                Development by <span className="">Erkam Demirci</span>.
-              </p>
-            </div>
-          </div>
-          <Link href="/">
-            <a className="nav-logo">
-              <Image src={'/images/ed2.png'} layout={'fill'} objectFit={'contain'} alt="erkamdemirci.com | Freelance Full-Stack Web Developer" />
-            </a>
+        <nav className="nav-links">
+          <a href="#work" className="nav-link">Work</a>
+          <a href="#about" className="nav-link">About</a>
+          <Link href="/about">
+            <a className="nav-link">Resume</a>
           </Link>
-          <div className="social-icons">
-            <a href="https://www.linkedin.com/in/erkamdemirci">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32">
-                <path d="M 7.5 5 C 6.132813 5 5 6.132813 5 7.5 L 5 24.5 C 5 25.867188 6.132813 27 7.5 27 L 24.5 27 C 25.867188 27 27 25.867188 27 24.5 L 27 7.5 C 27 6.132813 25.867188 5 24.5 5 Z M 7.5 7 L 24.5 7 C 24.785156 7 25 7.214844 25 7.5 L 25 24.5 C 25 24.785156 24.785156 25 24.5 25 L 7.5 25 C 7.214844 25 7 24.785156 7 24.5 L 7 7.5 C 7 7.214844 7.214844 7 7.5 7 Z M 10.4375 8.71875 C 9.488281 8.71875 8.71875 9.488281 8.71875 10.4375 C 8.71875 11.386719 9.488281 12.15625 10.4375 12.15625 C 11.386719 12.15625 12.15625 11.386719 12.15625 10.4375 C 12.15625 9.488281 11.386719 8.71875 10.4375 8.71875 Z M 19.46875 13.28125 C 18.035156 13.28125 17.082031 14.066406 16.6875 14.8125 L 16.625 14.8125 L 16.625 13.5 L 13.8125 13.5 L 13.8125 23 L 16.75 23 L 16.75 18.3125 C 16.75 17.074219 16.996094 15.875 18.53125 15.875 C 20.042969 15.875 20.0625 17.273438 20.0625 18.375 L 20.0625 23 L 23 23 L 23 17.78125 C 23 15.226563 22.457031 13.28125 19.46875 13.28125 Z M 9 13.5 L 9 23 L 11.96875 23 L 11.96875 13.5 Z"></path>
+          <a href="#footer" className="nav-cta">Contact</a>
+        </nav>
+
+        <button
+          className={`mobile-toggle ${menuOpen ? 'active' : ''}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <div className={`mobile-menu ${menuOpen ? 'active' : ''}`}>
+          <a href="#work" className="mobile-link" onClick={closeMenu}>Work</a>
+          <a href="#about" className="mobile-link" onClick={closeMenu}>About</a>
+          <Link href="/about">
+            <a className="mobile-link" onClick={closeMenu}>Resume</a>
+          </Link>
+          <a href="#footer" className="mobile-cta" onClick={closeMenu}>Contact</a>
+
+          <div className="mobile-social">
+            <a
+              href="https://www.linkedin.com/in/erkamdemirci"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>
             </a>
-            <a href="https://github.com/erkamdemirci">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 48 48">
-                <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 31.66536 35.956939 38.122519 29 40.251953 L 29 35.136719 C 29 33.226635 27.899316 31.588619 26.308594 30.773438 A 10 8 0 0 0 32.4375 18.720703 C 32.881044 17.355414 33.376523 14.960672 32.199219 13.076172 C 29.929345 13.076172 28.464667 14.632086 27.765625 15.599609 A 10 8 0 0 0 24 15 A 10 8 0 0 0 20.230469 15.59375 C 19.529731 14.625773 18.066226 13.076172 15.800781 13.076172 C 14.449711 15.238817 15.28492 17.564557 15.732422 18.513672 A 10 8 0 0 0 21.681641 30.779297 C 20.3755 31.452483 19.397283 32.674042 19.097656 34.15625 L 17.783203 34.15625 C 16.486203 34.15625 15.98225 33.629234 15.28125 32.740234 C 14.58925 31.851234 13.845172 31.253859 12.951172 31.005859 C 12.469172 30.954859 12.144453 31.321484 12.564453 31.646484 C 13.983453 32.612484 14.081391 34.193516 14.650391 35.228516 C 15.168391 36.160516 16.229687 37 17.429688 37 L 19 37 L 19 40.251953 C 12.043061 38.122519 7 31.66536 7 24 C 7 14.593391 14.593385 7 24 7 z"></path>
+            <a
+              href="https://github.com/erkamdemirci"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
               </svg>
             </a>
           </div>

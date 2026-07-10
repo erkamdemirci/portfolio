@@ -202,4 +202,58 @@ export const tr = {
     metaRailAria: "Ünite telemetri şeridi",
     telemetryAria: "İşletim telemetrisi",
   },
+  // Services (T25, 03-screens-and-flows.md §8) — verbatim TR content. The grid cells reuse
+  // home.services.cellOne..Four verbatim (identical source string per 02 §C19/03 §8 — grid
+  // body text matches the Home teaser exactly); `details` carries the page's own, slightly
+  // longer per-offer copy + the 3-item "dahil olanlar" list (03 §8 Details block — note s/01's
+  // detail body genuinely differs from the grid body ("tek sorumluluk" added); s/02-04 detail
+  // bodies are verbatim-identical to their grid bodies, per spec).
+  servicesPage: {
+    eyebrow: "01 — hizmetler / neler üstleniyoruz",
+    heading: "Sipariş üzerine inşa.",
+    includedLabel: "dahil olanlar",
+    details: [
+      {
+        index: "s/01",
+        anchor: "s-01",
+        title: "Ürün mühendisliği",
+        body: "Kapsamdan sevkiyata tek sorumluluk: mimari, geliştirme, dağıtım, lansman sonrası operasyon.",
+        included: ["mimari + teknik kapsam", "geliştirme + haftalık sevkiyat", "lansman + operasyon"],
+      },
+      {
+        index: "s/02",
+        anchor: "s-02",
+        title: "Web uygulamaları",
+        body: "Gerçek arka uçlu Next.js uygulamaları — tanıtım sitesinden tam SaaS'a.",
+        included: ["Next.js + Tailwind temeli", "gerçek veri katmanı", "performans bütçesi"],
+      },
+      {
+        index: "s/03",
+        anchor: "s-03",
+        title: "Mobil uygulamalar",
+        body: "İki mağazaya da sevk edilen, ilk günden OTA güncellemeli Expo uygulamaları.",
+        included: ["Expo tabanı", "mağaza süreçleri", "OTA güncelleme hattı"],
+      },
+      {
+        index: "s/04",
+        anchor: "s-04",
+        title: "Tasarım sistemleri",
+        body: "Bir ekibin bizsiz sürdürebileceği token'lar, bileşenler ve dokümantasyon.",
+        included: ["token seti + karanlık mod", "bileşen kütüphanesi", "kullanım dokümantasyonu"],
+      },
+    ],
+    modelEyebrow: "02 — çalışma modeli / böyle yürür",
+    steps: [
+      "01 brif — 48 saat içinde yanıt",
+      "02 kapsam — sabit teklif, net teslimler",
+      "03 inşa — haftalık sevkiyat ritmi",
+      "04 lansman — prova, sonra canlı",
+      "05 operasyon — izleme ve bakım bizde",
+    ],
+    kvAriaLabel: "Çalışma modeli özeti",
+    kvModel: { key: "model", value: "sabit kapsam ya da aylık" },
+    kvCapacity: { key: "kapasite", value: "01 açık slot" },
+    kvStart: { key: "başlangıç", value: "takvime göre" },
+    contactEyebrow: "03 — iletişim / slot-06",
+  },
 } as const;

@@ -195,4 +195,53 @@ export const en = {
     metaRailAria: "Unit telemetry strip",
     telemetryAria: "Operations telemetry",
   },
+  // Services (T25) — verbatim EN content, mirrors tr.ts.
+  servicesPage: {
+    eyebrow: "01 — services / what we take on",
+    heading: "Built to order.",
+    includedLabel: "included",
+    details: [
+      {
+        index: "s/01",
+        anchor: "s-01",
+        title: "Product engineering",
+        body: "One responsibility from scope to shipped: architecture, build, deploy, and post-launch operations.",
+        included: ["architecture + technical scope", "build + weekly shipping", "launch + operations"],
+      },
+      {
+        index: "s/02",
+        anchor: "s-02",
+        title: "Web apps",
+        body: "Next.js applications with real backends — from marketing site to full SaaS.",
+        included: ["Next.js + Tailwind base", "a real data layer", "a performance budget"],
+      },
+      {
+        index: "s/03",
+        anchor: "s-03",
+        title: "Mobile apps",
+        body: "Expo apps shipped to both stores, with over-the-air updates from day one.",
+        included: ["Expo base", "store processes", "an OTA update pipeline"],
+      },
+      {
+        index: "s/04",
+        anchor: "s-04",
+        title: "Design systems",
+        body: "Tokens, components, and documentation a team can maintain without us.",
+        included: ["token set + dark mode", "component library", "usage documentation"],
+      },
+    ],
+    modelEyebrow: "02 — engagement model / how it runs",
+    steps: [
+      "01 brief — a reply within 48 hours",
+      "02 scope — fixed quote, explicit deliverables",
+      "03 build — a weekly shipping rhythm",
+      "04 launch — rehearsal, then live",
+      "05 operations — monitoring and maintenance stay with us",
+    ],
+    kvAriaLabel: "Engagement model summary",
+    kvModel: { key: "model", value: "fixed scope or ongoing" },
+    kvCapacity: { key: "capacity", value: "01 open slot" },
+    kvStart: { key: "start", value: "by calendar" },
+    contactEyebrow: "03 — contact / bay-06",
+  },
 } as const;

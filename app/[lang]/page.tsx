@@ -189,8 +189,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                 image={{
                   src: "/screens/akitle/editor-1600.png",
                   alt: alt.akitle,
-                  width: 898,
-                  height: 856,
+                  width: 894,
+                  height: 754,
                 }}
               />
             }

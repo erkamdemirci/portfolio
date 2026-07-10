@@ -117,7 +117,7 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ lang
             <BrowserBay
               domain={h.cards.akitle.domain}
               span={7}
-              image={{ src: "/screens/akitle/editor-1600.png", alt: alt.akitle, width: 898, height: 856 }}
+              image={{ src: "/screens/akitle/editor-1600.png", alt: alt.akitle, width: 894, height: 754 }}
             />
           }
           href={caseHref.akitle}

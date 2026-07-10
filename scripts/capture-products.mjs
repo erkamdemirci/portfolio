@@ -147,15 +147,21 @@ async function run() {
     await hideOverlays(page);
     await waitSettled(page);
 
-    // (1) The whole hero contract-card figure — browser-chrome bar + line items + signature UI.
+    // (1) The contract-card content itself — line items + signature UI. Climbs only 3
+    // ancestors (the card BODY, not the outer wrapper) so Akitle's own fake browser-chrome
+    // bar ("● ● ●  akitle.com/c/contract" — a decorative hero graphic on akitle.com, not
+    // real browser UI) is excluded: DMRC's own C15 BrowserBay frame supplies its own chrome
+    // bar around this image, so including Akitle's baked-in one would double it up (found
+    // during T23 case-template composition — see DEVIATIONS.md).
     await capture("akitle/editor-1600.png", (out) =>
-      climbAndShoot(page, "Equipment Rental Contract", 5, out),
+      climbAndShoot(page, "Equipment Rental Contract", 3, out),
     );
 
     // (2) Close crop on the "Signed" badge card — header row + highlighted delivery-date box,
-    // cropped from the same hero figure (871,179)-(1319,606 at 1600x1000, CSS px).
+    // cropped from the same card body (872,229)-(1318,605 at 1600x1000, CSS px) — starts
+    // below Akitle's own chrome-bar strip for the same reason as (1).
     await capture("akitle/signed-1600.png", (out) =>
-      clipShoot(page, { x: 871, y: 179, width: 448, height: 225 }, out),
+      clipShoot(page, { x: 872, y: 229, width: 446, height: 190 }, out),
     );
 
     await context.close();

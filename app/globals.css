@@ -49,6 +49,13 @@
   --dur-slow: 240ms;
   --ease: ease;
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* layout rhythm — 01 §Spacing, radius & depth (Layout constants table) */
+  --sec: clamp(64px, 8vw, 112px);
+  --sec-tight: clamp(48px, 6vw, 72px);
+  --hero-top: clamp(56px, 7vw, 104px);
+  --gap-grid: 20px;
+  --gap-col: clamp(32px, 4vw, 64px);
 }
 
 html {

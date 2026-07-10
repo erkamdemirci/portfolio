@@ -6,6 +6,8 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { StatusChip } from "@/components/ui/status-chip";
 import { FleetReadout } from "@/components/telemetry/fleet-readout";
 import { StatRail } from "@/components/telemetry/stat-rail";
+import { BrowserBay } from "@/components/frames/browser-bay";
+import { PhoneBay } from "@/components/frames/phone-bay";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
@@ -448,6 +450,89 @@ export default async function SpecimenPage({
                     ]
               }
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- T15 — Screen frames (C15/C16/C17) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          frames — browser bay / phone bay / slot pattern (C15/C16/C17)
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          <div style={{ maxWidth: "560px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C15 — browser bay (span-7, slot state)
+            </p>
+            <div
+              style={{
+                border: "1px solid var(--line)",
+                borderRadius: "var(--radius)",
+                overflow: "hidden",
+                background: "var(--carbon-2)",
+              }}
+            >
+              <BrowserBay
+                domain="akitle.com"
+                span={7}
+                slot={{
+                  bars: [
+                    { top: "20px", left: "20px", width: "26%", height: "14px" },
+                    { top: "52px", left: "20px", width: "44%", height: "70%", tone: "skel-2" },
+                    { top: "52px", right: "20px", width: "30%", height: "36px" },
+                    { top: "104px", right: "20px", width: "12%", height: "8px", tone: "amber" },
+                    { top: "130px", right: "20px", width: "30%", height: "44%" },
+                  ],
+                  label:
+                    lang === "tr"
+                      ? {
+                          title: "Ekran yuvası",
+                          body: "Akitle sözleşme editörü: satır kalemleri, imza rozeti, koyu yeşil serif vurgular",
+                        }
+                      : {
+                          title: "Screen slot",
+                          body: "Akitle contract editor — line items, signed badge, deep-green serif accents",
+                        },
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ maxWidth: "560px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C16 — phone bay (slot state)
+            </p>
+            <div
+              style={{
+                border: "1px solid var(--line)",
+                borderRadius: "var(--radius)",
+                overflow: "hidden",
+                background: "var(--carbon-2)",
+                paddingBottom: "0",
+              }}
+            >
+              <PhoneBay
+                slot={{
+                  bars: [
+                    { top: "36px", left: "14%", width: "44%", height: "12px" },
+                    { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
+                    { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
+                    { top: "128px", left: "14%", width: "72%", height: "52px" },
+                  ],
+                  label:
+                    lang === "tr"
+                      ? {
+                          title: "Ekran yuvası",
+                          body: "VAAZ ana ekranı — namaz vakti geri sayımı, yeşil-altın serif arayüz",
+                        }
+                      : {
+                          title: "Screen slot",
+                          body: "VAAZ home — prayer-times countdown, green-gold serif UI",
+                        },
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>

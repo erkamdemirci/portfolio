@@ -162,4 +162,17 @@ export const en = {
       kvStack: { key: "stack", value: "Next.js · Expo · Convex" },
     },
   },
+  // Work index (T22, 03-screens-and-flows.md §2) — verbatim EN content.
+  workIndex: {
+    eyebrow: "01 — work / the full fleet",
+    heading: "The full fleet record.",
+    side: "Five products, two platforms. Each case record shows what we built, what we built it with, and what runs.",
+    extended: {
+      vaaz: "Time calculation, location, and the notification pipeline on one Expo base.",
+      akitle: "One product from editor to signature to legal archive.",
+      linkden: "Search, save, organize — keyboard first.",
+      characterdex: "Type profiles, tests, and the collection in one panel.",
+      oasis: "Real screens land in this record as they're ready.",
+    },
+  },
 } as const;

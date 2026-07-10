@@ -168,4 +168,18 @@ export const tr = {
       kvStack: { key: "yığın", value: "Next.js · Expo · Convex" },
     },
   },
+  // Work index (T22, 03-screens-and-flows.md §2) — verbatim TR content. Reuses `home.cards`
+  // for the base card copy; `extended` holds the second sentence appended per card.
+  workIndex: {
+    eyebrow: "01 — işler / tüm filo",
+    heading: "Tüm filo kaydı.",
+    side: "Beş ürün, iki platform. Her vaka kaydı ne inşa ettiğimizi, neyle inşa ettiğimizi ve neyin çalıştığını gösterir.",
+    extended: {
+      vaaz: "Vakit hesabı, konum ve bildirim akışı tek Expo tabanında.",
+      akitle: "Editörden imzaya, hukuki arşive kadar tek ürün.",
+      linkden: "Arama, kaydetme ve organizasyon — klavye öncelikli.",
+      characterdex: "Tip profilleri, testler ve koleksiyon tek panelde.",
+      oasis: "Gerçek ekranlar hazır oldukça bu kayda düşer.",
+    },
+  },
 } as const;

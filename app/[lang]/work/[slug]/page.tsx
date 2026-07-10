@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { StatusChip } from "@/components/ui/status-chip";
 import { ExternalTelLink } from "@/components/fleet/unit-card";
@@ -61,63 +63,6 @@ const CASE_HREF: Record<Lang, Record<CaseSlug, string>> = {
   },
 };
 
-// 03 Meta, titles & OG table — full 5-case table so T24 (data-only) never needs to touch
-// this template file.
-const META: Record<CaseSlug, Record<Lang, Metadata>> = {
-  vaaz: {
-    tr: {
-      title: "VAAZ vaka kaydı — DMRC",
-      description:
-        "Namaz vakti yol arkadaşı: vakitler, takip, vaaz içeriği. unit-01: v2.4, iOS/Android, iki mağazada 4,9.",
-    },
-    en: {
-      title: "VAAZ case record — DMRC",
-      description: "A prayer companion: times, tracking, sermon content. unit-01: v2.4, iOS/Android, 4.9 across both stores.",
-    },
-  },
-  akitle: {
-    tr: {
-      title: "Akitle vaka kaydı — DMRC",
-      description: "Kira sözleşmeleri tek akışta: hazırla, imzala, arşivle. unit-02: v3.1, web, üretimde.",
-    },
-    en: {
-      title: "Akitle case record — DMRC",
-      description: "Rental contracts in one flow: draft, sign, archive. unit-02: v3.1, web, in production.",
-    },
-  },
-  linkden: {
-    tr: {
-      title: "Linkden vaka kaydı — DMRC",
-      description: "Kodun yanında yaşayan dokümantasyon; klavye öncelikli. unit-03: v1.8, web, üretimde.",
-    },
-    en: {
-      title: "Linkden case record — DMRC",
-      description: "Documentation that lives next to the code; keyboard first. unit-03: v1.8, web, in production.",
-    },
-  },
-  characterdex: {
-    tr: {
-      title: "CharacterDex vaka kaydı — DMRC",
-      description: "Kişilik tipleri, koleksiyonluk kehanet kartlarıyla. unit-04: v2.0, web, üretimde.",
-    },
-    en: {
-      title: "CharacterDex case record — DMRC",
-      description: "Personality typing with collectible oracle cards. unit-04: v2.0, web, in production.",
-    },
-  },
-  "oasis-and-mind": {
-    tr: {
-      title: "Oasis and Mind vaka kaydı — DMRC",
-      description:
-        "Günlük ritüeller üzerine kurulu bakım oyunu. unit-05: v0.9, mobil, geliştirmede — kayıt güncellenir.",
-    },
-    en: {
-      title: "Oasis and Mind case record — DMRC",
-      description: "A care game built on daily rituals. unit-05: v0.9, mobile, in development — the record updates.",
-    },
-  },
-};
-
 export function generateStaticParams() {
   const langs: Lang[] = ["tr", "en"];
   const slugs = Object.keys(cases) as CaseSlug[];
@@ -130,7 +75,8 @@ export async function generateMetadata({
   params: Promise<{ lang: string; slug: string }>;
 }): Promise<Metadata> {
   const { lang, slug } = (await params) as { lang: Lang; slug: CaseSlug };
-  return META[slug]?.[lang] ?? {};
+  if (!cases[slug]) return {};
+  return pageMetadata(slug, lang);
 }
 
 function renderFrame(frame: CaseFrame, image: { src: string; alt: string; width: number; height: number } | undefined, slot: { bars: NonNullable<CaseFrame["slotBars"]>; label: NonNullable<import("@/components/frames/slot-pattern").SlotLabelContent> } | undefined) {
@@ -170,6 +116,8 @@ export default async function CaseStudyPage({
 
   return (
     <>
+      <HreflangLinks alt={alternatesFor(slug)} />
+
       {/* ---------- Hero — C9 unit eyebrow, h1, claim lede, C11 chip, C22 meta rail ---------- */}
       <section className="wrap pt-[var(--hero-top)] pb-[var(--sec-tight)]">
         <Eyebrow variant="hero">{`unit-${identity.unitNo} · ${identity.unitKey}`}</Eyebrow>

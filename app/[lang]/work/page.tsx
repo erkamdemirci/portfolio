@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { SectionHead } from "@/components/layout/section-head";
 import { BrowserBay } from "@/components/frames/browser-bay";
 import { PhoneBay } from "@/components/frames/phone-bay";
@@ -14,26 +16,13 @@ import type { Lang } from "@/lib/i18n/routes";
  * locale-rewrite middleware.
  */
 
-const META: Record<Lang, Metadata> = {
-  tr: {
-    title: "İşler — DMRC",
-    description:
-      "Tüm filo kaydı: VAAZ, Akitle, Linkden, CharacterDex, Oasis and Mind. Her vaka kaydı filodaki gerçek üründür — dördü üretimde, biri geliştirmede.",
-  },
-  en: {
-    title: "Work — DMRC",
-    description:
-      "The full fleet record: VAAZ, Akitle, Linkden, CharacterDex, Oasis and Mind. Every case record is a real product in the fleet — four in production, one in development.",
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Lang };
-  return META[lang];
+  return pageMetadata("work", lang);
 }
 
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
@@ -80,7 +69,9 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ lang
   const alt = IMAGE_ALT[lang];
 
   return (
-    <section className="wrap py-[var(--sec)]">
+    <>
+      <HreflangLinks alt={alternatesFor("work")} />
+      <section className="wrap py-[var(--sec)]">
       <SectionHead
         eyebrow={w.eyebrow}
         heading={w.heading}
@@ -203,6 +194,7 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ lang
           note={h.bay06.note}
         />
       </div>
-    </section>
+      </section>
+    </>
   );
 }

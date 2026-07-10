@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { ContactBand } from "@/components/bands/contact-band";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
@@ -11,24 +13,13 @@ import type { Lang } from "@/lib/i18n/routes";
  * band (03 gives the same strings verbatim) — only the eyebrow differs per page.
  */
 
-const META: Record<Lang, Metadata> = {
-  tr: {
-    title: "İletişim — DMRC",
-    description: "Slot 06 boş. Brifinizi e-postayla gönderin; 48 saat içinde yazılı yanıt.",
-  },
-  en: {
-    title: "Contact — DMRC",
-    description: "Bay 06 is empty. Send your brief by email; a written reply within 48 hours.",
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Lang };
-  return META[lang];
+  return pageMetadata("contact", lang);
 }
 
 const WORK_HREF: Record<Lang, string> = { tr: "/isler", en: "/en/work" };
@@ -41,6 +32,8 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
 
   return (
     <>
+      <HreflangLinks alt={alternatesFor("contact")} />
+
       {/* ---------- 01 — iletişim / slot-06 (C21 full, h1) ---------- */}
       <ContactBand
         variant="full"

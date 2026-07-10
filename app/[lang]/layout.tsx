@@ -7,10 +7,15 @@ import { SkipLink } from "@/components/chrome/skip-link";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { setRequestLang } from "@/lib/i18n/request-lang";
+import { SITE_URL } from "@/lib/seo";
 import { THEME_SCRIPT } from "@/lib/theme-script";
 import "../globals.css";
 
+// metadataBase (T30) — every URL-based field below this segment (alternates.canonical,
+// alternates.languages, openGraph.images) can use a relative path and still resolve to a
+// fully-qualified URL (04-tasks.md T30/T31; A4 deploy target, 06-risks-and-assumptions.md).
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "DMRC",
   description: "DMRC — Erkam Demirci's product studio.",
 };

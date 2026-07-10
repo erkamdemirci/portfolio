@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { Button } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { Eyebrow } from "@/components/ui/eyebrow";
@@ -21,26 +23,13 @@ import type { Lang } from "@/lib/i18n/routes";
  * lib/i18n/dictionaries/{tr,en}.ts `home` block (sourced from 03 §1 / 02-components.md).
  */
 
-const META: Record<Lang, Metadata> = {
-  tr: {
-    title: "DMRC — Ürün stüdyosu · Web & mobil",
-    description:
-      "Kendi ürünlerimizi geliştiriyoruz — ve sizinkini. Beş ürünlük filo: web ve mobil ürün mühendisliği, tasarımdan operasyona.",
-  },
-  en: {
-    title: "DMRC — Product studio · Web & mobile",
-    description:
-      "We build our own products — and yours. A five-product fleet: web and mobile product engineering, design through operations.",
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Lang };
-  return META[lang];
+  return pageMetadata("home", lang);
 }
 
 const WORK_HREF: Record<Lang, string> = { tr: "/isler", en: "/en/work" };
@@ -98,6 +87,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   return (
     <>
+      <HreflangLinks alt={alternatesFor("home")} />
+
       {/* ---------- Hero — no raster image; LCP is the h1 text (01 §Imagery) ---------- */}
       <section className="wrap pt-[var(--hero-top)]">
         <div className="grid grid-cols-[minmax(0,7fr)_minmax(0,5fr)] grid-rows-[auto_auto] gap-x-[var(--gap-col)] max-[1020px]:grid-cols-1 max-[1020px]:grid-rows-[auto_auto_auto]">

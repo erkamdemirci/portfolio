@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { ServiceGrid, type ServiceCellContent } from "@/components/services/service-cell";
 import { FleetReadout } from "@/components/telemetry/fleet-readout";
@@ -15,26 +17,13 @@ import type { Lang } from "@/lib/i18n/routes";
  * C21 compact contact band.
  */
 
-const META: Record<Lang, Metadata> = {
-  tr: {
-    title: "Stüdyo — DMRC",
-    description:
-      "Tek kuruculu ürün stüdyosu: Erkam Demirci. Küçük kalır, uçtan uca inşa eder, sevk ettiğini işletir.",
-  },
-  en: {
-    title: "Studio — DMRC",
-    description:
-      "A one-founder product studio: Erkam Demirci. It stays small, builds end to end, and operates what it ships.",
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Lang };
-  return META[lang];
+  return pageMetadata("studio", lang);
 }
 
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
@@ -56,6 +45,8 @@ export default async function StudioPage({ params }: { params: Promise<{ lang: s
 
   return (
     <>
+      <HreflangLinks alt={alternatesFor("studio")} />
+
       {/* ---------- 01 — stüdyo / dmrc kimdir (head + lede) ---------- */}
       <section className="wrap pt-[var(--hero-top)] pb-[var(--sec-tight)]">
         <Eyebrow variant="hero">{s.eyebrow}</Eyebrow>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { SectionHead } from "@/components/layout/section-head";
 import { ServiceGrid, type ServiceCellContent } from "@/components/services/service-cell";
@@ -17,26 +19,13 @@ import type { Lang } from "@/lib/i18n/routes";
  * band".
  */
 
-const META: Record<Lang, Metadata> = {
-  tr: {
-    title: "Hizmetler — DMRC",
-    description:
-      "Ürün mühendisliği, web ve mobil uygulamalar, tasarım sistemleri. Sabit kapsam ya da aylık; her iş çalışan bir şey sevk eder.",
-  },
-  en: {
-    title: "Services — DMRC",
-    description:
-      "Product engineering, web and mobile apps, design systems. Fixed scope or ongoing; every engagement ships something that runs.",
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = (await params) as { lang: Lang };
-  return META[lang];
+  return pageMetadata("services", lang);
 }
 
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
@@ -63,6 +52,8 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
 
   return (
     <>
+      <HreflangLinks alt={alternatesFor("services")} />
+
       {/* ---------- 01 — hizmetler / neler üstleniyoruz (head + grid, "tight grid") ---------- */}
       <section className="wrap pt-[var(--hero-top)] pb-[var(--sec-tight)]">
         <SectionHead eyebrow={s.eyebrow} heading={s.heading} headingLevel="h1" />

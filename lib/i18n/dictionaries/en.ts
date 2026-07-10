@@ -16,6 +16,8 @@ export const en = {
   modeChip: {
     dark: "mode / dark",
     light: "mode / light",
+    ariaToLight: "Switch to light theme",
+    ariaToDark: "Switch to dark theme",
   },
   localeChip: {
     label: "lang / en",

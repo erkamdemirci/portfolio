@@ -16,6 +16,8 @@ export const tr = {
   modeChip: {
     dark: "mod / koyu",
     light: "mod / açık",
+    ariaToLight: "Açık temaya geç",
+    ariaToDark: "Koyu temaya geç",
   },
   localeChip: {
     label: "dil / tr",

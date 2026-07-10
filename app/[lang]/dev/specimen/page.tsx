@@ -1,5 +1,9 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import { ArrowLink } from "@/components/ui/arrow-link";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { StatusChip } from "@/components/ui/status-chip";
 
 /**
  * Dev specimen page — 01-design-system.md §Typography (scale table, TR coverage check),
@@ -293,7 +297,7 @@ export default function SpecimenPage() {
       </section>
 
       {/* ---------- Color token swatches ---------- */}
-      <section>
+      <section style={sectionStyle}>
         <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
           color primitives
         </p>
@@ -319,6 +323,80 @@ export default function SpecimenPage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ---------- T08 — primitives gallery (C7/C8/C9/C11) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          primitives — button / arrow-link / eyebrow / status chip (C7/C8/C9/C11)
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C7 — button
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" }}>
+              <Button variant="accent" href="/tr/dev/specimen">
+                Proje başlat
+              </Button>
+              <Button variant="ghost" href="/tr/dev/specimen">
+                Filoyu gör
+              </Button>
+              <Button variant="accent" disabled>
+                Proje başlat
+              </Button>
+              <Button variant="ghost" disabled>
+                Filoyu gör
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C8 — arrow-link
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", alignItems: "center" }}>
+              <ArrowLink href="/iletisim" variant="forward">
+                Proje başlat
+              </ArrowLink>
+              <ArrowLink href="/" variant="back">
+                Ana sayfaya dön
+              </ArrowLink>
+            </div>
+          </div>
+
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C9 — section eyebrow
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <Eyebrow variant="hero">
+                DMRC — ürün stüdyosu · Bursa, TR → dünya geneli
+              </Eyebrow>
+              <Eyebrow variant="section">01 — işler / üretimde kanıt</Eyebrow>
+              <Eyebrow variant="section">03 — iletişim / slot-06</Eyebrow>
+            </div>
+          </div>
+
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C11 — status chip
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <StatusChip variant="live" flag="CANLI" meta="v2.4 · iOS/Android" />
+              <StatusChip variant="in-dev" flag="GELİŞTİRMEDE" meta="v0.9 · Mobil" />
+              <StatusChip variant="no-signal" flag="SİNYAL YOK" />
+              <div style={{ maxWidth: "220px" }}>
+                <StatusChip
+                  variant="in-dev"
+                  flag="GELİŞTİRME AŞAMASINDA"
+                  meta="OASIS AND MIND"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>

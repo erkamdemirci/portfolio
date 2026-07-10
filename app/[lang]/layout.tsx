@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { generalSans, plexMono } from "@/app/fonts";
+import { Header } from "@/components/chrome/header";
+import { SkipLink } from "@/components/chrome/skip-link";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { THEME_SCRIPT } from "@/lib/theme-script";
 import "../globals.css";
@@ -22,6 +25,7 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = (await params) as { lang: Lang };
+  const dict = getDictionary(lang);
 
   return (
     <html
@@ -38,7 +42,8 @@ export default async function RootLayout({
           interpolated from external data, so there is no injection surface to sanitize.
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-        {/* G1 header (skip link + nav + mode/locale chips) mounts here — T10 */}
+        <SkipLink label={dict.skipLink} />
+        <Header lang={lang} dict={dict} />
         <main id="main">{children}</main>
         {/* G2 footer title block mounts here — T12 */}
       </body>

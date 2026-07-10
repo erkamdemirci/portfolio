@@ -7,6 +7,11 @@
  */
 export const tr = {
   lang: "tr",
+  skipLink: "İçeriğe atla",
+  wordmark: {
+    name: "DMRC",
+    descriptor: "/ ürün stüdyosu",
+  },
   nav: {
     work: "İşler",
     services: "Hizmetler",
@@ -21,6 +26,7 @@ export const tr = {
   },
   localeChip: {
     label: "dil / tr",
+    ariaSwitch: "İngilizce sürüme geç",
   },
   footer: {
     cells: {

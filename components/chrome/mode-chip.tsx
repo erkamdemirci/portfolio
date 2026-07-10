@@ -45,7 +45,7 @@ export function ModeChip({ dict, className }: ModeChipProps) {
       type="button"
       onClick={toggle}
       aria-label={ariaLabel}
-      className={`mono relative inline-flex items-center justify-center rounded border border-line px-3 py-2 text-steel transition-[color,border-color] duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-2 before:content-[''] hover:border-line-strong hover:text-bright active:translate-y-px ${className ?? ""}`}
+      className={`mono relative inline-flex items-center justify-center whitespace-nowrap rounded border border-line px-3 py-2 text-steel transition-[color,border-color] duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-2 before:content-[''] hover:border-line-strong hover:text-bright active:translate-y-px ${className ?? ""}`}
     >
       {label}
     </button>

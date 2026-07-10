@@ -7,6 +7,11 @@
  */
 export const en = {
   lang: "en",
+  skipLink: "Skip to content",
+  wordmark: {
+    name: "DMRC",
+    descriptor: "/ product studio",
+  },
   nav: {
     work: "Work",
     services: "Services",
@@ -21,6 +26,7 @@ export const en = {
   },
   localeChip: {
     label: "lang / en",
+    ariaSwitch: "Switch to the Turkish version",
   },
   footer: {
     cells: {

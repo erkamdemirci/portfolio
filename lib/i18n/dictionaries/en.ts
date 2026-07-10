@@ -263,4 +263,14 @@ export const en = {
     founderStat: { value: "01", caption: "founder — on every line" },
     contactEyebrow: "05 — contact / bay-06",
   },
+  // Contact (T27) — verbatim EN content, mirrors tr.ts.
+  contactPage: {
+    eyebrow: "01 — contact / bay-06",
+    protocolHeading: "Response protocol",
+    steps: [
+      "01 brief — an email is enough, no template",
+      "02 review — a written reply within 48 hours",
+      "03 call — a 30-minute call if it fits; the quote arrives in writing",
+    ],
+  },
 } as const;

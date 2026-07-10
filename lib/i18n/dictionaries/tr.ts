@@ -275,4 +275,18 @@ export const tr = {
     founderStat: { value: "01", caption: "kurucu — her satırda" },
     contactEyebrow: "05 — iletişim / slot-06",
   },
+  // Contact (T27, 03-screens-and-flows.md §10) — verbatim TR content. The C21-full body
+  // (heading/lede/buttons/kv) reuses home.contactBand verbatim (identical source string per
+  // spec — only the eyebrow renumbers to "01" on this page). "protocolHeading" reuses the
+  // section's own name from 03's own section list ("Yanıt protokolü / Response protocol") —
+  // zero invented content.
+  contactPage: {
+    eyebrow: "01 — iletişim / slot-06",
+    protocolHeading: "Yanıt protokolü",
+    steps: [
+      "01 brif — e-posta yeterli, şablon yok",
+      "02 değerlendirme — 48 saat içinde yazılı yanıt",
+      "03 görüşme — uygunsa 30 dakikalık arama, teklif yazılı gelir",
+    ],
+  },
 } as const;

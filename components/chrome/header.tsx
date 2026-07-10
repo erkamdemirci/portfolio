@@ -2,20 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { Button } from "@/components/ui/button";
 import { ModeChip } from "./mode-chip";
 import { LocaleChip } from "./locale-chip";
+import { MobileMenu } from "./mobile-menu";
 
 /**
- * G1 — Header / nav (03-screens-and-flows.md §G1; 02-components.md §C1/C2/C3/C5).
+ * G1 — Header / nav (03-screens-and-flows.md §G1; 02-components.md §C1/C2/C3/C5/§C6).
  * 64px bar, border-bottom --line: C2 wordmark -> C3 links (margin-left auto) -> C4 mode
  * chip -> C5 locale chip (gap 12px) -> C7-accent CTA. <=640px: nav links + locale chip
- * move into the C6 mobile-menu panel; the bar keeps C2 (no descriptor) + C4 + C7 + the
- * C6 trigger. The trigger below is a non-functional placeholder — T11 replaces it with
- * the real MobileMenu disclosure (keyboard/ARIA/focus contract lives there).
+ * move into the C6 mobile-menu panel (T11); the bar keeps C2 (no descriptor) + C4 + C7 +
+ * the C6 trigger.
  */
 
 const NAV_ROUTES: Record<Lang, { work: string; services: string; studio: string }> = {
@@ -82,20 +81,7 @@ export function Header({ lang, dict }: HeaderProps) {
           {dict.nav.cta}
         </Button>
 
-        {/*
-          Mobile menu trigger placeholder — replaced by MobileMenu in T11 (full ARIA
-          contract lands there). 20px visible icon with the A7 invisible-expansion
-          pattern (before:-inset-3 = 12px each side -> 44x44 hit area, zero extra
-          layout width, matching the mode/locale chip technique already used above).
-        */}
-        <button
-          type="button"
-          aria-hidden="true"
-          tabIndex={-1}
-          className="relative inline-flex h-5 w-5 items-center justify-center text-bright before:absolute before:-inset-3 before:content-[''] sm:hidden"
-        >
-          <Menu aria-hidden="true" size={20} strokeWidth={1.5} />
-        </button>
+        <MobileMenu lang={lang} dict={dict} navItems={navItems} contactHref={CONTACT_HREF[lang]} />
       </div>
     </header>
   );

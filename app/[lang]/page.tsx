@@ -109,7 +109,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               <Button variant="accent" href={CONTACT_HREF[lang]}>
                 {dict.nav.cta}
               </Button>
-              <span className="mono text-steel">
+              {/* .mono minus its uppercase, as explicit utilities: an email is a code
+                  artifact (01 §Typography exemption) — TR's transform would render
+                  HELLO@ERKAMDEMİRCİ.COM. (.mono is unlayered CSS and outranks the
+                  normal-case utility, so the class can't be used here at all.) */}
+              <span className="font-mono text-xs tracking-[0.08em] text-steel">
                 <a
                   href={`mailto:${h.email}`}
                   className="transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:text-amber-text"

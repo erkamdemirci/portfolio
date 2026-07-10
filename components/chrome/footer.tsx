@@ -71,7 +71,10 @@ export function Footer({ lang, dict }: FooterProps) {
                 href={`mailto:${cells.channel.value}`}
                 className="transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:text-amber-text"
               >
-                {cells.channel.value}
+                {/* preferred break after the @ so a narrow cell never splits the
+                    domain mid-word ("hello@erkamdemirc / i.com" reads as a typo) */}
+                {cells.channel.value.split("@")[0]}@<wbr />
+                {cells.channel.value.split("@")[1]}
               </a>
             </span>
           </div>

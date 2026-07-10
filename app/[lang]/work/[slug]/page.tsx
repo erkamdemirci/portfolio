@@ -120,7 +120,7 @@ export default async function CaseStudyPage({
 
       {/* ---------- Hero — C9 unit eyebrow, h1, claim lede, C11 chip, C22 meta rail ---------- */}
       <section className="wrap pt-[var(--hero-top)] pb-[var(--sec-tight)]">
-        <Eyebrow variant="hero">{`unit-${identity.unitNo} · ${identity.unitKey}`}</Eyebrow>
+        <Eyebrow variant="hero">{`UNIT-${identity.unitNo} · ${identity.unitKey}`}</Eyebrow>
         <h1 className="max-w-[14ch] text-balance text-[clamp(2.8rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]">
           {identity.title}
         </h1>
@@ -227,12 +227,12 @@ export default async function CaseStudyPage({
           nextCaption={ct.pager.nextCaption}
           prev={{
             href: caseHref[prev],
-            unitLabel: `unit-${prevIdentity.unitNo} · ${prevIdentity.unitKey}`,
+            unitLabel: `UNIT-${prevIdentity.unitNo} · ${prevIdentity.unitKey}`,
             title: prevIdentity.title,
           }}
           next={{
             href: caseHref[next],
-            unitLabel: `unit-${nextIdentity.unitNo} · ${nextIdentity.unitKey}`,
+            unitLabel: `UNIT-${nextIdentity.unitNo} · ${nextIdentity.unitKey}`,
             title: nextIdentity.title,
           }}
         />

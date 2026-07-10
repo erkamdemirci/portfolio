@@ -14,7 +14,9 @@ export function ExternalTelLink({ href, label }: { href: string; label: string }
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1"
+      // normal-case: domains are code artifacts (01 §Typography exemption) — the TR
+      // locale's uppercase transform must never dot the i's (AKİTLE.COM is not a domain).
+      className="inline-flex items-center gap-1 normal-case"
     >
       {label}
       <ArrowUpRight aria-hidden="true" size={14} strokeWidth={1.5} />

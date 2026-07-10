@@ -56,7 +56,7 @@ export const en = {
     },
     cards: {
       vaaz: {
-        unitLabel: "unit-01 · VAAZ",
+        unitLabel: "UNIT-01 · VAAZ",
         flag: "LIVE",
         meta: "v2.4 · iOS / Android",
         title: "VAAZ",
@@ -66,7 +66,7 @@ export const en = {
         ratingSuffix: "store rating",
       },
       akitle: {
-        unitLabel: "unit-02 · AKITLE",
+        unitLabel: "UNIT-02 · AKITLE",
         flag: "LIVE",
         meta: "v3.1 · Web",
         title: "Akitle",
@@ -75,7 +75,7 @@ export const en = {
         telLine2: "rental contract SaaS",
       },
       linkden: {
-        unitLabel: "unit-03 · LINKDEN",
+        unitLabel: "UNIT-03 · LINKDEN",
         flag: "LIVE",
         meta: "v1.8 · Web",
         title: "Linkden",
@@ -84,7 +84,7 @@ export const en = {
         telLine2: "for dev teams",
       },
       characterdex: {
-        unitLabel: "unit-04 · CHARACTERDEX",
+        unitLabel: "UNIT-04 · CHARACTERDEX",
         flag: "LIVE",
         meta: "v2.0 · Web",
         title: "CharacterDex",
@@ -93,7 +93,7 @@ export const en = {
         telLine2: "web app",
       },
       oasis: {
-        unitLabel: "unit-05 · OASIS AND MIND",
+        unitLabel: "UNIT-05 · OASIS AND MIND",
         flag: "IN DEV",
         meta: "v0.9 · Mobile",
         title: "Oasis and Mind",

@@ -62,7 +62,7 @@ export const tr = {
     },
     cards: {
       vaaz: {
-        unitLabel: "unit-01 · VAAZ",
+        unitLabel: "UNIT-01 · VAAZ",
         flag: "CANLI",
         meta: "v2.4 · iOS · Android",
         title: "VAAZ",
@@ -72,7 +72,7 @@ export const tr = {
         ratingSuffix: "mağaza puanı",
       },
       akitle: {
-        unitLabel: "unit-02 · AKITLE",
+        unitLabel: "UNIT-02 · AKITLE",
         flag: "CANLI",
         meta: "v3.1 · Web",
         title: "Akitle",
@@ -81,7 +81,7 @@ export const tr = {
         telLine2: "kira sözleşmesi SaaS'ı",
       },
       linkden: {
-        unitLabel: "unit-03 · LINKDEN",
+        unitLabel: "UNIT-03 · LINKDEN",
         flag: "CANLI",
         meta: "v1.8 · Web",
         title: "Linkden",
@@ -90,7 +90,7 @@ export const tr = {
         telLine2: "geliştirici ekipler için",
       },
       characterdex: {
-        unitLabel: "unit-04 · CHARACTERDEX",
+        unitLabel: "UNIT-04 · CHARACTERDEX",
         flag: "CANLI",
         meta: "v2.0 · Web",
         title: "CharacterDex",
@@ -99,7 +99,7 @@ export const tr = {
         telLine2: "web uygulaması",
       },
       oasis: {
-        unitLabel: "unit-05 · OASIS AND MIND",
+        unitLabel: "UNIT-05 · OASIS AND MIND",
         flag: "GELİŞTİRMEDE",
         meta: "v0.9 · Mobil",
         title: "Oasis and Mind",

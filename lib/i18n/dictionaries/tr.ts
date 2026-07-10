@@ -289,4 +289,16 @@ export const tr = {
       "03 görüşme — uygunsa 30 dakikalık arama, teklif yazılı gelir",
     ],
   },
+  // 404 / G3 (T28, 03-screens-and-flows.md §G3; 02-components.md §C25) — verbatim TR content.
+  // "chipFlag" drops the literal "●" glyph from the spec's "● SİNYAL YOK" — the dot is always
+  // CSS-drawn by StatusChip (C11), never a literal character (same normalization already
+  // applied sitewide to C24's "durum" cell, T12).
+  notFound: {
+    chipFlag: "SİNYAL YOK",
+    heading: "Bu rotada kayıt yok.",
+    genericPath: "/istenen-rota",
+    readoutNote: "kayıtlı ünite yok",
+    homeLabel: "Ana sayfaya dön",
+    workLabel: "Filoyu gör",
+  },
 } as const;

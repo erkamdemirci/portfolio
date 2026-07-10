@@ -18,6 +18,10 @@ describe("toInternal", () => {
     expect(toInternal("/en/olmayan")).toEqual({ lang: "en", path: "/en/olmayan" });
   });
 
+  it("rewrites a public-facing garbage case-study slug (/isler/<unknown>) into the tr segment, verbatim (falls through to the app/[lang]/[...rest] catch-all — 'isler' is not a real internal segment name)", () => {
+    expect(toInternal("/isler/nonexistent-product")).toEqual({ lang: "tr", path: "/tr/isler/nonexistent-product" });
+  });
+
   it("maps TR root to /tr", () => {
     expect(toInternal("/")).toEqual({ lang: "tr", path: "/tr" });
   });

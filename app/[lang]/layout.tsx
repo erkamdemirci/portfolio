@@ -6,6 +6,7 @@ import { Header } from "@/components/chrome/header";
 import { SkipLink } from "@/components/chrome/skip-link";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
+import { setRequestLang } from "@/lib/i18n/request-lang";
 import { THEME_SCRIPT } from "@/lib/theme-script";
 import "../globals.css";
 
@@ -27,6 +28,9 @@ export default async function RootLayout({
 }) {
   const { lang } = (await params) as { lang: Lang };
   const dict = getDictionary(lang);
+  // Relay lang to app/[lang]/not-found.tsx, which receives no params of its own (T28
+  // deviation, see DEVIATIONS.md and lib/i18n/request-lang.ts).
+  setRequestLang(lang);
 
   return (
     <html

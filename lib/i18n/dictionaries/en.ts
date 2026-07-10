@@ -273,4 +273,13 @@ export const en = {
       "03 call — a 30-minute call if it fits; the quote arrives in writing",
     ],
   },
+  // 404 / G3 (T28) — verbatim EN content, mirrors tr.ts.
+  notFound: {
+    chipFlag: "NO SIGNAL",
+    heading: "Nothing on this route.",
+    genericPath: "/requested-path",
+    readoutNote: "no unit registered",
+    homeLabel: "Back to home",
+    workLabel: "See the fleet",
+  },
 } as const;

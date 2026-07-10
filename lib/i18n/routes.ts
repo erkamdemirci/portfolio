@@ -68,8 +68,18 @@ export function shouldBypass(pathname: string): boolean {
  * known and unknown EN paths are already in internal form (identity), and so are paths that
  * already carry the /tr segment (dev-only routes not in the public TR slug table, e.g.
  * /tr/dev/specimen — symmetric with /en so neither locale segment is ever double-prefixed);
- * unknown BARE (unprefixed) TR paths rewrite into the tr segment verbatim so the [...rest]
- * catch-all renders the locale-aware 404.
+ * unknown BARE (unprefixed) TR paths rewrite into the tr segment verbatim so the
+ * app/[lang]/[...rest] catch-all renders the locale-aware 404 (04-tasks.md T28).
+ *
+ * Known residual gap (T28, see DEVIATIONS.md), deliberately not closed here: a request
+ * directly targeting the INTERNAL English-canonical form of a bad case-study slug (e.g.
+ * `/tr/work/nonexistent-slug`, bypassing the public `/isler/nonexistent-slug` URL entirely)
+ * still reaches app/[lang]/work/[slug]/page.tsx's own `if (!record) notFound()` check
+ * (pre-existing since T23) rather than this file's catch-all — same 404 content and status
+ * either way, just via a different boundary. Not on the public URL surface (nothing links
+ * there), not covered by any T28 acceptance criterion; flagged rather than fixed to avoid
+ * scope creep into T23's file for a case with no material difference in outcome.
+ *
  * Returns null for asset/meta paths that must pass through untouched (no rewrite).
  */
 export function toInternal(pathname: string): RouteInternal | null {

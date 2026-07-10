@@ -33,7 +33,7 @@ export function KvBlock({ rows, ariaLabel, className }: KvBlockProps) {
           }`}
         >
           <span className="mono text-steel">{row.key}</span>
-          <span className="font-mono text-[0.8125rem] tracking-[0.03em] text-bright [&_a]:transition-colors [&_a]:duration-[var(--dur-base)] [&_a]:ease-[var(--ease)] [&_a:hover]:text-amber-text">
+          <span className="break-words font-mono text-[0.8125rem] tracking-[0.03em] text-bright [&_a]:transition-colors [&_a]:duration-[var(--dur-base)] [&_a]:ease-[var(--ease)] [&_a:hover]:text-amber-text">
             {row.value}
           </span>
         </div>

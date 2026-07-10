@@ -555,7 +555,7 @@ export default async function SpecimenPage({
           <UnitCard
             span={7}
             unitLabel="unit-02 · AKITLE"
-            status={{ variant: "live", flag: "CANLI", meta: "v3.1 · Web" }}
+            status={{ variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE", meta: "v3.1 · Web" }}
             frame={
               <BrowserBay
                 domain="akitle.com"
@@ -589,7 +589,7 @@ export default async function SpecimenPage({
           <UnitCard
             span={5}
             unitLabel="unit-01 · VAAZ"
-            status={{ variant: "live", flag: "CANLI", meta: "v2.4 · iOS/Android" }}
+            status={{ variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE", meta: "v2.4 · iOS/Android" }}
             frame={
               <PhoneBay
                 slot={{

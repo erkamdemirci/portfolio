@@ -187,7 +187,10 @@ export const en = {
       contact: { eyebrow: "05 — contact / bay-06" },
     },
     metaRailKeys: { status: "status", version: "version", platform: "platform", stack: "stack" },
-    telemetryKeys: { status: "status", monitoring: "monitoring", shipping: "shipping", live: "live" },
+    // Row 1 (durum/status) only — rows 2-4 are fully data-driven per case (lib/cases.tsx
+    // telemetryExtra), since Oasis substitutes monitoring/target/record for
+    // monitoring/shipping/live.
+    telemetryKeys: { status: "status" },
     pager: { prevCaption: "previous unit", nextCaption: "next unit" },
     metaRailAria: "Unit telemetry strip",
     telemetryAria: "Operations telemetry",

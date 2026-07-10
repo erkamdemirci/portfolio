@@ -12,7 +12,26 @@ import { ContactBand } from "@/components/bands/contact-band";
 import { UnitPager } from "@/components/case/unit-pager";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
-import { cases, UNIT_IDENTITY, getCaseNeighbors, type CaseFrame, type CaseSlug } from "@/lib/cases";
+import {
+  cases,
+  UNIT_IDENTITY,
+  getCaseNeighbors,
+  type CaseFrame,
+  type CaseSlug,
+  type ContentSegment,
+} from "@/lib/cases";
+
+/** Turns lib/cases.ts's plain-data ContentSegment[] into real React elements — `link`
+ *  segments always render via ExternalTelLink (mono text + the ArrowUpRight icon, 01
+ *  Amendment A5: the "↗" in content strings is never a literal text glyph). */
+function renderSegments(content: string | ContentSegment[]): ReactNode {
+  if (typeof content === "string") return content;
+  return content.map((segment, i) => {
+    if (typeof segment === "string") return <span key={i}>{segment}</span>;
+    if ("bold" in segment) return <b key={i}>{segment.bold}</b>;
+    return <ExternalTelLink key={i} href={segment.link.href} label={segment.link.label} />;
+  });
+}
 
 /**
  * Case-study template (03-screens-and-flows.md §Case-study shared anatomy; 04-tasks.md T23).
@@ -142,18 +161,11 @@ export default async function CaseStudyPage({
   const flag = record.statusVariant === "live" ? ct.statusFlag.live : ct.statusFlag.inDev;
   const sectionOutcome = record.isRoadStatus ? ct.sections.roadStatus : ct.sections.outcome;
 
+  // Row 1 (durum/status) is always derived from statusVariant/flag; rows 2-4 are fully
+  // data-driven (most cases: izleme/sevkiyat/canlı — Oasis: izleme/hedef/kayıt, 03 §4).
   const telemetryRows: KvRow[] = [
     { key: ct.telemetryKeys.status, value: <StatusChip variant={record.statusVariant} flag={flag} /> },
-    { key: ct.telemetryKeys.monitoring, value: content.telemetry.monitoring },
-    { key: ct.telemetryKeys.shipping, value: content.telemetry.shipping },
-    {
-      key: ct.telemetryKeys.live,
-      value: record.domain ? (
-        <ExternalTelLink href={`https://${record.domain}`} label={record.domain} />
-      ) : (
-        "—"
-      ),
-    },
+    ...content.telemetryExtra.map((row) => ({ key: row.key, value: renderSegments(row.value) })),
   ];
 
   return (
@@ -248,7 +260,7 @@ export default async function CaseStudyPage({
         <h2 className="text-balance text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.08] font-semibold tracking-[-0.025em]">
           {sectionOutcome.heading}
         </h2>
-        <p className="mt-5 max-w-[65ch] text-[1rem] text-steel">{content.outcomeBody as ReactNode}</p>
+        <p className="mt-5 max-w-[65ch] text-[1rem] text-steel">{renderSegments(content.outcomeBody)}</p>
       </section>
 
       {/* ---------- 05 — iletişim / slot-06 (compact) ---------- */}

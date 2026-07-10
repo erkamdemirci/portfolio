@@ -195,7 +195,9 @@ export const tr = {
       contact: { eyebrow: "05 — iletişim / slot-06" },
     },
     metaRailKeys: { status: "durum", version: "sürüm", platform: "platform", stack: "yığın" },
-    telemetryKeys: { status: "durum", monitoring: "izleme", shipping: "sevkiyat", live: "canlı" },
+    // Row 1 (durum/status) only — rows 2-4 are fully data-driven per case (lib/cases.tsx
+    // telemetryExtra), since Oasis substitutes izleme/hedef/kayıt for izleme/sevkiyat/canlı.
+    telemetryKeys: { status: "durum" },
     pager: { prevCaption: "önceki ünite", nextCaption: "sonraki ünite" },
     metaRailAria: "Ünite telemetri şeridi",
     telemetryAria: "İşletim telemetrisi",

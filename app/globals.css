@@ -103,3 +103,39 @@ a {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+/* ============================================================
+   Motion layer — 01-design-system.md §Motion (T14)
+   The ONE orchestrated moment: odometer count-up (lib/motion/use-odometer.ts)
+   synchronized with the single status-dot pulse below (C12 header dot ONLY —
+   every other status dot sitewide is static). Entrance reveals (components/motion/
+   reveal.tsx) opacity+translateY, 240ms --ease-out, 40ms stagger via transition-delay.
+   prefers-reduced-motion kills all of this through the global rule above.
+   ============================================================ */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.pulse {
+  animation: pulse 2.4s var(--ease) infinite;
+}
+
+.reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(8px);
+}

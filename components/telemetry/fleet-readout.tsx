@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
- * C12 — Fleet Readout panel (02-components.md §C12), static build in T13. The header
- * dot's pulse (the site's ONE motion moment, 01 §Motion) attaches in T14 — this card
- * ships the panel fully static.
+ * C12 — Fleet Readout panel (02-components.md §C12). The header dot carries the site's
+ * ONE motion moment (01 §Motion, wired in T14) — every other status dot on the site,
+ * including the five row dots below, is static.
  *
  * EN row-role copy note (DEVIATIONS.md, T13): 02 §C12 spells out TR row content only;
  * the EN equivalents below are the machineshop.html mockup's own original English panel
@@ -168,8 +168,8 @@ export function FleetReadout({ lang, ariaLabel, className }: FleetReadoutProps) 
       <div className="mono flex items-center justify-between border-b border-line px-5 py-4 text-steel">
         <b className="font-medium text-bright">{head.title}</b>
         <span className="inline-flex items-center gap-2 text-amber-text">
-          {/* pulse class attaches in T14 — the site's ONE motion moment (01 §Motion) */}
-          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-amber-mark" />
+          {/* The site's ONE motion moment (01 §Motion) — every other status dot is static. */}
+          <span aria-hidden="true" className="pulse h-2 w-2 rounded-full bg-amber-mark" />
           {head.liveFlag}
         </span>
       </div>

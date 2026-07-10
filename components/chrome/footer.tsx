@@ -6,8 +6,8 @@ import { StatusChip } from "@/components/ui/status-chip";
 /**
  * G2 — Footer title block (02-components.md §C24; 03-screens-and-flows.md §G2).
  * Six-cell telemetry title block (border-collapse rules below) + foot-base
- * (copyright · footer nav · sheet line). The "durum" cell's dot does NOT pulse — only
- * the C12 Fleet Readout header dot pulses site-wide (01 §Motion, wired in T14).
+ * (copyright · footer nav · sheet line). The "durum" cell's dot never animates — the
+ * site's ONE motion moment lives on the C12 Fleet Readout header dot only (01 §Motion).
  */
 
 const NAV_ROUTES: Record<Lang, { work: string; services: string; studio: string }> = {

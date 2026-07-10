@@ -2,8 +2,8 @@
  * C11 — Status chip (02-components.md §C11). Mono-label chip: dot mark (8px) + flag
  * (--amber-text, weight 500) + optional meta text (--steel). Color is never the only
  * signal — the flag text always states the status. No own hover/focus (static; sits
- * inside interactive parents). No pulse here — the ONE site-wide pulse lives on the
- * C12 Fleet Readout header dot only (T14).
+ * inside interactive parents). This dot never animates — the site's ONE motion moment
+ * lives on the C12 Fleet Readout header dot only (01 §Motion, T14).
  */
 
 export type StatusVariant = "live" | "in-dev" | "no-signal";

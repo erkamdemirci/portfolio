@@ -256,4 +256,23 @@ export const tr = {
     kvStart: { key: "başlangıç", value: "takvime göre" },
     contactEyebrow: "03 — iletişim / slot-06",
   },
+  // Studio (T26, 03-screens-and-flows.md §9) — verbatim TR content.
+  studioPage: {
+    eyebrow: "01 — stüdyo / dmrc kimdir",
+    heading: "Tek kurucu. Beş ürünlük filo.",
+    lede: "DMRC, Bursa'dan dünyaya çalışan tek kuruculu bir ürün stüdyosu. Erkam Demirci — full-stack geliştirici ve arayüz tasarımcısı — tasarımı, kodu ve operasyonu tek elden yürütür.",
+    principlesEyebrow: "02 — ilkeler / böyle çalışırız",
+    principles: [
+      { index: "p/01", title: "Uçtan uca", body: "Tasarım, kod, sevkiyat ve operasyon tek elden; ara katman yok." },
+      { index: "p/02", title: "Az ama canlı", body: "Aynı anda az iş alırız; aldığımız her iş üretimde yaşar." },
+      { index: "p/03", title: "Ölçülen konuşur", body: "Ölçmediğimiz şeyi iddia etmeyiz; telemetri süsleme değildir." },
+      { index: "p/04", title: "Sevk eden bakar", body: "Ne sevkettiysek bakımı bizdedir — müşteri işleri dahil." },
+    ],
+    registerEyebrow: "03 — filo kaydı / beş ünite",
+    registerAria: "Filo kaydı — beş ünite",
+    statsEyebrow: "04 — telemetri / rakamlar",
+    statsAria: "Stüdyo rakamları",
+    founderStat: { value: "01", caption: "kurucu — her satırda" },
+    contactEyebrow: "05 — iletişim / slot-06",
+  },
 } as const;

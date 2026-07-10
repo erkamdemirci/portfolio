@@ -244,4 +244,23 @@ export const en = {
     kvStart: { key: "start", value: "by calendar" },
     contactEyebrow: "03 — contact / bay-06",
   },
+  // Studio (T26) — verbatim EN content, mirrors tr.ts.
+  studioPage: {
+    eyebrow: "01 — studio / who is dmrc",
+    heading: "One founder. A five-product fleet.",
+    lede: "DMRC is a one-founder product studio working from Bursa for anywhere. Erkam Demirci — full-stack developer and UI designer — runs design, code, and operations end to end.",
+    principlesEyebrow: "02 — principles / how we work",
+    principles: [
+      { index: "p/01", title: "End to end", body: "Design, code, shipping, and operations in one pair of hands; no middle layer." },
+      { index: "p/02", title: "Few, but live", body: "We take little on at once; everything we take on lives in production." },
+      { index: "p/03", title: "Measured things talk", body: "We don't claim what we don't measure; telemetry isn't decoration." },
+      { index: "p/04", title: "Ship it, keep it", body: "What we ship, we maintain — client work included." },
+    ],
+    registerEyebrow: "03 — fleet register / five units",
+    registerAria: "Fleet register — five units",
+    statsEyebrow: "04 — telemetry / the numbers",
+    statsAria: "Studio numbers",
+    founderStat: { value: "01", caption: "founder — on every line" },
+    contactEyebrow: "05 — contact / bay-06",
+  },
 } as const;

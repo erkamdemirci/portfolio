@@ -10,6 +10,9 @@ import { BrowserBay } from "@/components/frames/browser-bay";
 import { PhoneBay } from "@/components/frames/phone-bay";
 import { UnitCard, ExternalTelLink } from "@/components/fleet/unit-card";
 import { ReservedBay } from "@/components/fleet/reserved-bay";
+import { SectionHead } from "@/components/layout/section-head";
+import { ServiceGrid } from "@/components/services/service-cell";
+import { KvBlock } from "@/components/telemetry/kv-block";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
@@ -633,6 +636,124 @@ export default async function SpecimenPage({
             ctaLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
             note={lang === "tr" ? "sıradaki slot: müsait" : "next slot: available"}
           />
+        </div>
+      </section>
+
+      {/* ---------- T17 — section head / services grid / kv block (C10/C19/C20) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          layout — section head / services grid / kv block (C10/C19/C20)
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C10 — section head
+            </p>
+            <SectionHead
+              eyebrow={lang === "tr" ? "01 — işler / üretimde kanıt" : "01 — work / proof in production"}
+              heading={lang === "tr" ? "Filo, canlı yayında." : "The fleet, live."}
+              sideText={
+                lang === "tr"
+                  ? "Aşağıdaki her ünite gerçek kullanıcılarla çalışan kendi ürünümüz. Ne sevkettiysek bakımını da yaparız — müşteri işleri aynı telemetriyi alır."
+                  : "Every unit below is our own product, running with real users. We maintain what we ship — client builds get the same telemetry."
+              }
+            />
+          </div>
+
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C19 — services grid (linked)
+            </p>
+            <ServiceGrid
+              variant="linked"
+              cells={
+                lang === "tr"
+                  ? [
+                      {
+                        index: "s/01",
+                        title: "Ürün mühendisliği",
+                        body: "Kapsamdan sevkiyata: mimari, geliştirme, dağıtım ve lansman sonrası operasyon.",
+                        href: "/hizmetler",
+                      },
+                      {
+                        index: "s/02",
+                        title: "Web uygulamaları",
+                        body: "Gerçek arka uçlu Next.js uygulamaları — tanıtım sitesinden tam SaaS'a.",
+                        href: "/hizmetler",
+                      },
+                      {
+                        index: "s/03",
+                        title: "Mobil uygulamalar",
+                        body: "İki mağazaya da sevk edilen, ilk günden OTA güncellemeli Expo uygulamaları.",
+                        href: "/hizmetler",
+                      },
+                      {
+                        index: "s/04",
+                        title: "Tasarım sistemleri",
+                        body: "Bir ekibin bizsiz sürdürebileceği token'lar, bileşenler ve dokümantasyon.",
+                        href: "/hizmetler",
+                      },
+                    ]
+                  : [
+                      {
+                        index: "s/01",
+                        title: "Product engineering",
+                        body: "Scope to shipped: architecture, build, deploy, and the operations after launch.",
+                        href: "/en/services",
+                      },
+                      {
+                        index: "s/02",
+                        title: "Web apps",
+                        body: "Next.js applications with real backends — from marketing site to full SaaS.",
+                        href: "/en/services",
+                      },
+                      {
+                        index: "s/03",
+                        title: "Mobile apps",
+                        body: "Expo apps shipped to both stores, with over-the-air updates from day one.",
+                        href: "/en/services",
+                      },
+                      {
+                        index: "s/04",
+                        title: "Design systems",
+                        body: "Tokens, components, and documentation a team can maintain without us.",
+                        href: "/en/services",
+                      },
+                    ]
+              }
+            />
+          </div>
+
+          <div style={{ maxWidth: "420px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C20 — kv telemetry block
+            </p>
+            <KvBlock
+              ariaLabel={lang === "tr" ? "İletişim bilgileri" : "Contact details"}
+              rows={
+                lang === "tr"
+                  ? [
+                      {
+                        key: "e-posta",
+                        value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
+                      },
+                      { key: "üs", value: "Bursa, Türkiye → dünya geneli" },
+                      { key: "yanıt", value: "< 48 sa · iş günleri" },
+                      { key: "yığın", value: "Next.js · Expo · Convex" },
+                    ]
+                  : [
+                      {
+                        key: "email",
+                        value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
+                      },
+                      { key: "base", value: "Bursa, Türkiye → worldwide" },
+                      { key: "response", value: "< 48h, working days" },
+                      { key: "stack", value: "Next.js · Expo · Convex" },
+                    ]
+              }
+            />
+          </div>
         </div>
       </section>
     </div>

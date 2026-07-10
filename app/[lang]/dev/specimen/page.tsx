@@ -8,6 +8,8 @@ import { FleetReadout } from "@/components/telemetry/fleet-readout";
 import { StatRail } from "@/components/telemetry/stat-rail";
 import { BrowserBay } from "@/components/frames/browser-bay";
 import { PhoneBay } from "@/components/frames/phone-bay";
+import { UnitCard, ExternalTelLink } from "@/components/fleet/unit-card";
+import { ReservedBay } from "@/components/fleet/reserved-bay";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
@@ -534,6 +536,103 @@ export default async function SpecimenPage({
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ---------- T16 — Unit card + BAY-06 reserved card (C14/C18) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          fleet — unit card / reserved bay (C14/C18)
+        </p>
+
+        <div className="grid grid-cols-12 gap-5">
+          <UnitCard
+            span={7}
+            unitLabel="unit-02 · AKITLE"
+            status={{ variant: "live", flag: "CANLI", meta: "v3.1 · Web" }}
+            frame={
+              <BrowserBay
+                domain="akitle.com"
+                span={7}
+                slot={{
+                  bars: [
+                    { top: "20px", left: "20px", width: "26%", height: "14px" },
+                    { top: "52px", left: "20px", width: "44%", height: "70%", tone: "skel-2" },
+                    { top: "52px", right: "20px", width: "30%", height: "36px" },
+                    { top: "104px", right: "20px", width: "12%", height: "8px", tone: "amber" },
+                    { top: "130px", right: "20px", width: "30%", height: "44%" },
+                  ],
+                  label:
+                    lang === "tr"
+                      ? { title: "Ekran yuvası", body: "Akitle sözleşme editörü" }
+                      : { title: "Screen slot", body: "Akitle contract editor" },
+                }}
+              />
+            }
+            href={lang === "tr" ? "/isler/akitle" : "/en/work/akitle"}
+            title="Akitle"
+            description={
+              lang === "tr"
+                ? "Kira sözleşmeleri tek akışta hazırlanır, imzalanır ve arşivlenir."
+                : "Rental contracts drafted, signed, and archived in a single flow."
+            }
+            telLine1={<ExternalTelLink href="https://akitle.com" label="akitle.com" />}
+            telLine2={lang === "tr" ? "kira sözleşmesi SaaS'ı" : "rental contract SaaS"}
+          />
+
+          <UnitCard
+            span={5}
+            unitLabel="unit-01 · VAAZ"
+            status={{ variant: "live", flag: "CANLI", meta: "v2.4 · iOS/Android" }}
+            frame={
+              <PhoneBay
+                slot={{
+                  bars: [
+                    { top: "36px", left: "14%", width: "44%", height: "12px" },
+                    { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
+                    { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
+                  ],
+                  label:
+                    lang === "tr"
+                      ? { title: "Ekran yuvası", body: "VAAZ ana ekranı" }
+                      : { title: "Screen slot", body: "VAAZ home" },
+                }}
+              />
+            }
+            href={lang === "tr" ? "/isler/vaaz" : "/en/work/vaaz"}
+            title="VAAZ"
+            description={
+              lang === "tr"
+                ? "Namaz vakitleri, günlük takip ve vaaz içeriği tek yol arkadaşında."
+                : "Prayer times, daily tracking, and sermon content in one companion app."
+            }
+            telLine1={<ExternalTelLink href="https://getvaaz.com" label="getvaaz.com" />}
+            telLine2={
+              lang === "tr" ? (
+                <>
+                  <b>4,9</b> mağaza puanı
+                </>
+              ) : (
+                <>
+                  <b>4.9</b> store rating
+                </>
+              )
+            }
+          />
+
+          <ReservedBay
+            slotLabel={lang === "tr" ? "slot-06 · rezerve" : "bay-06 · reserved"}
+            capacityLabel={lang === "tr" ? "kapasite: 01" : "capacity: 01"}
+            title={lang === "tr" ? "Ürününüz burada çalışır." : "Your product runs here."}
+            body={
+              lang === "tr"
+                ? "Aynı anda az sayıda müşteri işi alırız ve kendi ürünümüz gibi işletiriz — aynı yığın, aynı izleme, aynı standartlar."
+                : "We take on a few client builds at a time and run them like our own — same stack, same monitoring, same standards."
+            }
+            ctaHref={lang === "tr" ? "/iletisim" : "/en/contact"}
+            ctaLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
+            note={lang === "tr" ? "sıradaki slot: müsait" : "next slot: available"}
+          />
         </div>
       </section>
     </div>

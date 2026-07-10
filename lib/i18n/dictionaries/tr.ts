@@ -35,7 +35,7 @@ export const tr = {
       fleet: { key: "filo", value: "filoda 05 ürün" },
       stack: { key: "yığın", value: "web & mobil" },
       channel: { key: "kanal", value: "hello@erkamdemirci.com" },
-      status: { key: "durum", value: "● operasyonel" },
+      status: { key: "durum", value: "operasyonel" }, // dot is CSS-drawn (C11), not text
     },
     copyright: "© 2026 DMRC · erkamdemirci.com",
     sheetLine: "sayfa 01/01 · rev B · machine shop",

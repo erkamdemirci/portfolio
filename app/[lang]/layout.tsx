@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { generalSans, plexMono } from "@/app/fonts";
+import { Footer } from "@/components/chrome/footer";
 import { Header } from "@/components/chrome/header";
 import { SkipLink } from "@/components/chrome/skip-link";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -45,7 +46,7 @@ export default async function RootLayout({
         <SkipLink label={dict.skipLink} />
         <Header lang={lang} dict={dict} />
         <main id="main">{children}</main>
-        {/* G2 footer title block mounts here — T12 */}
+        <Footer lang={lang} dict={dict} />
       </body>
     </html>
   );

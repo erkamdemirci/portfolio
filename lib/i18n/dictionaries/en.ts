@@ -35,7 +35,7 @@ export const en = {
       fleet: { key: "fleet", value: "05 products in the fleet" },
       stack: { key: "stack", value: "web & mobile" },
       channel: { key: "channel", value: "hello@erkamdemirci.com" },
-      status: { key: "status", value: "● operational" },
+      status: { key: "status", value: "operational" }, // dot is CSS-drawn (C11), not text
     },
     copyright: "© 2026 DMRC · erkamdemirci.com",
     sheetLine: "sayfa 01/01 · rev B · machine shop",

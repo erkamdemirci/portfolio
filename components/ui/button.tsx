@@ -46,7 +46,12 @@ export function Button({ variant = "accent", children, className, ...rest }: But
     const isInternal = href.startsWith("/");
     if (isInternal) {
       return (
-        <Link href={href} className={classes} {...anchorRest}>
+        // prefetch={false}: T32 perf fix (see DEVIATIONS.md) — Next's default viewport
+        // prefetching fires an RSC-payload fetch for every visible internal <Link>; on a
+        // link-dense page (Home's CTA + fleet grid + nav) this saturated the throttled
+        // Lighthouse mobile-preset connection and pushed LCP past the 2500ms budget (measured
+        // 3066ms). No visual/behavioral change to the user-facing navigation itself.
+        <Link href={href} prefetch={false} className={classes} {...anchorRest}>
           {children}
         </Link>
       );

@@ -178,6 +178,7 @@ export function FleetReadout({ lang, ariaLabel, className }: FleetReadoutProps) 
         <Link
           key={row.key}
           href={hrefs[row.key]}
+          prefetch={false}
           className="grid grid-cols-[16px_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-line px-5 py-3 transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:bg-carbon-3 focus-visible:outline-offset-[-3px]!"
         >
           <span

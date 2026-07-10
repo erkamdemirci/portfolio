@@ -54,6 +54,7 @@ export function ServiceGrid({ cells, variant, className }: ServiceGridProps) {
           <Link
             key={cell.index}
             href={cell.href}
+            prefetch={false}
             className={`group ${CELL_BASE} transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:bg-carbon-2 active:translate-y-px focus-visible:outline-offset-[-3px]!`}
           >
             <CellBody {...cell} />

@@ -32,6 +32,13 @@ interface BrowserBayProps {
 
 export function BrowserBay({ domain, span, image, slot, className }: BrowserBayProps) {
   const aspectClass = span === 5 ? "aspect-[16/11.5]" : "aspect-[16/9.2]";
+  // Without `sizes`, next/image assumes the DECLARED width/height (the source image's own
+  // pixel size, e.g. 1600-2368px wide) is the rendered size and generates a 1x/2x srcset off
+  // that — but the card only ever renders at a fraction of a 1240px-max .wrap column (span-7
+  // ~700px, span-5 ~500px at >1020px; full-bleed ~viewport width below that). T32 perf fix
+  // (see DEVIATIONS.md): this mismatch was serving a 3840px-wide image to a 412px mobile
+  // viewport, one contributor to a Lighthouse mobile LCP budget overrun.
+  const sizes = span === 5 ? "(max-width: 1020px) 100vw, 520px" : "(max-width: 1020px) 100vw, 720px";
 
   return (
     <div className={`flex flex-col ${className ?? ""}`}>
@@ -59,6 +66,7 @@ export function BrowserBay({ domain, span, image, slot, className }: BrowserBayP
             alt={image.alt}
             width={image.width}
             height={image.height}
+            sizes={sizes}
             priority={image.priority}
             loading={image.priority ? undefined : "lazy"}
             className="h-full w-full object-cover object-top"

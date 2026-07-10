@@ -27,6 +27,7 @@ export function LocaleChip({ dict, className }: LocaleChipProps) {
   return (
     <Link
       href={href}
+      prefetch={false}
       hrefLang={targetLang}
       rel="alternate"
       aria-label={dict.ariaSwitch}

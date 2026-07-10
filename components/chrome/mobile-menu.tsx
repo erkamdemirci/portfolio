@@ -149,6 +149,7 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
                   key={item.href}
                   ref={index === 0 ? firstLinkRef : undefined}
                   href={item.href}
+                  prefetch={false}
                   onClick={close}
                   className="border-b border-line py-4 text-[1.5rem] font-semibold tracking-[-0.02em] text-bright active:translate-y-px"
                 >

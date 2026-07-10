@@ -76,7 +76,7 @@ export function UnitCard({
 
       <div className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-2 p-5 max-[640px]:grid-cols-1">
         <h3 className="text-[1.2rem] leading-[1.6] font-semibold tracking-[-0.015em]">
-          <Link href={href} className="after:absolute after:inset-0 after:content-['']">
+          <Link href={href} prefetch={false} className="after:absolute after:inset-0 after:content-['']">
             {title}
           </Link>
         </h3>

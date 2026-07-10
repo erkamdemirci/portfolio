@@ -47,7 +47,9 @@ export function ArrowLink({ href, children, variant = "forward", className }: Ar
 
   if (isInternal) {
     return (
-      <Link href={href} className={classes}>
+      // prefetch={false} — T32 perf fix, see components/ui/button.tsx's identical comment
+      // and DEVIATIONS.md.
+      <Link href={href} prefetch={false} className={classes}>
         {content}
       </Link>
     );

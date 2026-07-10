@@ -63,6 +63,11 @@ export function PhoneBay({ image, slot, className }: PhoneBayProps) {
             alt={image.alt}
             width={image.width}
             height={image.height}
+            // sizes — T32 perf fix (see DEVIATIONS.md, browser-bay.tsx's identical fix): the
+            // phone frame's own track is clamped 160-230px (never full-bleed, even on mobile
+            // — max-[640px]:w-[min(200px,70%)]), so a single conservative upper-bound value
+            // covers every breakpoint without an oversized srcset candidate.
+            sizes="230px"
             priority={image.priority}
             loading={image.priority ? undefined : "lazy"}
             className="h-full w-full object-cover object-top"

@@ -56,6 +56,7 @@ export function Header({ lang, dict }: HeaderProps) {
       <div className="wrap flex h-auto min-h-16 flex-wrap items-center gap-x-2 gap-y-2 min-[850px]:h-16 min-[850px]:flex-nowrap min-[850px]:gap-7">
         <Link
           href={HOME_HREF[lang]}
+          prefetch={false}
           className="inline-flex items-baseline gap-3 text-[1.1rem] font-bold tracking-[-0.01em] text-bright active:translate-y-px"
         >
           <i aria-hidden="true" className="h-[9px] w-[9px] self-center rounded-[2px] bg-amber-mark" />
@@ -70,6 +71,7 @@ export function Header({ lang, dict }: HeaderProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 aria-current={current ? "page" : undefined}
                 className={`text-[0.9rem] font-medium underline-offset-[6px] transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:text-bright hover:underline hover:decoration-amber-mark active:translate-y-px ${
                   current ? "text-bright underline decoration-amber-mark" : "text-steel"

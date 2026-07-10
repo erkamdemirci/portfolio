@@ -90,6 +90,7 @@ export function Footer({ lang, dict }: FooterProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className="mono text-steel transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:text-bright"
               >
                 {item.label}

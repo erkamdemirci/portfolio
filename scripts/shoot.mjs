@@ -11,7 +11,10 @@
  *     [--base http://localhost:3000] [--selector "h1"]
  *
  * Usage (pinned matrix, T29/T32):
- *   node scripts/shoot.mjs --matrix m3 [--base http://localhost:3000]
+ *   node scripts/shoot.mjs --matrix m3 [--base http://localhost:3000] [--out-dir <dir>]
+ *   (--out-dir defaults to <RUN>/assets/impl/m3/ — T32 passes <RUN>/assets/impl/final/ to
+ *   re-shoot the identical pinned matrix into its own final-set directory, per 05-
+ *   verification.md: "T29 '--matrix m3' and T32 final set refer to exactly this.")
  *
  * T29 fix (04-tasks.md; see DEVIATIONS.md T21 flag): the original wait strategy was
  * `waitUntil: "networkidle"`, which never resolves on Link-heavy pages once Home (T21) and
@@ -113,12 +116,20 @@ const ROUTES = [
 const RUN_M3_DIR =
   "/Users/erkamdemirci/Desktop/portfolio/.bpud/runs/20260710-0135-studio-redesign/assets/impl/m3";
 
-async function runMatrix(name) {
+/**
+ * T32 addition: `--out-dir` lets the SAME pinned m3 route/viewport/theme matrix be re-shot
+ * into a different directory (T32's own `<RUN>/assets/impl/final/`, per 05-verification.md:
+ * "T29 '--matrix m3' and T32 final set refer to exactly this") without touching T29's own
+ * already-saved shots or its unparameterized invocation (`node scripts/shoot.mjs --matrix
+ * m3`, still defaults to RUN_M3_DIR — fully backward compatible).
+ */
+async function runMatrix(name, outDirOverride) {
   if (name !== "m3") {
     console.error(`Unknown matrix "${name}" — only "m3" is defined.`);
     process.exit(1);
   }
 
+  const outDir = outDirOverride || RUN_M3_DIR;
   const browser = await chromium.launch();
   const shots = [];
 
@@ -129,7 +140,7 @@ async function runMatrix(name) {
         const { height } = VIEWPORTS[width];
         shots.push({
           route: route.tr,
-          out: path.join(RUN_M3_DIR, `${route.slug}-tr-${theme}-${width}.png`),
+          out: path.join(outDir, `${route.slug}-tr-${theme}-${width}.png`),
           width,
           height,
           theme,
@@ -145,7 +156,7 @@ async function runMatrix(name) {
       const { height } = VIEWPORTS[width];
       shots.push({
         route: route.en,
-        out: path.join(RUN_M3_DIR, `${route.slug}-en-dark-${width}.png`),
+        out: path.join(outDir, `${route.slug}-en-dark-${width}.png`),
         width,
         height,
         theme: "dark",
@@ -157,7 +168,7 @@ async function runMatrix(name) {
   // Reduced motion: home, 1440, dark, TR, prefers-reduced-motion emulated = 1 shot.
   shots.push({
     route: "/",
-    out: path.join(RUN_M3_DIR, "home-tr-dark-1440-reduced-motion.png"),
+    out: path.join(outDir, "home-tr-dark-1440-reduced-motion.png"),
     width: 1440,
     height: VIEWPORTS[1440].height,
     theme: "dark",
@@ -169,11 +180,11 @@ async function runMatrix(name) {
   }
 
   await browser.close();
-  console.log(`\nmatrix ${name}: ${shots.length} shots written to ${RUN_M3_DIR}`);
+  console.log(`\nmatrix ${name}: ${shots.length} shots written to ${outDir}`);
 }
 
 if (args.matrix) {
-  await runMatrix(args.matrix);
+  await runMatrix(args.matrix, args["out-dir"]);
   process.exit(0);
 }
 

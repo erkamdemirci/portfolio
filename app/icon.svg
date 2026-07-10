@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="DMRC">
+  <!--
+    04-tasks.md T31; 01-design-system.md §logo handling: "Favicon: amber tick on carbon (SVG +
+    ICO fallback, replacing the cached old-identity favicon — audit landmine)." The mark alone
+    (no wordmark text) — the same 1:1 square tick from C2 (components/chrome/header.tsx's 9x9px
+    `<i>`), scaled to fill the icon canvas; text is illegible at favicon sizes, the tick alone
+    reads as a symbol. Hex literals are the T31-sanctioned exception to the token gate (05-
+    verification.md's token-drift row allowlists this exact file) — a static SVG asset has no
+    CSS custom-property scope to read `--carbon`/`--amber-mark` from, and the favicon must stay
+    a fixed dark-ground mark regardless of the viewer's OS/browser chrome theme.
+  -->
+  <rect width="32" height="32" fill="#121316" />
+  <rect x="9" y="9" width="14" height="14" rx="3" fill="#F0A32A" />
+</svg>

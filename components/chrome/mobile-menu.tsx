@@ -110,7 +110,7 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
         aria-expanded={open}
         aria-controls={MENU_ID}
         onClick={() => setOpen((value) => !value)}
-        className="relative inline-flex h-5 w-5 items-center justify-center text-bright transition-colors duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-3 before:content-[''] hover:text-amber-text active:translate-y-px sm:hidden"
+        className="relative inline-flex h-5 w-5 items-center justify-center text-bright transition-colors duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-3 before:content-[''] hover:text-amber-text active:translate-y-px min-[850px]:hidden"
       >
         <span className="sr-only">{triggerLabel}</span>
         <Menu aria-hidden="true" size={20} strokeWidth={1.5} />

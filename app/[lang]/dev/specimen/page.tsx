@@ -13,6 +13,9 @@ import { ReservedBay } from "@/components/fleet/reserved-bay";
 import { SectionHead } from "@/components/layout/section-head";
 import { ServiceGrid } from "@/components/services/service-cell";
 import { KvBlock } from "@/components/telemetry/kv-block";
+import { ContactBand } from "@/components/bands/contact-band";
+import { MetaRail } from "@/components/case/meta-rail";
+import { UnitPager } from "@/components/case/unit-pager";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
@@ -752,6 +755,105 @@ export default async function SpecimenPage({
                       { key: "stack", value: "Next.js · Expo · Convex" },
                     ]
               }
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- T18 — contact band / case meta rail / next-unit pager (C21/C22/C23) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          bands + case — contact band / meta rail / unit pager (C21/C22/C23)
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
+          <div style={{ marginBottom: "20px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C21 — contact band (full)
+            </p>
+          </div>
+          <ContactBand
+            variant="full"
+            headingLevel="h2"
+            eyebrow={lang === "tr" ? "03 — iletişim / slot-06" : "03 — contact / bay-06"}
+            heading={lang === "tr" ? "Slot 06 boş." : "Bay 06 is empty."}
+            lede={
+              lang === "tr"
+                ? "Ne inşa ettiğinizi anlatın — aşama, platform ve sizin için 'bitti'nin ne olduğu. Her brifi okuyor, 48 saat içinde yanıtlıyoruz."
+                : "Tell us what you're building — stage, platform, and what shipped looks like to you. We read every brief and reply within 48 hours."
+            }
+            accentHref={lang === "tr" ? "/iletisim" : "/en/contact"}
+            accentLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
+            ghostHref={lang === "tr" ? "/isler" : "/en/work"}
+            ghostLabel={lang === "tr" ? "Filoyu gör" : "See the fleet"}
+            kvAriaLabel={lang === "tr" ? "İletişim bilgileri" : "Contact details"}
+            kvRows={
+              lang === "tr"
+                ? [
+                    {
+                      key: "e-posta",
+                      value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
+                    },
+                    { key: "üs", value: "Bursa, Türkiye → dünya geneli" },
+                    { key: "yanıt", value: "< 48 sa · iş günleri" },
+                    { key: "yığın", value: "Next.js · Expo · Convex" },
+                  ]
+                : [
+                    {
+                      key: "email",
+                      value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
+                    },
+                    { key: "base", value: "Bursa, Türkiye → worldwide" },
+                    { key: "response", value: "< 48h, working days" },
+                    { key: "stack", value: "Next.js · Expo · Convex" },
+                  ]
+            }
+          />
+
+          <div style={{ padding: "24px 20px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C21 — contact band (compact)
+            </p>
+          </div>
+          <ContactBand
+            variant="compact"
+            eyebrow={lang === "tr" ? "05 — iletişim / slot-06" : "05 — contact / bay-06"}
+            heading={lang === "tr" ? "Slot 06 boş." : "Bay 06 is empty."}
+            accentHref={lang === "tr" ? "/iletisim" : "/en/contact"}
+            accentLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
+          />
+
+          <div className="wrap" style={{ paddingTop: "40px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C22 — case meta rail (Akitle)
+            </p>
+            <MetaRail
+              cells={[
+                { key: lang === "tr" ? "durum" : "status", status: { variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE" } },
+                { key: lang === "tr" ? "sürüm" : "version", value: "v3.1" },
+                { key: "platform", value: "Web" },
+                { key: lang === "tr" ? "yığın" : "stack", value: "Next.js · Convex" },
+              ]}
+            />
+
+            <div style={{ marginTop: "40px", marginBottom: "12px" }}>
+              <p className="mono" style={{ color: "var(--steel)" }}>
+                C23 — next-unit pager (Akitle neighbors)
+              </p>
+            </div>
+            <UnitPager
+              prevCaption={lang === "tr" ? "önceki ünite" : "previous unit"}
+              nextCaption={lang === "tr" ? "sonraki ünite" : "next unit"}
+              prev={{
+                href: lang === "tr" ? "/isler/vaaz" : "/en/work/vaaz",
+                unitLabel: "unit-01 · VAAZ",
+                title: "VAAZ",
+              }}
+              next={{
+                href: lang === "tr" ? "/isler/linkden" : "/en/work/linkden",
+                unitLabel: "unit-03 · LINKDEN",
+                title: "Linkden",
+              }}
             />
           </div>
         </div>

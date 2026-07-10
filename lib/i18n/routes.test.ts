@@ -26,6 +26,14 @@ describe("toInternal", () => {
     expect(toInternal("/en")).toEqual({ lang: "en", path: "/en" });
   });
 
+  it("treats a bare /tr request as internal identity (symmetric with /en)", () => {
+    expect(toInternal("/tr")).toEqual({ lang: "tr", path: "/tr" });
+  });
+
+  it("treats an already-internal /tr/* path (e.g. a dev-only route not in the public table) as identity, not double-prefixed", () => {
+    expect(toInternal("/tr/dev/specimen")).toEqual({ lang: "tr", path: "/tr/dev/specimen" });
+  });
+
   const bypassPaths = [
     "/_next/static/chunks/main.js",
     "/_next/image?url=%2Fscreens%2Fvaaz.png&w=640&q=75",

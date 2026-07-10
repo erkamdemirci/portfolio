@@ -38,8 +38,15 @@ function canonicalOf(pair: RoutePair): string {
   return pair.en === EN_PREFIX ? "" : pair.en.slice(EN_PREFIX.length);
 }
 
+const TR_PREFIX = "/tr";
+
 function isEnPath(pathname: string): boolean {
   return pathname === EN_PREFIX || pathname.startsWith(`${EN_PREFIX}/`);
+}
+
+/** Already-internal /tr paths (e.g. dev-only routes not in the public TR slug table). */
+function isInternalTrPath(pathname: string): boolean {
+  return pathname === TR_PREFIX || pathname.startsWith(`${TR_PREFIX}/`);
 }
 
 /** File-extension check — ignores query strings since it only matches the trailing segment. */
@@ -58,8 +65,11 @@ export function shouldBypass(pathname: string): boolean {
 /**
  * Maps a public-facing URL to its internal app/[lang] route.
  * Known TR paths resolve to the English canonical segment (e.g. /isler/vaaz -> /tr/work/vaaz);
- * known and unknown EN paths are already in internal form (identity); unknown TR paths rewrite
- * into the tr segment verbatim so the [...rest] catch-all renders the locale-aware 404.
+ * known and unknown EN paths are already in internal form (identity), and so are paths that
+ * already carry the /tr segment (dev-only routes not in the public TR slug table, e.g.
+ * /tr/dev/specimen — symmetric with /en so neither locale segment is ever double-prefixed);
+ * unknown BARE (unprefixed) TR paths rewrite into the tr segment verbatim so the [...rest]
+ * catch-all renders the locale-aware 404.
  * Returns null for asset/meta paths that must pass through untouched (no rewrite).
  */
 export function toInternal(pathname: string): RouteInternal | null {
@@ -67,6 +77,10 @@ export function toInternal(pathname: string): RouteInternal | null {
 
   if (isEnPath(pathname)) {
     return { lang: "en", path: pathname };
+  }
+
+  if (isInternalTrPath(pathname)) {
+    return { lang: "tr", path: pathname };
   }
 
   const match = localePairs.find((pair) => pair.tr === pathname);

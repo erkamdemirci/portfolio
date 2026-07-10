@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { StatusChip } from "@/components/ui/status-chip";
+import { FleetReadout } from "@/components/telemetry/fleet-readout";
+import { StatRail } from "@/components/telemetry/stat-rail";
+import type { Lang } from "@/lib/i18n/routes";
 
 /**
  * Dev specimen page — 01-design-system.md §Typography (scale table, TR coverage check),
@@ -190,7 +193,13 @@ const sectionStyle: CSSProperties = {
   marginBottom: "40px",
 };
 
-export default function SpecimenPage() {
+export default async function SpecimenPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = (await params) as { lang: Lang };
+
   return (
     <div
       className="wrap"
@@ -396,6 +405,49 @@ export default function SpecimenPage() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- T13 — Fleet Readout panel + stat rail (C12/C13) ---------- */}
+      <section>
+        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
+          telemetry — fleet readout panel / stat rail (C12/C13)
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          <div style={{ maxWidth: "480px" }}>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C12 — fleet readout panel
+            </p>
+            <FleetReadout
+              lang={lang}
+              ariaLabel={lang === "tr" ? "Filo durumu okuması" : "Fleet status readout"}
+            />
+          </div>
+
+          <div>
+            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
+              C13 — stat rail
+            </p>
+            <StatRail
+              ariaLabel={lang === "tr" ? "Stüdyo rakamları" : "Studio numbers"}
+              cells={
+                lang === "tr"
+                  ? [
+                      { value: "05", caption: "ürün filoda" },
+                      { value: "02", caption: "platform — web & mobil" },
+                      { value: "<48", suffix: "sa", caption: "yeni briflere yanıt" },
+                      { value: "01", caption: "açık slot — slot-06" },
+                    ]
+                  : [
+                      { value: "05", caption: "products in the fleet" },
+                      { value: "02", caption: "platforms — web & mobile" },
+                      { value: "<48", suffix: "h", caption: "reply on new briefs" },
+                      { value: "01", caption: "open slot — bay-06" },
+                    ]
+              }
+            />
           </div>
         </div>
       </section>

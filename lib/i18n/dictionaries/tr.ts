@@ -182,4 +182,22 @@ export const tr = {
       oasis: "Gerçek ekranlar hazır oldukça bu kayda düşer.",
     },
   },
+  // Case-study shared anatomy (T23, 03-screens-and-flows.md §Case-study shared anatomy) —
+  // template-wide labels reused across all 5 case pages (per-case content lives in lib/cases.ts).
+  caseTemplate: {
+    statusFlag: { live: "CANLI", inDev: "GELİŞTİRMEDE" },
+    sections: {
+      context: { eyebrow: "01 — bağlam", heading: "Bağlam" },
+      build: { eyebrow: "02 — inşa", heading: "İnşa ettiklerimiz" },
+      telemetry: { eyebrow: "03 — telemetri", heading: "Telemetri" },
+      outcome: { eyebrow: "04 — sonuç", heading: "Sonuç" },
+      roadStatus: { eyebrow: "04 — yol durumu", heading: "Yol durumu" },
+      contact: { eyebrow: "05 — iletişim / slot-06" },
+    },
+    metaRailKeys: { status: "durum", version: "sürüm", platform: "platform", stack: "yığın" },
+    telemetryKeys: { status: "durum", monitoring: "izleme", shipping: "sevkiyat", live: "canlı" },
+    pager: { prevCaption: "önceki ünite", nextCaption: "sonraki ünite" },
+    metaRailAria: "Ünite telemetri şeridi",
+    telemetryAria: "İşletim telemetrisi",
+  },
 } as const;

@@ -175,4 +175,21 @@ export const en = {
       oasis: "Real screens land in this record as they're ready.",
     },
   },
+  // Case-study shared anatomy (T23) — template-wide labels, mirrors tr.ts.
+  caseTemplate: {
+    statusFlag: { live: "LIVE", inDev: "IN DEV" },
+    sections: {
+      context: { eyebrow: "01 — context", heading: "Context" },
+      build: { eyebrow: "02 — build", heading: "What we built" },
+      telemetry: { eyebrow: "03 — telemetry", heading: "Telemetry" },
+      outcome: { eyebrow: "04 — outcome", heading: "Outcome" },
+      roadStatus: { eyebrow: "04 — road status", heading: "Road status" },
+      contact: { eyebrow: "05 — contact / bay-06" },
+    },
+    metaRailKeys: { status: "status", version: "version", platform: "platform", stack: "stack" },
+    telemetryKeys: { status: "status", monitoring: "monitoring", shipping: "shipping", live: "live" },
+    pager: { prevCaption: "previous unit", nextCaption: "next unit" },
+    metaRailAria: "Unit telemetry strip",
+    telemetryAria: "Operations telemetry",
+  },
 } as const;

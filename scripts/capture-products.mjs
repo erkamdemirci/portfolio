@@ -157,11 +157,15 @@ async function run() {
       climbAndShoot(page, "Equipment Rental Contract", 3, out),
     );
 
-    // (2) Close crop on the "Signed" badge card — header row + highlighted delivery-date box,
-    // cropped from the same card body (872,229)-(1318,605 at 1600x1000, CSS px) — starts
-    // below Akitle's own chrome-bar strip for the same reason as (1).
+    // (2) Close crop on the "Signed" badge card — header row, highlighted delivery-date box,
+    // and the line-items table — cropped from the same card body (872,229 at 1600x1000, CSS
+    // px), starting below Akitle's own chrome-bar strip for the same reason as (1). Height is
+    // deliberately width/(16/11.5) (~320px) to MATCH C15 BrowserBay's span-5 canvas aspect
+    // ratio exactly — an earlier, much-wider 446x190 crop got severely center-cropped by
+    // `object-fit: cover` inside that fixed-aspect frame (title truncated to "nt Rental
+    // Contract"), found while visually checking T23's case page (see DEVIATIONS.md).
     await capture("akitle/signed-1600.png", (out) =>
-      clipShoot(page, { x: 872, y: 229, width: 446, height: 190 }, out),
+      clipShoot(page, { x: 872, y: 229, width: 446, height: 321 }, out),
     );
 
     await context.close();

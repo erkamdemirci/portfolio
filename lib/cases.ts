@@ -23,13 +23,13 @@ import type { Lang } from "@/lib/i18n/routes";
 
 export type CaseSlug = "vaaz" | "akitle" | "linkden" | "characterdex" | "oasis-and-mind";
 
-/** Fleet order — unit-01..05, the circular pager sequence (03: 01->02->03->04->05->01). */
+/** Case order — the circular pager sequence (03: 01->02->03->04->05->01). */
 export const CASE_ORDER: CaseSlug[] = ["vaaz", "akitle", "linkden", "characterdex", "oasis-and-mind"];
 
 export interface UnitIdentity {
   unitNo: string; // "01".."05"
-  /** Uppercase product key for "unit-0X · KEY" eyebrow/pager labels (01 Typography exemption:
-   *  brand-name spellings, not translatable prose — pre-uppercased same as fleet-readout.tsx). */
+  /** Uppercase product key, kept for the interim case page's labels (removed when the case
+   *  template migrates at T40; the new pager uses `title`). Brand-name spelling, not prose. */
   unitKey: string;
   /** Display title — identical spelling in both locales for every case (03 §3-7 confirms). */
   title: string;
@@ -94,11 +94,10 @@ interface CaseLocaleContent {
   chipMeta: string;
   metaRail: { version: string; platform: string; stack: string };
   contextBody: string;
-  /** Telemetry rows 2-4 (row 1, "durum/status", is always derived from statusVariant/flag by
-   *  the template). Most cases use the shared izleme/sevkiyat/canlı keys (03 §Case-study
-   *  shared anatomy section 4), but Oasis (no shipping cadence, no live URL yet) substitutes
-   *  izleme/hedef/kayıt (03 §4) — so keys travel WITH each row instead of being derived from
-   *  a shared dict. */
+  /** Detail rows 2-4 (row 1, "durum/status", is always derived from statusVariant/flag by
+   *  the template). Most cases share the same three update/distribution/online keys, but Oasis
+   *  (no distribution cadence, no live URL yet) substitutes update/target/record — so keys
+   *  travel WITH each row instead of being derived from a shared dict. */
   telemetryExtra: [CaseTelemetryRow, CaseTelemetryRow, CaseTelemetryRow];
   outcomeBody: string | ContentSegment[];
 }
@@ -143,10 +142,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         },
       },
       {
-        // No real capture exists for this feature (T20 recon: getvaaz.com has no distinct
-        // daily-tracking/streak screen) — 03 §7 explicitly allows "C16 real ya da C17 slot"
-        // here. Bar geometry reuses machineshop.html's unit-01 phone-bay canvas verbatim
-        // (03's pinned C17 geometry rule — no implementer-invented bar positions).
+        // No real capture exists for this feature (recon: getvaaz.com has no distinct
+        // daily-tracking/streak screen). Interim placeholder geometry, removed when this
+        // feature becomes text-forward at T40 (03 §3 image map). No invented bar positions.
         frame: {
           kind: "phone",
           slotBars: [
@@ -162,27 +160,27 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
           tr: {
             title: "Günlük takip",
             body: "Kılınan vakitler ve seri, baskı kurmadan işlenir; kaçan gün sessizce telafiye açılır.",
-            slotLabel: { title: "Ekran yuvası", body: "günlük takip ekranı — kılınan vakitler ve seri" },
+            slotLabel: { title: "Görsel yakında", body: "günlük takip ekranı — kılınan vakitler ve seri" },
           },
           en: {
             title: "Daily tracking",
             body: "Prayed times and streaks are logged without pressure; a missed day quietly opens to make-up.",
-            slotLabel: { title: "Screen slot", body: "daily tracking screen — prayed times and streak" },
+            slotLabel: { title: "Visual coming", body: "daily tracking screen — prayed times and streak" },
           },
         },
       },
     ],
     locale: {
       tr: {
-        claim: "Namaz vakti yol arkadaşı: vakitler, takip, vaaz içeriği.",
+        claim: "Namaz vakti yol arkadaşınız: vakitler, takip ve vaaz içeriği.",
         chipMeta: "v2.4 · iOS/Android",
         metaRail: { version: "v2.4", platform: "iOS · Android", stack: "Expo · Convex" },
         contextBody:
           "Vakit uygulamaları ya reklam dolu ya da hesabı kaba. VAAZ vakti doğru hesaplar, günü nazikçe takip eder ve vaaz içeriğini tek yerde toplar.",
         telemetryExtra: [
-          { key: "izleme", value: "günlük" },
-          { key: "sevkiyat", value: "OTA + mağaza" },
-          { key: "canlı", value: [{ link: { href: "https://getvaaz.com", label: "getvaaz.com" } }] },
+          { key: "güncelleme", value: "günlük" },
+          { key: "dağıtım", value: "OTA + mağaza" },
+          { key: "yayında", value: [{ link: { href: "https://getvaaz.com", label: "getvaaz.com" } }] },
         ],
         outcomeBody: [
           "İki mağazada ",
@@ -194,15 +192,15 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         ],
       },
       en: {
-        claim: "A prayer companion: times, tracking, sermon content.",
+        claim: "A prayer-time companion: times, tracking, and sermon content.",
         chipMeta: "v2.4 · iOS/Android",
         metaRail: { version: "v2.4", platform: "iOS / Android", stack: "Expo · Convex" },
         contextBody:
           "Prayer-time apps are either ad-stuffed or careless with the math. VAAZ computes times correctly, tracks the day gently, and keeps sermon content in one place.",
         telemetryExtra: [
-          { key: "monitoring", value: "daily" },
-          { key: "shipping", value: "OTA + stores" },
-          { key: "live", value: [{ link: { href: "https://getvaaz.com", label: "getvaaz.com" } }] },
+          { key: "updates", value: "daily" },
+          { key: "distribution", value: "OTA + stores" },
+          { key: "online", value: [{ link: { href: "https://getvaaz.com", label: "getvaaz.com" } }] },
         ],
         outcomeBody: [
           "Rated ",
@@ -267,9 +265,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Kira sözleşmeleri hâlâ Word şablonları ve ıslak imzayla dönüyor. Akitle sözleşmenin yazımından imzasına ve arşivine kadar tek bir akış kurar.",
         telemetryExtra: [
-          { key: "izleme", value: "günlük" },
-          { key: "sevkiyat", value: "sürekli" },
-          { key: "canlı", value: [{ link: { href: "https://akitle.com", label: "akitle.com" } }] },
+          { key: "güncelleme", value: "günlük" },
+          { key: "dağıtım", value: "sürekli" },
+          { key: "yayında", value: [{ link: { href: "https://akitle.com", label: "akitle.com" } }] },
         ],
         outcomeBody:
           "v3.1 üretimde; sözleşmeler gerçek taraflarca akıtılıyor — ürünün adı buradan gelir.",
@@ -281,9 +279,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Rental contracts still run on Word templates and wet signatures. Akitle builds a single flow from drafting to signature to archive.",
         telemetryExtra: [
-          { key: "monitoring", value: "daily" },
-          { key: "shipping", value: "continuous" },
-          { key: "live", value: [{ link: { href: "https://akitle.com", label: "akitle.com" } }] },
+          { key: "updates", value: "daily" },
+          { key: "distribution", value: "continuous" },
+          { key: "online", value: [{ link: { href: "https://akitle.com", label: "akitle.com" } }] },
         ],
         outcomeBody:
           "v3.1 in production; contracts flow between real parties — the product is named for it.",
@@ -336,28 +334,28 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
     ],
     locale: {
       tr: {
-        claim: "Tarif ettiği kodun hemen yanında yaşayan dokümantasyon.",
+        claim: "Yazdığı kodun yanında yaşayan dokümantasyon.",
         chipMeta: "v1.8 · Web",
         metaRail: { version: "v1.8", platform: "Web", stack: "owner-verify" },
         contextBody:
           "Dokümantasyon koddan uzaklaştıkça çürür. Linkden geliştirici ekipler için aramayı, kaydetmeyi ve organizasyonu klavye hızında tutar.",
         telemetryExtra: [
-          { key: "izleme", value: "günlük" },
-          { key: "sevkiyat", value: "sürekli" },
-          { key: "canlı", value: [{ link: { href: "https://linkden.co", label: "linkden.co" } }] },
+          { key: "güncelleme", value: "günlük" },
+          { key: "dağıtım", value: "sürekli" },
+          { key: "yayında", value: [{ link: { href: "https://linkden.co", label: "linkden.co" } }] },
         ],
         outcomeBody: "v1.8 üretimde; B/W geliştirici-aracı estetiği ürünün kendi kimliğidir.",
       },
       en: {
-        claim: "Documentation that lives next to the code it describes.",
+        claim: "Documentation that lives next to its code.",
         chipMeta: "v1.8 · Web",
         metaRail: { version: "v1.8", platform: "Web", stack: "owner-verify" },
         contextBody:
           "Documentation rots as it drifts from the code. Linkden keeps search, save, and organization at keyboard speed for dev teams.",
         telemetryExtra: [
-          { key: "monitoring", value: "daily" },
-          { key: "shipping", value: "continuous" },
-          { key: "live", value: [{ link: { href: "https://linkden.co", label: "linkden.co" } }] },
+          { key: "updates", value: "daily" },
+          { key: "distribution", value: "continuous" },
+          { key: "online", value: [{ link: { href: "https://linkden.co", label: "linkden.co" } }] },
         ],
         outcomeBody: "v1.8 in production; the B/W dev-tool aesthetic is the product's own identity.",
       },
@@ -415,9 +413,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Kişilik testleri sonuç sayfasında biter; koleksiyon hissi yoktur. CharacterDex tip profillerini kalıcı, biriktirilebilir bir kayda çevirir.",
         telemetryExtra: [
-          { key: "izleme", value: "günlük" },
-          { key: "sevkiyat", value: "sürekli" },
-          { key: "canlı", value: [{ link: { href: "https://characterdex.com", label: "characterdex.com" } }] },
+          { key: "güncelleme", value: "günlük" },
+          { key: "dağıtım", value: "sürekli" },
+          { key: "yayında", value: [{ link: { href: "https://characterdex.com", label: "characterdex.com" } }] },
         ],
         outcomeBody: "v2.0 üretimde; kart sistemi canlı kullanıcılarla dönüyor.",
       },
@@ -428,9 +426,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Personality tests end at a results page; nothing accumulates. CharacterDex turns type profiles into a permanent, collectible record.",
         telemetryExtra: [
-          { key: "monitoring", value: "daily" },
-          { key: "shipping", value: "continuous" },
-          { key: "live", value: [{ link: { href: "https://characterdex.com", label: "characterdex.com" } }] },
+          { key: "updates", value: "daily" },
+          { key: "distribution", value: "continuous" },
+          { key: "online", value: [{ link: { href: "https://characterdex.com", label: "characterdex.com" } }] },
         ],
         outcomeBody: "v2.0 in production; the card system is running with live users.",
       },
@@ -443,9 +441,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
     isRoadStatus: true,
     features: [
       {
-        // ALL Oasis frames are C17 slots by design (01 §Imagery source table: "missing ->
-        // flagged"; live URL is a placeholder landing). Bar geometry reuses machineshop.html's
-        // unit-05 phone-bay canvas verbatim (03's pinned C17 geometry rule).
+        // ALL Oasis frames are placeholders by design (01 §Imagery source table: "missing ->
+        // flagged"; no live URL yet). Interim placeholder geometry, removed when these features
+        // become text-forward at T40 (03 §3 image map).
         frame: {
           kind: "phone",
           slotBars: [
@@ -460,12 +458,12 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
           tr: {
             title: "Bakım döngüsü",
             body: "Günlük ritüeller oyunun kendisi: bak, besle, düzenle. Seri bozulunca ceza yok, dönüş var.",
-            slotLabel: { title: "Ekran yuvası", body: "bakım döngüsü ana ekranı, sıcak krem arayüz" },
+            slotLabel: { title: "Görsel yakında", body: "bakım döngüsü ana ekranı, sıcak krem arayüz" },
           },
           en: {
             title: "The care loop",
             body: "Daily rituals are the game itself: tend, feed, arrange. A broken streak costs nothing — you just come back.",
-            slotLabel: { title: "Screen slot", body: "care-loop home screen, warm cream UI" },
+            slotLabel: { title: "Visual coming", body: "care-loop home screen, warm cream UI" },
           },
         },
       },
@@ -484,12 +482,12 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
           tr: {
             title: "Sıcak krem dünya",
             body: "Arayüz yumuşak, örüntü net: oyun görselleri sıcak krem, tipografi sakin.",
-            slotLabel: { title: "Ekran yuvası", body: "oyun görselleri sıcak krem, tipografi sakin" },
+            slotLabel: { title: "Görsel yakında", body: "oyun görselleri sıcak krem, tipografi sakin" },
           },
           en: {
             title: "A warm cream world",
             body: "The interface is soft, the pattern is clear: warm cream visuals, calm typography.",
-            slotLabel: { title: "Screen slot", body: "warm cream game visuals, calm typography" },
+            slotLabel: { title: "Visual coming", body: "warm cream game visuals, calm typography" },
           },
         },
       },
@@ -502,12 +500,12 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Sağlıklı yaşam uygulamaları görev listesine dönüşür. Oasis and Mind bakımı bir oyuna çevirir: küçük ritüeller, sıcak bir dünya, suçluluk yok.",
         telemetryExtra: [
-          { key: "izleme", value: "iç sürümlerde" },
+          { key: "güncelleme", value: "iç sürümlerde" },
           { key: "hedef", value: "iki mağaza" },
           { key: "kayıt", value: "bu sayfa güncellenir" },
         ],
         outcomeBody:
-          "Ünite v0.9'da; iki mağazaya da sevk edilecek. Gerçek ekranlar hazır oldukça bu kayda düşer.",
+          "Ürün v0.9'da; iki mağazaya da çıkacak. Gerçek ekranlar hazır oldukça bu kayda eklenir.",
       },
       en: {
         claim: "A care game built around daily rituals.",
@@ -516,12 +514,12 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         contextBody:
           "Wellness apps decay into task lists. Oasis and Mind turns care into a game: small rituals, a warm world, no guilt.",
         telemetryExtra: [
-          { key: "monitoring", value: "internal builds" },
+          { key: "updates", value: "internal builds" },
           { key: "target", value: "both stores" },
           { key: "record", value: "this page updates" },
         ],
         outcomeBody:
-          "The unit is at v0.9, headed to both stores. Real screens land in this record as they're ready.",
+          "The product is at v0.9, headed to both stores. Real screens land in this record as they're ready.",
       },
     },
   },

@@ -57,14 +57,14 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
         ]}
       />
 
-      {/* ---------- Yanıt protokolü / Response protocol ---------- */}
-      <section className="wrap border-t border-line py-[var(--sec-tight)]">
+      {/* ---------- Yanıt protokolü / Response protocol (interim; T50 rebuilds this page) ---------- */}
+      <section className="wrap border-t border-line py-[clamp(48px,6vw,72px)]">
         <h2 className="text-balance text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.08] font-semibold tracking-[-0.025em]">
           {c.protocolHeading}
         </h2>
         <ul className="mt-8 flex flex-col gap-3">
           {c.steps.map((step) => (
-            <li key={step} className="mono text-steel">
+            <li key={step} className="mono text-ink-soft">
               {step}
             </li>
           ))}

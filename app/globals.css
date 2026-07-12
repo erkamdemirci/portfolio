@@ -41,37 +41,6 @@
 }
 
 /* ============================================================
-   COMPAT — remove in T44. Temporary aliases mapping the OLD token/utility names
-   to the nearest NEW tokens (all via var() indirection, so NO raw hex and NO literal
-   ms enter this file) so components/pages not yet migrated (M2/M3) still compile and
-   render sanely at every milestone boundary. T44 deletes this whole block after the
-   last component/page is migrated, then the dead-token NAME gate runs.
-   ============================================================ */
-:root {
-  /* old bare custom-properties read directly via var(--x) in un-migrated components */
-  --carbon: var(--paper); --carbon-2: var(--paper-2); --carbon-3: var(--paper-2);
-  --bright: var(--ink); --steel: var(--ink-soft);
-  --amber: var(--ever); --amber-hi: var(--ever); --amber-text: var(--ever); --amber-mark: var(--ever);
-  --on-amber: var(--paper); --ring: var(--ring-media); --glow: transparent;
-  --skel: var(--paper-2); --skel-2: var(--line-strong);
-  --radius: var(--radius-shot);
-  /* old layout rhythm + motion names, aliased to the new tokens (no literal ms here) */
-  --sec: clamp(64px,8vw,112px); --sec-tight: clamp(48px,6vw,72px);
-  --gap-grid: 20px; --gap-col: clamp(32px,4vw,64px);
-  --dur-base: var(--dur-fast); --dur-slow: var(--dur-reveal); --ease: var(--ease-out);
-}
-@theme inline {
-  --color-carbon: var(--paper);       --color-carbon-2: var(--paper-2);
-  --color-carbon-3: var(--paper-2);   --color-bright: var(--ink);
-  --color-steel: var(--ink-soft);     --color-amber: var(--ever);
-  --color-amber-hi: var(--ever);      --color-amber-text: var(--ever);
-  --color-amber-mark: var(--ever);    --color-on-amber: var(--paper);
-  --color-focus: var(--ever);         --color-skel: var(--paper-2);
-  --color-skel-2: var(--line-strong);
-}
-/* ============================================================ END COMPAT ============ */
-
-/* ============================================================
    Base layer — 01 §Platform mapping wiring + §Typography + §Motion
    ============================================================ */
 

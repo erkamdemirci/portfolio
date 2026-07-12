@@ -40,6 +40,10 @@ export const en = {
     },
     copyright: "© 2026 DMRC · erkamdemirci.com",
     sheetLine: "sayfa 01/01 · rev B · machine shop",
+    // T21 — de-themed footer (brand restatement + contact line). Cells/sheetLine above are
+    // now orphaned (Footer no longer renders them); T24 de-themes their values.
+    brand: "DMRC — Erkam Demirci's product studio",
+    contact: "hello@erkamdemirci.com",
   },
   // Home (T21, 03-screens-and-flows.md §1) — verbatim EN content, structurally mirrors tr.ts.
   home: {

@@ -40,6 +40,10 @@ export const tr = {
     },
     copyright: "© 2026 DMRC · erkamdemirci.com",
     sheetLine: "sayfa 01/01 · rev B · machine shop",
+    // T21 — de-themed footer (brand restatement + contact line). The cells/sheetLine above
+    // are now orphaned (Footer no longer renders them); T23 de-themes their values.
+    brand: "DMRC — Erkam Demirci'nin ürün stüdyosu",
+    contact: "hello@erkamdemirci.com",
   },
   // Home (T21, 03-screens-and-flows.md §1) — verbatim TR content. Named keys (not arrays) so
   // grep-based acceptance checks can pin exact strings and so the `as const` + Dictionary

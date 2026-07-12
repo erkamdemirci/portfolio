@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { G3NotFound } from "@/components/chrome/g3-not-found";
+import { NotFound } from "@/components/chrome/not-found";
 import { getRequestLang } from "@/lib/i18n/request-lang";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import type { Lang } from "@/lib/i18n/routes";
 
 /**
  * G3 — 404 (03-screens-and-flows.md §G3; 02-components.md §C25; 04-tasks.md T28). Renders for
@@ -30,7 +32,20 @@ export const metadata: Metadata = {
   robots: "noindex",
 };
 
-export default function NotFound() {
+const HOME_HREF: Record<Lang, string> = { tr: "/", en: "/en" };
+const WORK_HREF: Record<Lang, string> = { tr: "/isler", en: "/en/work" };
+
+export default function NotFoundPage() {
   const lang = getRequestLang();
-  return <G3NotFound lang={lang} />;
+  const n = getDictionary(lang).notFound;
+  return (
+    <NotFound
+      heading={n.heading}
+      path={n.genericPath}
+      homeHref={HOME_HREF[lang]}
+      homeLabel={n.homeLabel}
+      workHref={WORK_HREF[lang]}
+      workLabel={n.workLabel}
+    />
+  );
 }

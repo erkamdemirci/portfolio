@@ -12,7 +12,8 @@ import { LocaleChip } from "./locale-chip";
 /**
  * MobileMenu (02-components.md §MobileMenu). A 44×44 icon trigger (Menu→X) and a portaled
  * full-viewport paper panel: wordmark + close → large nav links (Blog is TR-only, A11) →
- * primary CTA → LocaleChip. Below 620px the header hands its nav to this menu.
+ * primary CTA → LocaleChip. Below the header's 850px collapse the header hands its nav to
+ * this menu (see header.tsx for why the breakpoint is 850, not the mockup's 620).
  *
  * BINDING keyboard/ARIA/focus contract — do NOT alter: focus-trap, `inert` on the rest of
  * the page, `Escape` to close, and body scroll-lock (the useEffect + close() below). Only
@@ -116,7 +117,7 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
         aria-expanded={open}
         aria-controls={MENU_ID}
         onClick={() => setOpen((value) => !value)}
-        className="grid h-11 w-11 place-items-center rounded-ui border border-line bg-paper text-ink transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] motion-safe:active:[transform:scale(0.97)] [@media(hover:hover)_and_(pointer:fine)]:hover:border-ink-soft min-[621px]:hidden"
+        className="grid h-11 w-11 place-items-center rounded-ui border border-line bg-paper text-ink transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] motion-safe:active:[transform:scale(0.97)] [@media(hover:hover)_and_(pointer:fine)]:hover:border-ink-soft min-[850px]:hidden"
       >
         <span className="sr-only">{triggerLabel}</span>
         <Menu aria-hidden="true" size={18} strokeWidth={1.5} />

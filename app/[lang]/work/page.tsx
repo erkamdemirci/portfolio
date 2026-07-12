@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { alternatesFor, pageMetadata } from "@/lib/seo";
 import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { SectionHead } from "@/components/layout/section-head";
-import { BrowserBay } from "@/components/frames/browser-bay";
-import { PhoneBay } from "@/components/frames/phone-bay";
-import { UnitCard, ExternalTelLink } from "@/components/fleet/unit-card";
-import { ReservedBay } from "@/components/fleet/reserved-bay";
+import { ProductCard } from "@/components/work/product-card";
+import { OpenSlotCell } from "@/components/work/open-slot-cell";
+import { ContactBand } from "@/components/bands/contact-band";
+import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { cases, type CaseSlug } from "@/lib/cases";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
- * 2 — Work index (03-screens-and-flows.md §2; 04-tasks.md T22). C10 head (h1 — this is the
- * page's only h1, per the heading-outline rule) + the same 5-card fleet grid as Home's teaser,
- * with an extended second sentence per card, closed by C18. Public URL /isler via the T04
- * locale-rewrite middleware.
+ * 2 — Work index (03-screens-and-flows.md §2). SectionHead (side-note, h1) → the full record of
+ * 5 products as ProductCard `row` variants (typographic plates, --line-strong dividers) → the
+ * OpenSlotCell → ContactBand compact. Heading outline: h1 → each row title h2 → OpenSlotCell h2
+ * → contact h2.
  */
 
 export async function generateMetadata({
@@ -25,40 +26,30 @@ export async function generateMetadata({
   return pageMetadata("work", lang);
 }
 
+const WORK_HREF: Record<Lang, string> = { tr: "/isler", en: "/en/work" };
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
 
-const CASE_HREF: Record<Lang, Record<"vaaz" | "akitle" | "linkden" | "characterdex" | "oasis", string>> = {
+const CASE_HREF: Record<Lang, Record<CaseSlug, string>> = {
   tr: {
     vaaz: "/isler/vaaz",
     akitle: "/isler/akitle",
     linkden: "/isler/linkden",
     characterdex: "/isler/characterdex",
-    oasis: "/isler/oasis-and-mind",
+    "oasis-and-mind": "/isler/oasis-and-mind",
   },
   en: {
     vaaz: "/en/work/vaaz",
     akitle: "/en/work/akitle",
     linkden: "/en/work/linkden",
     characterdex: "/en/work/characterdex",
-    oasis: "/en/work/oasis-and-mind",
+    "oasis-and-mind": "/en/work/oasis-and-mind",
   },
 };
 
-// Same descriptive, localized alt text convention as Home (T21) — not spec-cited verbatim.
-const IMAGE_ALT: Record<Lang, Record<"vaaz" | "akitle" | "linkden" | "characterdex", string>> = {
-  tr: {
-    vaaz: "VAAZ namaz vakti geri sayım ekranı — İstanbul, sonraki vakit kartı",
-    akitle: "Akitle kira sözleşmesi editörü — satır kalemleri ve imzalandı rozeti",
-    linkden: "Linkden dokümantasyon paneli — arama gecikme rozetleriyle",
-    characterdex: "CharacterDex uygulama paneli — üç kolonlu tip profili düzeni",
-  },
-  en: {
-    vaaz: "VAAZ prayer-time countdown screen — Istanbul, next-prayer card",
-    akitle: "Akitle rental contract editor — line items and signed badge",
-    linkden: "Linkden documentation panel — with search latency badges",
-    characterdex: "CharacterDex app panel — three-column type-profile layout",
-  },
-};
+function splitMeta(meta: string, domain?: string) {
+  const [version, ...rest] = meta.split(" · ");
+  return { version, platform: rest.join(" · "), domain };
+}
 
 export default async function WorkIndexPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = (await params) as { lang: Lang };
@@ -66,135 +57,106 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ lang
   const h = dict.home;
   const w = dict.workIndex;
   const caseHref = CASE_HREF[lang];
-  const alt = IMAGE_ALT[lang];
+  const claimOf = (slug: CaseSlug) => cases[slug]?.locale[lang].claim ?? "";
 
   return (
     <>
       <HreflangLinks alt={alternatesFor("work")} />
-      <section className="wrap py-[var(--sec)]">
-      <SectionHead
-        eyebrow={w.eyebrow}
-        heading={w.heading}
-        sideText={w.side}
-        headingLevel="h1"
-      />
 
-      <div className="grid grid-cols-12 gap-[var(--gap-grid)]">
-        <UnitCard
-          span={5}
-          unitLabel={h.cards.vaaz.unitLabel}
-          status={{ variant: "live", flag: h.cards.vaaz.flag, meta: h.cards.vaaz.meta }}
-          frame={
-            <PhoneBay
-              image={{ src: "/screens/vaaz/times-390.png", alt: alt.vaaz, width: 700, height: 728 }}
+      <section className="wrap py-[var(--pad-section)]">
+        <SectionHead heading={w.heading} sideText={w.side} headingLevel="h1" />
+
+        <div className="mt-[clamp(24px,3vw,40px)] flex flex-col divide-y divide-line-strong border-t border-line-strong">
+          <Reveal index={0}>
+            <ProductCard
+              variant="row"
+              titleLevel="h2"
+              href={caseHref.vaaz}
+              title={h.cards.vaaz.title}
+              status={{ variant: "live", flag: h.cards.vaaz.flag }}
+              meta={splitMeta(h.cards.vaaz.meta, h.cards.vaaz.domain)}
+              description={`${h.cards.vaaz.description} ${w.extended.vaaz}`}
+              plate={{ status: h.cards.vaaz.flag, name: h.cards.vaaz.title, claim: claimOf("vaaz"), ratio: "700/728" }}
+              proof={
+                <>
+                  <span className="mono text-ink">{h.cards.vaaz.rating}</span> {h.cards.vaaz.ratingSuffix}
+                </>
+              }
             />
-          }
-          href={caseHref.vaaz}
-          title={h.cards.vaaz.title}
-          description={`${h.cards.vaaz.description} ${w.extended.vaaz}`}
-          telLine1={<ExternalTelLink href={`https://${h.cards.vaaz.domain}`} label={h.cards.vaaz.domain} />}
-          telLine2={
-            <>
-              <b>{h.cards.vaaz.rating}</b> {h.cards.vaaz.ratingSuffix}
-            </>
-          }
-        />
-
-        <UnitCard
-          span={7}
-          unitLabel={h.cards.akitle.unitLabel}
-          status={{ variant: "live", flag: h.cards.akitle.flag, meta: h.cards.akitle.meta }}
-          frame={
-            <BrowserBay
-              domain={h.cards.akitle.domain}
-              span={7}
-              image={{ src: "/screens/akitle/editor-1600.png", alt: alt.akitle, width: 894, height: 754 }}
+          </Reveal>
+          <Reveal index={1}>
+            <ProductCard
+              variant="row"
+              titleLevel="h2"
+              href={caseHref.akitle}
+              title={h.cards.akitle.title}
+              status={{ variant: "live", flag: h.cards.akitle.flag }}
+              meta={splitMeta(h.cards.akitle.meta, h.cards.akitle.domain)}
+              description={`${h.cards.akitle.description} ${w.extended.akitle}`}
+              plate={{ status: h.cards.akitle.flag, name: h.cards.akitle.title, claim: claimOf("akitle"), ratio: "3/2" }}
             />
-          }
-          href={caseHref.akitle}
-          title={h.cards.akitle.title}
-          description={`${h.cards.akitle.description} ${w.extended.akitle}`}
-          telLine1={<ExternalTelLink href={`https://${h.cards.akitle.domain}`} label={h.cards.akitle.domain} />}
-          telLine2={h.cards.akitle.telLine2}
-        />
-
-        <UnitCard
-          span={5}
-          unitLabel={h.cards.linkden.unitLabel}
-          status={{ variant: "live", flag: h.cards.linkden.flag, meta: h.cards.linkden.meta }}
-          frame={
-            <BrowserBay
-              domain={h.cards.linkden.domain}
-              span={5}
-              image={{ src: "/screens/linkden/panel-1600.png", alt: alt.linkden, width: 1180, height: 784 }}
+          </Reveal>
+          <Reveal index={2}>
+            <ProductCard
+              variant="row"
+              titleLevel="h2"
+              href={caseHref.linkden}
+              title={h.cards.linkden.title}
+              status={{ variant: "live", flag: h.cards.linkden.flag }}
+              meta={splitMeta(h.cards.linkden.meta, h.cards.linkden.domain)}
+              description={`${h.cards.linkden.description} ${w.extended.linkden}`}
+              plate={{ status: h.cards.linkden.flag, name: h.cards.linkden.title, claim: claimOf("linkden"), ratio: "3/2" }}
             />
-          }
-          href={caseHref.linkden}
-          title={h.cards.linkden.title}
-          description={`${h.cards.linkden.description} ${w.extended.linkden}`}
-          telLine1={<ExternalTelLink href={`https://${h.cards.linkden.domain}`} label={h.cards.linkden.domain} />}
-          telLine2={h.cards.linkden.telLine2}
-        />
-
-        <UnitCard
-          span={7}
-          unitLabel={h.cards.characterdex.unitLabel}
-          status={{ variant: "live", flag: h.cards.characterdex.flag, meta: h.cards.characterdex.meta }}
-          frame={
-            <BrowserBay
-              domain={h.cards.characterdex.domain}
-              span={7}
-              image={{
-                src: "/screens/characterdex/profiles-1600.png",
-                alt: alt.characterdex,
-                width: 1600,
-                height: 1000,
-              }}
+          </Reveal>
+          <Reveal index={3}>
+            <ProductCard
+              variant="row"
+              titleLevel="h2"
+              href={caseHref.characterdex}
+              title={h.cards.characterdex.title}
+              status={{ variant: "live", flag: h.cards.characterdex.flag }}
+              meta={splitMeta(h.cards.characterdex.meta, h.cards.characterdex.domain)}
+              description={`${h.cards.characterdex.description} ${w.extended.characterdex}`}
+              plate={{ status: h.cards.characterdex.flag, name: h.cards.characterdex.title, claim: claimOf("characterdex"), ratio: "3/2" }}
             />
-          }
-          href={caseHref.characterdex}
-          title={h.cards.characterdex.title}
-          description={`${h.cards.characterdex.description} ${w.extended.characterdex}`}
-          telLine1={
-            <ExternalTelLink href={`https://${h.cards.characterdex.domain}`} label={h.cards.characterdex.domain} />
-          }
-          telLine2={h.cards.characterdex.telLine2}
-        />
-
-        <UnitCard
-          span={5}
-          unitLabel={h.cards.oasis.unitLabel}
-          status={{ variant: "in-dev", flag: h.cards.oasis.flag, meta: h.cards.oasis.meta }}
-          frame={
-            <PhoneBay
-              slot={{
-                bars: [
-                  { top: "36px", left: "14%", width: "44%", height: "12px" },
-                  { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
-                  { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
-                ],
-                label: { title: h.cards.oasis.slotTitle, body: h.cards.oasis.slotBody },
-              }}
+          </Reveal>
+          <Reveal index={4}>
+            <ProductCard
+              variant="row"
+              titleLevel="h2"
+              href={caseHref["oasis-and-mind"]}
+              title={h.cards.oasis.title}
+              status={{ variant: "in-dev", flag: h.cards.oasis.flag }}
+              meta={splitMeta(h.cards.oasis.meta)}
+              description={`${h.cards.oasis.description} ${w.extended.oasis}`}
+              plate={{ status: h.cards.oasis.flag, name: h.cards.oasis.title, claim: claimOf("oasis-and-mind"), ratio: "700/728" }}
             />
-          }
-          href={caseHref.oasis}
-          title={h.cards.oasis.title}
-          description={`${h.cards.oasis.description} ${w.extended.oasis}`}
-          telLine1={h.cards.oasis.telLine1}
-          telLine2={h.cards.oasis.telLine2}
-        />
+          </Reveal>
+        </div>
 
-        <ReservedBay
-          slotLabel={h.openSlot.label}
-          capacityLabel=""
-          title={h.openSlot.title}
-          body={h.openSlot.body}
-          ctaHref={CONTACT_HREF[lang]}
-          ctaLabel={h.openSlot.cta}
-          note=""
-        />
-      </div>
+        <Reveal>
+          <OpenSlotCell
+            className="mt-[clamp(40px,5vw,72px)]"
+            titleLevel="h2"
+            label={h.openSlot.label}
+            title={h.openSlot.title}
+            body={h.openSlot.body}
+            ctaHref={CONTACT_HREF[lang]}
+            ctaLabel={h.openSlot.cta}
+          />
+        </Reveal>
       </section>
+
+      <Reveal>
+        <ContactBand
+          variant="compact"
+          headingLevel="h2"
+          heading={h.contactBand.heading}
+          turn={h.contactBand.headingTurn}
+          accentHref={CONTACT_HREF[lang]}
+          accentLabel={h.contactBand.accentLabel}
+        />
+      </Reveal>
     </>
   );
 }

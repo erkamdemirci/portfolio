@@ -1,30 +1,20 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import { ArrowLink } from "@/components/ui/arrow-link";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { StatusChip } from "@/components/ui/status-chip";
-import { FleetReadout } from "@/components/telemetry/fleet-readout";
-import { StatRail } from "@/components/telemetry/stat-rail";
-import { BrowserBay } from "@/components/frames/browser-bay";
-import { PhoneBay } from "@/components/frames/phone-bay";
-import { UnitCard, ExternalTelLink } from "@/components/fleet/unit-card";
-import { ReservedBay } from "@/components/fleet/reserved-bay";
-import { SectionHead } from "@/components/layout/section-head";
-import { ServiceGrid } from "@/components/services/service-cell";
-import { KvBlock } from "@/components/telemetry/kv-block";
-import { ContactBand } from "@/components/bands/contact-band";
-import { MetaRail } from "@/components/case/meta-rail";
-import { UnitPager } from "@/components/case/unit-pager";
+import Image from "next/image";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
- * Dev specimen page — 01-design-system.md §Typography (scale table, TR coverage check),
- * §Color tokens. Internal-only reference render; excluded from search indexing.
+ * Dev specimen — 01-design-system.md demonstrator (internal-only, noindex). Renders the NEW
+ * quiet-editorial system in whatever theme data-theme resolves to: the §Color tokens (both
+ * themes via the theme toggle), the full §Typography scale (display-hero → figure-inline)
+ * including the signature serif-italic evergreen turn, the §Motion behaviors (entrance
+ * reveal, press scale(0.97), the stat figure), and a §Iconography & imagery plate sample
+ * (typographic + browser-shot). Uses ONLY new tokens/utilities — no old carbon/amber/steel.
  *
- * Every type-role token from the 01 scale table, a swatch grid for every color primitive,
- * an İĞŞÇÖÜ/ığşçöü render in both faces (both weights), and the İ/I uppercase-transform
- * probe ("işler · istanbul" -> "İŞLER · İSTANBUL" under lang="tr").
+ * Note: the stat figure renders in its final value (the odometer's SSR + reduced-motion
+ * state). The live count-up ships on the home + studio stat bands (T29/T38/T42) where the
+ * use-odometer client hook is wired; the specimen stays a server component to keep the
+ * noindex metadata export. See DEVIATIONS.md (T06).
  */
 
 export const metadata: Metadata = {
@@ -33,175 +23,122 @@ export const metadata: Metadata = {
 
 interface TypeRole {
   token: string;
-  face: string;
-  size: string;
-  tracking: string;
-  lineHeight: string;
-  notes: string;
+  note: string;
+  style: CSSProperties;
   sample: string;
+  /** render the sample as an italic-ever turn after the upright text (display-hero) */
+  turn?: string;
+  mono?: boolean;
 }
+
+const DISPLAY = "var(--font-display)";
+const BODY = "var(--font-body)";
 
 const TYPE_SCALE: TypeRole[] = [
   {
-    token: "display (h1)",
-    face: "GS 700",
-    size: "clamp(2.8rem, 6vw, 5rem)",
-    tracking: "-0.03em",
-    lineHeight: "1.02",
-    notes: "one per page; text-wrap: balance",
-    sample: "Filo, canlı yayında.",
+    token: "display-hero",
+    note: "Instrument Serif 400 · clamp(3rem,7vw,5.5rem) · lh 1.05 · -0.005em",
+    style: { fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(3rem,7vw,5.5rem)", lineHeight: 1.05, letterSpacing: "-0.005em" },
+    sample: "İyi kurulmuş bir deneme",
+    turn: " — ve sizinki.",
   },
   {
-    token: "h2",
-    face: "GS 600",
-    size: "clamp(1.9rem, 3.4vw, 2.7rem)",
-    tracking: "-0.025em",
-    lineHeight: "1.08",
-    notes: "section heads",
-    sample: "Sipariş üzerine inşa.",
+    token: "display-1",
+    note: "Instrument Serif 400 · clamp(2rem,3.6vw,3rem) · lh 1.08 · -0.005em",
+    style: { fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(2rem,3.6vw,3rem)", lineHeight: 1.08, letterSpacing: "-0.005em" },
+    sample: "Web ve ürün stüdyosu",
   },
   {
-    token: "h3-lg",
-    face: "GS 600",
-    size: "clamp(1.5rem, 2.4vw, 2rem)",
-    tracking: "-0.02em",
-    lineHeight: "1.6",
-    notes: "bay/CTA card titles",
-    sample: "Slot 06 boş.",
+    token: "display-2",
+    note: "Instrument Serif 400 · clamp(1.75rem,3vw,2.5rem) · lh 1.1",
+    style: { fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1.1 },
+    sample: "Üretimde",
   },
   {
-    token: "stat",
-    face: "GS 600",
-    size: "2rem",
-    tracking: "-0.02em",
-    lineHeight: "1.1",
-    notes: "stat-rail values; tabular-nums",
+    token: "display-3",
+    note: "Instrument Serif 400 · clamp(1.5rem,2.2vw,2rem) · lh 1.1",
+    style: { fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(1.5rem,2.2vw,2rem)", lineHeight: 1.1 },
+    sample: "Hizmetler ve çalışma biçimi",
+  },
+  {
+    token: "figure-xl",
+    note: "Geist Mono 400 tnum · clamp(2rem,4vw,3rem) · lh 1 · -0.02em",
+    style: { fontSize: "clamp(2rem,4vw,3rem)", lineHeight: 1, letterSpacing: "-0.02em" },
     sample: "05",
-  },
-  {
-    token: "h3",
-    face: "GS 600",
-    size: "1.2rem",
-    tracking: "-0.015em",
-    lineHeight: "1.6",
-    notes: "card titles",
-    sample: "Akitle",
-  },
-  {
-    token: "h3-sm",
-    face: "GS 600",
-    size: "1.05rem",
-    tracking: "-0.01em",
-    lineHeight: "1.6",
-    notes: "service cell titles",
-    sample: "Ürün tasarımı",
+    mono: true,
   },
   {
     token: "lede",
-    face: "GS 400",
-    size: "1.1rem",
-    tracking: "0",
-    lineHeight: "1.6",
-    notes: "color --steel; max-width 52ch",
-    sample: "Beş ürünümüz filoda — dördü üretimde, biri geliştirmede.",
+    note: "Hanken 400 · clamp(1.08rem,1.4vw,1.22rem) · lh 1.6",
+    style: { fontFamily: BODY, fontWeight: 400, fontSize: "clamp(1.08rem,1.4vw,1.22rem)", lineHeight: 1.6, textWrap: "pretty" },
+    sample: "Kendi ürünlerimizi kurar, aynı özenle sizinkini de kurarız.",
   },
   {
     token: "body",
-    face: "GS 400",
-    size: "1rem",
-    tracking: "0",
-    lineHeight: "1.6",
-    notes: "16px base; text-wrap: pretty",
-    sample: "Müşteri işleri aynı atölyeden geçer: tasarlanır, inşa edilir, sevk edilir.",
-  },
-  {
-    token: "btn",
-    face: "GS 600",
-    size: "0.95rem",
-    tracking: "0",
-    lineHeight: "1.6",
-    notes: "buttons, arrow-links",
-    sample: "Proje başlat",
-  },
-  {
-    token: "ui",
-    face: "GS 500",
-    size: "0.9rem",
-    tracking: "0",
-    lineHeight: "1.6",
-    notes: "nav links",
-    sample: "İşler · Hizmetler · Stüdyo",
+    note: "Hanken 400 · 17px · lh 1.65 · text-wrap pretty",
+    style: { fontFamily: BODY, fontWeight: 400, fontSize: "17px", lineHeight: 1.65, textWrap: "pretty" },
+    sample:
+      "Her iş aynı yerden geçer: tasarlanır, kurulur ve yayına alınır. Sonrasında da bakımını üstleniriz.",
   },
   {
     token: "body-sm",
-    face: "GS 400",
-    size: "0.875rem",
-    tracking: "0",
-    lineHeight: "1.6",
-    notes: "card/service body copy",
-    sample: "Kira sözleşmeleri tek akışta hazırlanır, imzalanır ve arşivlenir.",
+    note: "Hanken 400 · 0.92rem · lh 1.55",
+    style: { fontFamily: BODY, fontWeight: 400, fontSize: "0.92rem", lineHeight: 1.55 },
+    sample: "Sözleşmeler tek akışta hazırlanır, imzalanır ve arşivlenir.",
   },
   {
-    token: "meta",
-    face: "GS 400",
-    size: "0.8125rem",
-    tracking: "0",
-    lineHeight: "1.4",
-    notes: "panel row roles",
-    sample: "Namaz vakti yol arkadaşı",
+    token: "ui",
+    note: "Hanken 500 · 0.95rem · lh 1",
+    style: { fontFamily: BODY, fontWeight: 500, fontSize: "0.95rem", lineHeight: 1 },
+    sample: "İşler · Hizmetler · Stüdyo",
+  },
+  {
+    token: "eyebrow",
+    note: "Hanken 500 · 0.82rem · lh 1.3 · 0.04em · sentence case",
+    style: { fontFamily: BODY, fontWeight: 500, fontSize: "0.82rem", lineHeight: 1.3, letterSpacing: "0.04em" },
+    sample: "web ve ürün stüdyosu",
+  },
+  {
+    token: "label-xs",
+    note: "Hanken 500 · 0.8rem · lh 1.4",
+    style: { fontFamily: BODY, fontWeight: 500, fontSize: "0.8rem", lineHeight: 1.4 },
+    sample: "sürüm · platform · yığın",
+  },
+  {
+    token: "figure-inline",
+    note: "Geist Mono 400 tnum · 0.84rem · -0.01em",
+    style: { fontSize: "0.84rem", letterSpacing: "-0.01em" },
+    sample: "v2.4 · 4,9 · <48 sa",
+    mono: true,
   },
 ];
 
-const MONO_DATA = {
-  token: "mono-data",
-  face: "Plex Mono 400/500",
-  size: "0.8125rem (13px)",
-  tracking: "+0.03em (kv) / +0.06em (telemetry)",
-  lineHeight: "1.7",
-  notes: "versions, URLs, kv values; tabular-nums",
-  sample: "v2.4 · akitle.com ↗ · 4,9",
-};
-
-const MONO_LABEL = {
-  token: "mono-label",
-  face: "Plex Mono 400/500",
-  size: "0.75rem (12px)",
-  tracking: "+0.07–0.08em",
-  lineHeight: "1.6–1.75",
-  notes: "UPPERCASE eyebrow/label layer — 12px floor, never smaller",
-  sample: "unit-02 · akitle",
-};
-
-interface ColorToken {
+interface Swatch {
   name: string;
-  var: string;
+  fill: string;
+  /** demonstrate translucent hairline tokens as a border on a paper-2 field */
+  border?: boolean;
 }
 
-const COLOR_TOKENS: ColorToken[] = [
-  { name: "--carbon", var: "var(--carbon)" },
-  { name: "--carbon-2", var: "var(--carbon-2)" },
-  { name: "--carbon-3", var: "var(--carbon-3)" },
-  { name: "--bright", var: "var(--bright)" },
-  { name: "--steel", var: "var(--steel)" },
-  { name: "--amber", var: "var(--amber)" },
-  { name: "--amber-hi", var: "var(--amber-hi)" },
-  { name: "--amber-text", var: "var(--amber-text)" },
-  { name: "--amber-mark", var: "var(--amber-mark)" },
-  { name: "--on-amber", var: "var(--on-amber)" },
-  { name: "--focus", var: "var(--focus)" },
-  { name: "--line", var: "var(--line)" },
-  { name: "--line-strong", var: "var(--line-strong)" },
-  { name: "--ring", var: "var(--ring)" },
-  { name: "--glow", var: "var(--glow)" },
-  { name: "--skel", var: "var(--skel)" },
-  { name: "--skel-2", var: "var(--skel-2)" },
+const SWATCHES: Swatch[] = [
+  { name: "--paper", fill: "var(--paper)" },
+  { name: "--paper-2", fill: "var(--paper-2)" },
+  { name: "--ink", fill: "var(--ink)" },
+  { name: "--ink-soft", fill: "var(--ink-soft)" },
+  { name: "--ever", fill: "var(--ever)" },
+  { name: "--ever-hover", fill: "var(--ever-hover)" },
+  { name: "--line", fill: "var(--line)", border: true },
+  { name: "--line-strong", fill: "var(--line-strong)", border: true },
+  { name: "--ring-media", fill: "var(--ring-media)", border: true },
 ];
 
 const sectionStyle: CSSProperties = {
   borderBottom: "1px solid var(--line)",
-  paddingBottom: "40px",
-  marginBottom: "40px",
+  paddingBottom: "48px",
+  marginBottom: "48px",
 };
+
+const capStyle: CSSProperties = { marginBottom: "16px" };
 
 export default async function SpecimenPage({
   params,
@@ -211,650 +148,219 @@ export default async function SpecimenPage({
   const { lang } = (await params) as { lang: Lang };
 
   return (
-    <div
-      className="wrap"
-      style={{ paddingTop: "48px", paddingBottom: "104px", color: "var(--bright)" }}
-    >
-      <p className="mono" style={{ color: "var(--steel)", marginBottom: "8px" }}>
-        dev / specimen — internal only
+    <div className="wrap text-ink" style={{ paddingTop: "48px", paddingBottom: "120px" }}>
+      <p className="mono text-ink-soft" style={{ marginBottom: "8px" }}>
+        dev / specimen — internal only · {lang}
       </p>
-      <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "40px" }}>
-        Token &amp; type specimen
+      <h1 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(2rem,3.6vw,3rem)", lineHeight: 1.08, marginBottom: "48px" }}>
+        Quiet-editorial system specimen
       </h1>
 
-      {/* ---------- TR glyph coverage — General Sans ---------- */}
+      {/* ---------- Color tokens ---------- */}
       <section style={sectionStyle}>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-          tr coverage — general sans
-        </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: "1.5rem" }}>
-          İĞŞÇÖÜ ığşçöü
-        </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "1.5rem" }}>
-          İĞŞÇÖÜ ığşçöü
-        </p>
-      </section>
-
-      {/* ---------- TR glyph coverage — IBM Plex Mono ---------- */}
-      <section style={sectionStyle}>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-          tr coverage — ibm plex mono
-        </p>
-        <p style={{ fontFamily: "var(--font-mono)", fontWeight: 400, fontSize: "1.25rem" }}>
-          İĞŞÇÖÜ ığşçöü
-        </p>
-        <p style={{ fontFamily: "var(--font-mono)", fontWeight: 500, fontSize: "1.25rem" }}>
-          İĞŞÇÖÜ ığşçöü
-        </p>
-      </section>
-
-      {/* ---------- İ/I uppercase-transform probe ---------- */}
-      <section style={sectionStyle}>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-          uppercase transform probe (lang-dependent İ/I casing)
-        </p>
-        <span className="mono" style={{ color: "var(--amber-text)" }}>
-          işler · istanbul
-        </span>
-      </section>
-
-      {/* ---------- Type scale ---------- */}
-      <section style={sectionStyle}>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          type scale
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-          {TYPE_SCALE.map((role) => (
-            <div key={role.token}>
-              <p
-                className="mono"
-                style={{ color: "var(--steel)", marginBottom: "6px" }}
-              >
-                {role.token} · {role.face} · {role.size} · tracking {role.tracking} · lh{" "}
-                {role.lineHeight} — {role.notes}
-              </p>
-              <p
-                style={{
-                  fontSize: role.size,
-                  letterSpacing: role.tracking,
-                  lineHeight: role.lineHeight,
-                  fontWeight: role.face.includes("700")
-                    ? 700
-                    : role.face.includes("600")
-                      ? 600
-                      : role.face.includes("500")
-                        ? 500
-                        : 400,
-                }}
-              >
-                {role.sample}
-              </p>
-            </div>
-          ))}
-
-          {[MONO_DATA, MONO_LABEL].map((role) => (
-            <div key={role.token}>
-              <p
-                className="mono"
-                style={{ color: "var(--steel)", marginBottom: "6px" }}
-              >
-                {role.token} · {role.face} · {role.size} · tracking {role.tracking} · lh{" "}
-                {role.lineHeight} — {role.notes}
-              </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.8125rem",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {role.sample}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- Color token swatches ---------- */}
-      <section style={sectionStyle}>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          color primitives
+        <p className="mono text-ink-soft" style={capStyle}>
+          color tokens — 01 §Color (toggle theme to verify both columns)
         </p>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
             gap: "16px",
           }}
         >
-          {COLOR_TOKENS.map((token) => (
-            <div key={token.name}>
+          {SWATCHES.map((s) => (
+            <div key={s.name}>
               <div
+                className="rounded-media"
                 style={{
                   height: "64px",
-                  borderRadius: "var(--radius)",
-                  border: "1px solid var(--line)",
-                  background: token.var,
+                  background: s.border ? "var(--paper-2)" : s.fill,
+                  border: s.border ? `2px solid ${s.fill}` : "1px solid var(--line)",
                 }}
               />
-              <p className="mono" style={{ color: "var(--steel)", marginTop: "8px" }}>
-                {token.name}
+              <p className="mono text-ink-soft" style={{ marginTop: "8px" }}>
+                {s.name}
               </p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ---------- T08 — primitives gallery (C7/C8/C9/C11) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          primitives — button / arrow-link / eyebrow / status chip (C7/C8/C9/C11)
+      {/* ---------- Type scale ---------- */}
+      <section style={sectionStyle}>
+        <p className="mono text-ink-soft" style={capStyle}>
+          type scale — 01 §Typography (display-hero → figure-inline)
         </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+          {TYPE_SCALE.map((role) => (
+            <div key={role.token}>
+              <p className="mono text-ink-soft" style={{ marginBottom: "8px" }}>
+                {role.token} · {role.note}
+              </p>
+              <p className={role.mono ? "mono text-ink" : "text-ink"} style={role.style}>
+                {role.sample}
+                {role.turn ? (
+                  <em style={{ fontStyle: "italic", color: "var(--ever)" }}>{role.turn}</em>
+                ) : null}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+      {/* ---------- TR glyph coverage (latin-ext) ---------- */}
+      <section style={sectionStyle}>
+        <p className="mono text-ink-soft" style={capStyle}>
+          Turkish glyph coverage — latin-ext (no tofu)
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <p className="text-ink" style={{ fontFamily: DISPLAY, fontSize: "1.75rem" }}>
+            İĞŞÇÖÜ ığşçöü — display
+          </p>
+          <p className="text-ink" style={{ fontFamily: BODY, fontSize: "1.5rem" }}>
+            İĞŞÇÖÜ ığşçöü — body
+          </p>
+          <p className="mono text-ink" style={{ fontSize: "1.25rem" }}>
+            İĞŞÇÖÜ ığşçöü — mono
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- Motion ---------- */}
+      <section style={sectionStyle}>
+        <p className="mono text-ink-soft" style={capStyle}>
+          motion — 01 §Motion (entrance reveal · press scale(0.97) · stat figure)
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "40px", alignItems: "flex-start" }}>
+          {/* entrance reveal — shown in its settled state (opacity 1 / no translate) */}
           <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C7 — button
+            <p className="mono text-ink-soft" style={{ marginBottom: "10px" }}>
+              entrance reveal · 240ms --ease-out · fade + 8px rise
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" }}>
-              <Button variant="accent" href="/tr/dev/specimen">
-                Proje başlat
-              </Button>
-              <Button variant="ghost" href="/tr/dev/specimen">
-                Filoyu gör
-              </Button>
-              <Button variant="accent" disabled>
-                Proje başlat
-              </Button>
-              <Button variant="ghost" disabled>
-                Filoyu gör
-              </Button>
+            <div
+              className="reveal rounded-media border-line text-ink"
+              style={{ border: "1px solid var(--line)", background: "var(--paper-2)", padding: "20px 24px", maxWidth: "280px", fontFamily: BODY }}
+            >
+              Bölümler görünüme girdikçe belirir.
             </div>
           </div>
 
+          {/* press feedback — real native button, scale(0.97) on :active */}
           <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C8 — arrow-link
+            <p className="mono text-ink-soft" style={{ marginBottom: "10px" }}>
+              press · scale(0.97) · --dur-fast --ease-out
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", alignItems: "center" }}>
-              <ArrowLink href="/iletisim" variant="forward">
-                Proje başlat
-              </ArrowLink>
-              <ArrowLink href="/" variant="back">
-                Ana sayfaya dön
-              </ArrowLink>
-            </div>
+            <button
+              type="button"
+              className="rounded-ui active:[transform:scale(0.97)]"
+              style={{
+                minHeight: "44px",
+                padding: "0.62rem 1.2rem",
+                background: "var(--ever)",
+                color: "var(--paper)",
+                fontFamily: BODY,
+                fontWeight: 500,
+                fontSize: "0.95rem",
+                transitionProperty: "transform",
+                transitionDuration: "var(--dur-fast)",
+                transitionTimingFunction: "var(--ease-out)",
+              }}
+            >
+              Teklif al
+            </button>
           </div>
 
+          {/* stat figure — figure-xl, final value (odometer SSR/reduced-motion state) */}
           <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C9 — section eyebrow
+            <p className="mono text-ink-soft" style={{ marginBottom: "10px" }}>
+              stat figure · figure-xl · Geist Mono tnum
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <Eyebrow variant="hero">
-                DMRC — ürün stüdyosu · Bursa, TR → dünya geneli
-              </Eyebrow>
-              <Eyebrow variant="section">01 — işler / üretimde kanıt</Eyebrow>
-              <Eyebrow variant="section">03 — iletişim / slot-06</Eyebrow>
+            <span
+              className="mono text-ink"
+              style={{ fontSize: "clamp(2rem,4vw,3rem)", lineHeight: 1, letterSpacing: "-0.02em" }}
+            >
+              05
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Plate sample ---------- */}
+      <section>
+        <p className="mono text-ink-soft" style={capStyle}>
+          plate — 01 §Iconography & imagery (typographic + browser-shot)
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "32px", maxWidth: "760px" }}>
+          {/* typographic plate — aspect 3/2 mat, centered status/rule/name/claim */}
+          <div>
+            <div
+              className="rounded-media border-line"
+              style={{
+                background: "var(--paper-2)",
+                border: "1px solid var(--line)",
+                padding: "clamp(10px,1.3vw,16px)",
+              }}
+            >
+              <div
+                className="rounded-shot"
+                style={{
+                  aspectRatio: "3 / 2",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                  padding: "24px",
+                  textAlign: "center",
+                }}
+              >
+                <span className="text-ink-soft" style={{ fontFamily: BODY, fontWeight: 500, fontSize: "0.8rem", letterSpacing: "0.02em" }}>
+                  Geliştirmede
+                </span>
+                <span style={{ width: "34px", height: "1px", background: "var(--line-strong)" }} />
+                <span className="text-ink" style={{ fontFamily: DISPLAY, fontSize: "1.6rem", lineHeight: 1.1 }}>
+                  Oasis and Mind
+                </span>
+                <span className="text-ink-soft" style={{ fontFamily: BODY, fontSize: "0.92rem", lineHeight: 1.5, maxWidth: "34ch" }}>
+                  Sakinlik ve odak için tasarlanan bir mobil uygulama.
+                </span>
+              </div>
             </div>
+            <p className="text-ink-soft" style={{ fontFamily: BODY, fontSize: "0.92rem", marginTop: "10px" }}>
+              Tipografik plaka — ekran görüntüsü olmayan ürün.
+            </p>
           </div>
 
+          {/* browser-shot plate — real screenshot, inset ring drawn as a border overlay */}
           <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C11 — status chip
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <StatusChip variant="live" flag="CANLI" meta="v2.4 · iOS/Android" />
-              <StatusChip variant="in-dev" flag="GELİŞTİRMEDE" meta="v0.9 · Mobil" />
-              <StatusChip variant="no-signal" flag="SİNYAL YOK" />
-              <div style={{ maxWidth: "220px" }}>
-                <StatusChip
-                  variant="in-dev"
-                  flag="GELİŞTİRME AŞAMASINDA"
-                  meta="OASIS AND MIND"
+            <div
+              className="rounded-media border-line"
+              style={{
+                background: "var(--paper-2)",
+                border: "1px solid var(--line)",
+                padding: "clamp(10px,1.3vw,16px)",
+              }}
+            >
+              <div className="rounded-shot" style={{ position: "relative", overflow: "hidden", aspectRatio: "894 / 754" }}>
+                <Image
+                  src="/screens/akitle/editor-1600.png"
+                  alt="Akitle sözleşme editörü"
+                  width={894}
+                  height={754}
+                  sizes="(max-width: 760px) 100vw, 380px"
+                  style={{ display: "block", width: "100%", height: "auto" }}
+                />
+                {/* 1px inset ring (border overlay, not a shadow — borders-only depth strategy) */}
+                <span
+                  aria-hidden
+                  className="rounded-shot"
+                  style={{ position: "absolute", inset: 0, border: "1px solid var(--ring-media)", pointerEvents: "none" }}
                 />
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- T13 — Fleet Readout panel + stat rail (C12/C13) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          telemetry — fleet readout panel / stat rail (C12/C13)
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-          <div style={{ maxWidth: "480px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C12 — fleet readout panel
+            <p className="text-ink-soft" style={{ fontFamily: BODY, fontSize: "0.92rem", marginTop: "10px" }}>
+              Tarayıcı plakası — gerçek ekran görüntüsü, sahte tarayıcı çerçevesi yok.
             </p>
-            <FleetReadout
-              lang={lang}
-              ariaLabel={lang === "tr" ? "Filo durumu okuması" : "Fleet status readout"}
-            />
-          </div>
-
-          <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C13 — stat rail
-            </p>
-            <StatRail
-              ariaLabel={lang === "tr" ? "Stüdyo rakamları" : "Studio numbers"}
-              cells={
-                lang === "tr"
-                  ? [
-                      { value: "05", caption: "ürün filoda" },
-                      { value: "02", caption: "platform — web & mobil" },
-                      { value: "<48", suffix: "sa", caption: "yeni briflere yanıt" },
-                      { value: "01", caption: "açık slot — slot-06" },
-                    ]
-                  : [
-                      { value: "05", caption: "products in the fleet" },
-                      { value: "02", caption: "platforms — web & mobile" },
-                      { value: "<48", suffix: "h", caption: "reply on new briefs" },
-                      { value: "01", caption: "open slot — bay-06" },
-                    ]
-              }
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- T15 — Screen frames (C15/C16/C17) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          frames — browser bay / phone bay / slot pattern (C15/C16/C17)
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-          <div style={{ maxWidth: "560px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C15 — browser bay (span-7, slot state)
-            </p>
-            <div
-              style={{
-                border: "1px solid var(--line)",
-                borderRadius: "var(--radius)",
-                overflow: "hidden",
-                background: "var(--carbon-2)",
-              }}
-            >
-              <BrowserBay
-                domain="akitle.com"
-                span={7}
-                slot={{
-                  bars: [
-                    { top: "20px", left: "20px", width: "26%", height: "14px" },
-                    { top: "52px", left: "20px", width: "44%", height: "70%", tone: "skel-2" },
-                    { top: "52px", right: "20px", width: "30%", height: "36px" },
-                    { top: "104px", right: "20px", width: "12%", height: "8px", tone: "amber" },
-                    { top: "130px", right: "20px", width: "30%", height: "44%" },
-                  ],
-                  label:
-                    lang === "tr"
-                      ? {
-                          title: "Ekran yuvası",
-                          body: "Akitle sözleşme editörü: satır kalemleri, imza rozeti, koyu yeşil serif vurgular",
-                        }
-                      : {
-                          title: "Screen slot",
-                          body: "Akitle contract editor — line items, signed badge, deep-green serif accents",
-                        },
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{ maxWidth: "560px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C16 — phone bay (slot state)
-            </p>
-            <div
-              style={{
-                border: "1px solid var(--line)",
-                borderRadius: "var(--radius)",
-                overflow: "hidden",
-                background: "var(--carbon-2)",
-                paddingBottom: "0",
-              }}
-            >
-              <PhoneBay
-                slot={{
-                  bars: [
-                    { top: "36px", left: "14%", width: "44%", height: "12px" },
-                    { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
-                    { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
-                    { top: "128px", left: "14%", width: "72%", height: "52px" },
-                  ],
-                  label:
-                    lang === "tr"
-                      ? {
-                          title: "Ekran yuvası",
-                          body: "VAAZ ana ekranı — namaz vakti geri sayımı, yeşil-altın serif arayüz",
-                        }
-                      : {
-                          title: "Screen slot",
-                          body: "VAAZ home — prayer-times countdown, green-gold serif UI",
-                        },
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- T16 — Unit card + BAY-06 reserved card (C14/C18) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          fleet — unit card / reserved bay (C14/C18)
-        </p>
-
-        <div className="grid grid-cols-12 gap-5">
-          <UnitCard
-            span={7}
-            unitLabel="unit-02 · AKITLE"
-            status={{ variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE", meta: "v3.1 · Web" }}
-            frame={
-              <BrowserBay
-                domain="akitle.com"
-                span={7}
-                slot={{
-                  bars: [
-                    { top: "20px", left: "20px", width: "26%", height: "14px" },
-                    { top: "52px", left: "20px", width: "44%", height: "70%", tone: "skel-2" },
-                    { top: "52px", right: "20px", width: "30%", height: "36px" },
-                    { top: "104px", right: "20px", width: "12%", height: "8px", tone: "amber" },
-                    { top: "130px", right: "20px", width: "30%", height: "44%" },
-                  ],
-                  label:
-                    lang === "tr"
-                      ? { title: "Ekran yuvası", body: "Akitle sözleşme editörü" }
-                      : { title: "Screen slot", body: "Akitle contract editor" },
-                }}
-              />
-            }
-            href={lang === "tr" ? "/isler/akitle" : "/en/work/akitle"}
-            title="Akitle"
-            description={
-              lang === "tr"
-                ? "Kira sözleşmeleri tek akışta hazırlanır, imzalanır ve arşivlenir."
-                : "Rental contracts drafted, signed, and archived in a single flow."
-            }
-            telLine1={<ExternalTelLink href="https://akitle.com" label="akitle.com" />}
-            telLine2={lang === "tr" ? "kira sözleşmesi SaaS'ı" : "rental contract SaaS"}
-          />
-
-          <UnitCard
-            span={5}
-            unitLabel="unit-01 · VAAZ"
-            status={{ variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE", meta: "v2.4 · iOS/Android" }}
-            frame={
-              <PhoneBay
-                slot={{
-                  bars: [
-                    { top: "36px", left: "14%", width: "44%", height: "12px" },
-                    { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
-                    { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
-                  ],
-                  label:
-                    lang === "tr"
-                      ? { title: "Ekran yuvası", body: "VAAZ ana ekranı" }
-                      : { title: "Screen slot", body: "VAAZ home" },
-                }}
-              />
-            }
-            href={lang === "tr" ? "/isler/vaaz" : "/en/work/vaaz"}
-            title="VAAZ"
-            description={
-              lang === "tr"
-                ? "Namaz vakitleri, günlük takip ve vaaz içeriği tek yol arkadaşında."
-                : "Prayer times, daily tracking, and sermon content in one companion app."
-            }
-            telLine1={<ExternalTelLink href="https://getvaaz.com" label="getvaaz.com" />}
-            telLine2={
-              lang === "tr" ? (
-                <>
-                  <b>4,9</b> mağaza puanı
-                </>
-              ) : (
-                <>
-                  <b>4.9</b> store rating
-                </>
-              )
-            }
-          />
-
-          <ReservedBay
-            slotLabel={lang === "tr" ? "slot-06 · rezerve" : "bay-06 · reserved"}
-            capacityLabel={lang === "tr" ? "kapasite: 01" : "capacity: 01"}
-            title={lang === "tr" ? "Ürününüz burada çalışır." : "Your product runs here."}
-            body={
-              lang === "tr"
-                ? "Aynı anda az sayıda müşteri işi alırız ve kendi ürünümüz gibi işletiriz — aynı yığın, aynı izleme, aynı standartlar."
-                : "We take on a few client builds at a time and run them like our own — same stack, same monitoring, same standards."
-            }
-            ctaHref={lang === "tr" ? "/iletisim" : "/en/contact"}
-            ctaLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
-            note={lang === "tr" ? "sıradaki slot: müsait" : "next slot: available"}
-          />
-        </div>
-      </section>
-
-      {/* ---------- T17 — section head / services grid / kv block (C10/C19/C20) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          layout — section head / services grid / kv block (C10/C19/C20)
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
-          <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C10 — section head
-            </p>
-            <SectionHead
-              eyebrow={lang === "tr" ? "01 — işler / üretimde kanıt" : "01 — work / proof in production"}
-              heading={lang === "tr" ? "Filo, canlı yayında." : "The fleet, live."}
-              sideText={
-                lang === "tr"
-                  ? "Aşağıdaki her ünite gerçek kullanıcılarla çalışan kendi ürünümüz. Ne sevkettiysek bakımını da yaparız — müşteri işleri aynı telemetriyi alır."
-                  : "Every unit below is our own product, running with real users. We maintain what we ship — client builds get the same telemetry."
-              }
-            />
-          </div>
-
-          <div>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C19 — services grid (linked)
-            </p>
-            <ServiceGrid
-              variant="linked"
-              cells={
-                lang === "tr"
-                  ? [
-                      {
-                        index: "s/01",
-                        title: "Ürün mühendisliği",
-                        body: "Kapsamdan sevkiyata: mimari, geliştirme, dağıtım ve lansman sonrası operasyon.",
-                        href: "/hizmetler",
-                      },
-                      {
-                        index: "s/02",
-                        title: "Web uygulamaları",
-                        body: "Gerçek arka uçlu Next.js uygulamaları — tanıtım sitesinden tam SaaS'a.",
-                        href: "/hizmetler",
-                      },
-                      {
-                        index: "s/03",
-                        title: "Mobil uygulamalar",
-                        body: "İki mağazaya da sevk edilen, ilk günden OTA güncellemeli Expo uygulamaları.",
-                        href: "/hizmetler",
-                      },
-                      {
-                        index: "s/04",
-                        title: "Tasarım sistemleri",
-                        body: "Bir ekibin bizsiz sürdürebileceği token'lar, bileşenler ve dokümantasyon.",
-                        href: "/hizmetler",
-                      },
-                    ]
-                  : [
-                      {
-                        index: "s/01",
-                        title: "Product engineering",
-                        body: "Scope to shipped: architecture, build, deploy, and the operations after launch.",
-                        href: "/en/services",
-                      },
-                      {
-                        index: "s/02",
-                        title: "Web apps",
-                        body: "Next.js applications with real backends — from marketing site to full SaaS.",
-                        href: "/en/services",
-                      },
-                      {
-                        index: "s/03",
-                        title: "Mobile apps",
-                        body: "Expo apps shipped to both stores, with over-the-air updates from day one.",
-                        href: "/en/services",
-                      },
-                      {
-                        index: "s/04",
-                        title: "Design systems",
-                        body: "Tokens, components, and documentation a team can maintain without us.",
-                        href: "/en/services",
-                      },
-                    ]
-              }
-            />
-          </div>
-
-          <div style={{ maxWidth: "420px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C20 — kv telemetry block
-            </p>
-            <KvBlock
-              ariaLabel={lang === "tr" ? "İletişim bilgileri" : "Contact details"}
-              rows={
-                lang === "tr"
-                  ? [
-                      {
-                        key: "e-posta",
-                        value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
-                      },
-                      { key: "üs", value: "Bursa, Türkiye → dünya geneli" },
-                      { key: "yanıt", value: "< 48 sa · iş günleri" },
-                      { key: "yığın", value: "Next.js · Expo · Convex" },
-                    ]
-                  : [
-                      {
-                        key: "email",
-                        value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
-                      },
-                      { key: "base", value: "Bursa, Türkiye → worldwide" },
-                      { key: "response", value: "< 48h, working days" },
-                      { key: "stack", value: "Next.js · Expo · Convex" },
-                    ]
-              }
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- T18 — contact band / case meta rail / next-unit pager (C21/C22/C23) ---------- */}
-      <section>
-        <p className="mono" style={{ color: "var(--steel)", marginBottom: "20px" }}>
-          bands + case — contact band / meta rail / unit pager (C21/C22/C23)
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
-          <div style={{ marginBottom: "20px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C21 — contact band (full)
-            </p>
-          </div>
-          <ContactBand
-            variant="full"
-            headingLevel="h2"
-            eyebrow={lang === "tr" ? "03 — iletişim / slot-06" : "03 — contact / bay-06"}
-            heading={lang === "tr" ? "Slot 06 boş." : "Bay 06 is empty."}
-            lede={
-              lang === "tr"
-                ? "Ne inşa ettiğinizi anlatın — aşama, platform ve sizin için 'bitti'nin ne olduğu. Her brifi okuyor, 48 saat içinde yanıtlıyoruz."
-                : "Tell us what you're building — stage, platform, and what shipped looks like to you. We read every brief and reply within 48 hours."
-            }
-            accentHref={lang === "tr" ? "/iletisim" : "/en/contact"}
-            accentLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
-            ghostHref={lang === "tr" ? "/isler" : "/en/work"}
-            ghostLabel={lang === "tr" ? "Filoyu gör" : "See the fleet"}
-            kvAriaLabel={lang === "tr" ? "İletişim bilgileri" : "Contact details"}
-            kvRows={
-              lang === "tr"
-                ? [
-                    {
-                      key: "e-posta",
-                      value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
-                    },
-                    { key: "üs", value: "Bursa, Türkiye → dünya geneli" },
-                    { key: "yanıt", value: "< 48 sa · iş günleri" },
-                    { key: "yığın", value: "Next.js · Expo · Convex" },
-                  ]
-                : [
-                    {
-                      key: "email",
-                      value: <a href="mailto:hello@erkamdemirci.com">hello@erkamdemirci.com</a>,
-                    },
-                    { key: "base", value: "Bursa, Türkiye → worldwide" },
-                    { key: "response", value: "< 48h, working days" },
-                    { key: "stack", value: "Next.js · Expo · Convex" },
-                  ]
-            }
-          />
-
-          <div style={{ padding: "24px 20px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C21 — contact band (compact)
-            </p>
-          </div>
-          <ContactBand
-            variant="compact"
-            eyebrow={lang === "tr" ? "05 — iletişim / slot-06" : "05 — contact / bay-06"}
-            heading={lang === "tr" ? "Slot 06 boş." : "Bay 06 is empty."}
-            accentHref={lang === "tr" ? "/iletisim" : "/en/contact"}
-            accentLabel={lang === "tr" ? "Proje başlat" : "Start a project"}
-          />
-
-          <div className="wrap" style={{ paddingTop: "40px" }}>
-            <p className="mono" style={{ color: "var(--steel)", marginBottom: "12px" }}>
-              C22 — case meta rail (Akitle)
-            </p>
-            <MetaRail
-              cells={[
-                { key: lang === "tr" ? "durum" : "status", status: { variant: "live", flag: lang === "tr" ? "CANLI" : "LIVE" } },
-                { key: lang === "tr" ? "sürüm" : "version", value: "v3.1" },
-                { key: "platform", value: "Web" },
-                { key: lang === "tr" ? "yığın" : "stack", value: "Next.js · Convex" },
-              ]}
-            />
-
-            <div style={{ marginTop: "40px", marginBottom: "12px" }}>
-              <p className="mono" style={{ color: "var(--steel)" }}>
-                C23 — next-unit pager (Akitle neighbors)
-              </p>
-            </div>
-            <UnitPager
-              prevCaption={lang === "tr" ? "önceki ünite" : "previous unit"}
-              nextCaption={lang === "tr" ? "sonraki ünite" : "next unit"}
-              prev={{
-                href: lang === "tr" ? "/isler/vaaz" : "/en/work/vaaz",
-                unitLabel: "unit-01 · VAAZ",
-                title: "VAAZ",
-              }}
-              next={{
-                href: lang === "tr" ? "/isler/linkden" : "/en/work/linkden",
-                unitLabel: "unit-03 · LINKDEN",
-                title: "Linkden",
-              }}
-            />
           </div>
         </div>
       </section>

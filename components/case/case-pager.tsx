@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 /**
  * CasePager (02-components.md §CasePager, replaces case/unit-pager). Circular prev/next at the
  * case foot (05 → 01) driven by CASE_ORDER + UNIT_IDENTITY.title (the page supplies the
- * neighbors). Captions are de-themed ("Önceki"/"Sonraki" — no "ünite"). Hover slides the arrow
+ * neighbors). Captions are de-themed ("Önceki"/"Sonraki"), dropping the old per-item noun. Hover slides the arrow
  * + underlines the neighbour title; press scales .985; both are removed under reduced motion via
  * the `.ghost`/`.figure` globals hooks. Arrows are lucide icons, never literal glyphs.
  */

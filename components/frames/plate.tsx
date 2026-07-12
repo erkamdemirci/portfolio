@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 /**
- * Plate (02-components.md §Plate; 01 §Iconography & imagery) — THE frame system, replacing
- * frames/browser-bay + phone-bay + slot-pattern.
+ * Plate (02-components.md §Plate; 01 §Iconography & imagery) — THE frame system, replacing the
+ * old browser / phone / placeholder frame components.
  *
  * A `--paper-2` mat (hairline border, radius-media) holds either a real screenshot or a
  * typographic fallback, with an optional sentence-case caption below. Screenshots mount via

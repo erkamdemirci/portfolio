@@ -7,7 +7,7 @@ import type { Lang } from "@/lib/i18n/routes";
 
 /**
  * 10 — Contact (03-screens-and-flows.md §10; 04-tasks.md T27). C21 full AS the page body
- * (heading level h1 — this page's only h1, eyebrow renumbered "01 — iletişim / slot-06")
+ * (heading level h1 — this page's only h1, eyebrow de-themed)
  * -> yanıt protokolü / response protocol (3 numbered mono steps). No form anywhere (brief
  * rule). The band's heading/lede/buttons/kv content is byte-identical to Home's contact
  * band (03 gives the same strings verbatim) — only the eyebrow differs per page.
@@ -34,7 +34,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
     <>
       <HreflangLinks alt={alternatesFor("contact")} />
 
-      {/* ---------- 01 — iletişim / slot-06 (C21 full, h1) ---------- */}
+      {/* ---------- Contact band (full, h1) ---------- */}
       <ContactBand
         variant="full"
         headingLevel="h1"

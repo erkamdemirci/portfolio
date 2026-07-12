@@ -4,8 +4,8 @@ import { ArrowLink } from "@/components/ui/arrow-link";
 /**
  * NotFound (02-components.md §NotFound; 03 §9 — replaces case/route-readout + g3-not-found).
  * A calm 404: heading (the document's only h1) + the attempted path echoed in Geist Mono
- * `--ink-soft` + two links (home ghost button, work arrow-link). The old "SİNYAL YOK" / "kayıtlı
- * ünite yok" machine conceit is dropped.
+ * `--ink-soft` + two links (home ghost button, work arrow-link). The old machine-readout status
+ * conceit is dropped.
  */
 
 interface NotFoundProps {

@@ -1,8 +1,8 @@
 import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 
 /**
- * CaseSpecList (02-components.md §CaseSpecList — de-themed replacement for the "Telemetri" KV
- * section). A de-themed section head ("Ayrıntılar" / "Details", NEVER "Telemetri") over a
+ * CaseSpecList (02-components.md §CaseSpecList — de-themed replacement for the old operations-KV
+ * section). A de-themed section head ("Ayrıntılar" / "Details" — never the old machine heading) over a
  * KvBlock of a status row + 2–3 data rows. Rows are built by the case page (status → StatusChip,
  * the live row → an external-mono TextLink, rich values via renderSegments), so `standard` and
  * `road-status` (Oasis) are pure data differences — no branch here.

@@ -31,7 +31,7 @@ describe("metaFor", () => {
     );
   });
 
-  it("contact/en matches the 03 §SEO table verbatim (de-themed — no Bay 06 conceit)", () => {
+  it("contact/en matches the 03 §SEO table verbatim (de-themed contact copy)", () => {
     expect(metaFor("contact", "en").title).toBe("Contact — Get a Quote | DMRC");
     expect(metaFor("contact", "en").description).toBe(
       "Get a quote for your website or mobile app project. Bursa-based DMRC replies to every brief within 48 hours. Reach us by email or the form.",

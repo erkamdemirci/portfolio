@@ -173,7 +173,7 @@ export default async function CaseStudyPage({
         </div>
       </section>
 
-      {/* ---------- Details (de-themed from "Telemetri") ---------- */}
+      {/* ---------- Details (de-themed section) ---------- */}
       <Reveal>
         <section className="wrap border-t border-line py-[var(--pad-section)]">
           <CaseSpecList heading={ct.sections.telemetry.heading} ariaLabel={ct.telemetryAria} rows={specRows} />

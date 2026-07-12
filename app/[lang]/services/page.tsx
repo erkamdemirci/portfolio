@@ -57,7 +57,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
         <h2 className="mb-[clamp(24px,3vw,40px)] font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-ink">
           {dict.nav.services}
         </h2>
-        <div className="flex flex-col divide-y divide-line">
+        {/* 1-col at 390; 2-col grid at ≥768 (03 §4 responsive) — each cell carries a top
+            hairline so the ruled rhythm survives the column split. */}
+        <div className="grid grid-cols-1 gap-x-[clamp(32px,5vw,72px)] min-[768px]:grid-cols-2">
           {s.details.map((item) => (
             <Reveal key={item.anchor}>
               <ServiceDetail
@@ -67,7 +69,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
                 included={item.included}
                 includedLabel={s.includedLabel}
                 titleLevel="h3"
-                className="py-[clamp(28px,4vw,44px)] first:pt-0"
+                className="border-t border-line py-[clamp(28px,4vw,44px)]"
               />
             </Reveal>
           ))}

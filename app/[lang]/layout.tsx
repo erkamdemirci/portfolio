@@ -40,7 +40,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      data-theme="dark"
+      data-theme="light"
       suppressHydrationWarning
       className={`${instrumentSerif.variable} ${hanken.variable} ${geistMono.variable}`}
     >

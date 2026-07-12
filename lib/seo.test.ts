@@ -7,34 +7,34 @@ import { alternatesForPath, metaFor, sitemap } from "@/lib/seo";
  */
 
 describe("metaFor", () => {
-  it("home/tr matches the 03 §Meta table verbatim", () => {
-    expect(metaFor("home", "tr").title).toBe("DMRC — Ürün stüdyosu · Web & mobil");
+  it("home/tr matches the 03 §SEO table verbatim", () => {
+    expect(metaFor("home", "tr").title).toBe("Kurumsal Web Sitesi ve Mobil Uygulama Ajansı | DMRC");
   });
 
-  it("home/en matches the 03 §Meta table verbatim", () => {
-    expect(metaFor("home", "en").title).toBe("DMRC — Product studio · Web & mobile");
+  it("home/en matches the 03 §SEO table verbatim", () => {
+    expect(metaFor("home", "en").title).toBe("Corporate Website & Mobile App Studio | DMRC");
   });
 
-  it("work/tr matches the 03 §Meta table verbatim", () => {
-    expect(metaFor("work", "tr").title).toBe("İşler — DMRC");
+  it("work/tr matches the 03 §SEO table verbatim", () => {
+    expect(metaFor("work", "tr").title).toBe("İşler — Web ve Mobil Ürünlerimiz | DMRC");
   });
 
   it("vaaz/tr description carries the 4,9 formatting (criterion 10d)", () => {
     expect(metaFor("vaaz", "tr").description).toBe(
-      "Namaz vakti yol arkadaşı: vakitler, takip, vaaz içeriği. unit-01: v2.4, iOS/Android, iki mağazada 4,9.",
+      "VAAZ; namaz vakitleri, günlük takip ve vaaz içeriğini tek uygulamada sunar. iOS ve Android'de canlı, iki mağazada 4,9 puan. DMRC ürünü.",
     );
   });
 
   it("vaaz/en description carries the 4.9 formatting (criterion 10d)", () => {
     expect(metaFor("vaaz", "en").description).toBe(
-      "A prayer companion: times, tracking, sermon content. unit-01: v2.4, iOS/Android, 4.9 across both stores.",
+      "VAAZ brings prayer times, daily tracking, and sermon content into one app. Live on iOS and Android, rated 4.9 on both stores. A DMRC product.",
     );
   });
 
-  it("contact/en matches the 03 §Meta table verbatim (Bay 06 / bay-06 register)", () => {
-    expect(metaFor("contact", "en").title).toBe("Contact — DMRC");
+  it("contact/en matches the 03 §SEO table verbatim (de-themed — no Bay 06 conceit)", () => {
+    expect(metaFor("contact", "en").title).toBe("Contact — Get a Quote | DMRC");
     expect(metaFor("contact", "en").description).toBe(
-      "Bay 06 is empty. Send your brief by email; a written reply within 48 hours.",
+      "Get a quote for your website or mobile app project. Bursa-based DMRC replies to every brief within 48 hours. Reach us by email or the form.",
     );
   });
 });

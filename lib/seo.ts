@@ -22,118 +22,126 @@ interface MetaEntry {
   description: string;
 }
 
-// The 03 §Meta, titles & OG table — copied verbatim, both locales, all 10 rows.
+// The 03 §SEO table — copied verbatim, both locales, all 10 rows (de-themed).
 const META_TABLE: Record<PageKey, Record<Lang, MetaEntry>> = {
   home: {
     tr: {
-      title: "DMRC — Ürün stüdyosu · Web & mobil",
+      title: "Kurumsal Web Sitesi ve Mobil Uygulama Ajansı | DMRC",
       description:
-        "Kendi ürünlerimizi geliştiriyoruz — ve sizinkini. Beş ürünlük filo: web ve mobil ürün mühendisliği, tasarımdan operasyona.",
+        "Bursa merkezli DMRC kurumsal web siteleri, web tasarım ve mobil uygulama geliştirir. Kendi ürünlerini kuran bir stüdyonun özeniyle projenizi hayata geçiririz.",
     },
     en: {
-      title: "DMRC — Product studio · Web & mobile",
+      title: "Corporate Website & Mobile App Studio | DMRC",
       description:
-        "We build our own products — and yours. A five-product fleet: web and mobile product engineering, design through operations.",
+        "Bursa-based DMRC builds corporate websites, web apps, and mobile apps — with the discipline of a studio that builds its own products end to end.",
     },
   },
   work: {
     tr: {
-      title: "İşler — DMRC",
+      title: "İşler — Web ve Mobil Ürünlerimiz | DMRC",
       description:
-        "Tüm filo kaydı: VAAZ, Akitle, Linkden, CharacterDex, Oasis and Mind. Her vaka kaydı filodaki gerçek üründür — dördü üretimde, biri geliştirmede.",
+        "DMRC'nin geliştirdiği ürünler ve müşteri projeleri: canlı web siteleri ve mobil uygulamalar. Her kayıt ne inşa ettiğimizi ve neyin çalıştığını gösterir.",
     },
     en: {
-      title: "Work — DMRC",
+      title: "Work — Our Web & Mobile Products | DMRC",
       description:
-        "The full fleet record: VAAZ, Akitle, Linkden, CharacterDex, Oasis and Mind. Every case record is a real product in the fleet — four in production, one in development.",
+        "The products and client work DMRC has built: live web and mobile apps. Each record shows what we built, what we built it with, and what runs.",
     },
   },
   vaaz: {
     tr: {
-      title: "VAAZ vaka kaydı — DMRC",
+      title: "VAAZ — Namaz Vakti Uygulaması | DMRC",
       description:
-        "Namaz vakti yol arkadaşı: vakitler, takip, vaaz içeriği. unit-01: v2.4, iOS/Android, iki mağazada 4,9.",
+        "VAAZ; namaz vakitleri, günlük takip ve vaaz içeriğini tek uygulamada sunar. iOS ve Android'de canlı, iki mağazada 4,9 puan. DMRC ürünü.",
     },
     en: {
-      title: "VAAZ case record — DMRC",
+      title: "VAAZ — Prayer Times App | DMRC",
       description:
-        "A prayer companion: times, tracking, sermon content. unit-01: v2.4, iOS/Android, 4.9 across both stores.",
+        "VAAZ brings prayer times, daily tracking, and sermon content into one app. Live on iOS and Android, rated 4.9 on both stores. A DMRC product.",
     },
   },
   akitle: {
     tr: {
-      title: "Akitle vaka kaydı — DMRC",
-      description: "Kira sözleşmeleri tek akışta: hazırla, imzala, arşivle. unit-02: v3.1, web, üretimde.",
+      title: "Akitle — Kira Sözleşmesi Uygulaması | DMRC",
+      description:
+        "Akitle kira sözleşmelerini tek akışta hazırlar, imzalar ve arşivler. v3.1 üretimde, gerçek kullanıcılarla canlı. DMRC ürünü.",
     },
     en: {
-      title: "Akitle case record — DMRC",
-      description: "Rental contracts in one flow: draft, sign, archive. unit-02: v3.1, web, in production.",
+      title: "Akitle — Rental Contract App | DMRC",
+      description:
+        "Akitle drafts, signs, and archives rental contracts in a single flow. v3.1 in production, live with real users. A DMRC product.",
     },
   },
   linkden: {
     tr: {
-      title: "Linkden vaka kaydı — DMRC",
-      description: "Kodun yanında yaşayan dokümantasyon; klavye öncelikli. unit-03: v1.8, web, üretimde.",
+      title: "Linkden — Geliştirici Dokümantasyon Aracı | DMRC",
+      description:
+        "Linkden, dokümantasyonu yazdığı kodun yanında tutan klavye öncelikli bir araç. v1.8 üretimde. DMRC ürünü.",
     },
     en: {
-      title: "Linkden case record — DMRC",
-      description: "Documentation that lives next to the code; keyboard first. unit-03: v1.8, web, in production.",
+      title: "Linkden — Developer Docs Tool | DMRC",
+      description:
+        "Linkden keeps documentation next to the code it describes — a keyboard-first tool for dev teams. v1.8 in production. A DMRC product.",
     },
   },
   characterdex: {
     tr: {
-      title: "CharacterDex vaka kaydı — DMRC",
-      description: "Kişilik tipleri, koleksiyonluk kehanet kartlarıyla. unit-04: v2.0, web, üretimde.",
+      title: "CharacterDex — Kişilik Tipi Uygulaması | DMRC",
+      description:
+        "CharacterDex, koleksiyonluk kart sistemiyle kişilik tiplerini keşfettiren bir web uygulaması. v2.0 canlı. DMRC ürünü.",
     },
     en: {
-      title: "CharacterDex case record — DMRC",
-      description: "Personality typing with collectible oracle cards. unit-04: v2.0, web, in production.",
+      title: "CharacterDex — Personality Typing App | DMRC",
+      description:
+        "CharacterDex explores personality types with a collectible card system. v2.0 live on the web. A DMRC product.",
     },
   },
   "oasis-and-mind": {
     tr: {
-      title: "Oasis and Mind vaka kaydı — DMRC",
+      title: "Oasis and Mind — Bakım Oyunu | DMRC",
       description:
-        "Günlük ritüeller üzerine kurulu bakım oyunu. unit-05: v0.9, mobil, geliştirmede — kayıt güncellenir.",
+        "Oasis and Mind, günlük sağlıklı yaşam ritüelleri etrafında kurulan bir bakım oyunu. Mobilde geliştirme aşamasında. DMRC ürünü.",
     },
     en: {
-      title: "Oasis and Mind case record — DMRC",
+      title: "Oasis and Mind — Care Game | DMRC",
       description:
-        "A care game built on daily rituals. unit-05: v0.9, mobile, in development — the record updates.",
+        "Oasis and Mind is a care game built around daily wellness rituals. In development on mobile. A DMRC product.",
     },
   },
   services: {
     tr: {
-      title: "Hizmetler — DMRC",
+      title: "Web Tasarım ve Geliştirme Hizmetleri | DMRC",
       description:
-        "Ürün mühendisliği, web ve mobil uygulamalar, tasarım sistemleri. Sabit kapsam ya da aylık; her iş çalışan bir şey sevk eder.",
+        "Kurumsal web siteleri, web tasarım ve geliştirme, mobil uygulama ve kurumsal kimlik. DMRC projenizi tasarımdan yayına tek elden yürütür. Teklif için yazın.",
     },
     en: {
-      title: "Services — DMRC",
+      title: "Web Design & Development Services | DMRC",
       description:
-        "Product engineering, web and mobile apps, design systems. Fixed scope or ongoing; every engagement ships something that runs.",
+        "Corporate websites, web design and development, mobile apps, and brand identity. DMRC runs your project from design to launch — ask for a quote.",
     },
   },
   studio: {
     tr: {
-      title: "Stüdyo — DMRC",
+      title: "Stüdyo — DMRC Hakkında | Erkam Demirci",
       description:
-        "Tek kuruculu ürün stüdyosu: Erkam Demirci. Küçük kalır, uçtan uca inşa eder, sevk ettiğini işletir.",
+        "DMRC, Bursa merkezli tek kuruculu bir web ve ürün stüdyosu. Erkam Demirci tasarımı, kodu ve operasyonu tek elden yürütür.",
     },
     en: {
-      title: "Studio — DMRC",
+      title: "Studio — About DMRC | Erkam Demirci",
       description:
-        "A one-founder product studio: Erkam Demirci. It stays small, builds end to end, and operates what it ships.",
+        "DMRC is a one-founder web and product studio based in Bursa. Erkam Demirci runs design, code, and operations end to end.",
     },
   },
   contact: {
     tr: {
-      title: "İletişim — DMRC",
-      description: "Slot 06 boş. Brifinizi e-postayla gönderin; 48 saat içinde yazılı yanıt.",
+      title: "İletişim — Teklif Al | DMRC",
+      description:
+        "Web sitesi veya mobil uygulama projeniz için teklif alın. Bursa merkezli DMRC her briefe 48 saat içinde yanıt verir. E-posta veya form ile ulaşın.",
     },
     en: {
-      title: "Contact — DMRC",
-      description: "Bay 06 is empty. Send your brief by email; a written reply within 48 hours.",
+      title: "Contact — Get a Quote | DMRC",
+      description:
+        "Get a quote for your website or mobile app project. Bursa-based DMRC replies to every brief within 48 hours. Reach us by email or the form.",
     },
   },
 };

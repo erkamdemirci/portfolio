@@ -1,75 +1,93 @@
-/* app/globals.css — THE token source of truth */
+/* app/globals.css — THE token source of truth (01-design-system.md §Platform mapping) */
 @import "tailwindcss";
 
-:root { /* dark = canonical/default */
-  --carbon:#121316; --carbon-2:#1B1D22; --carbon-3:#23262C;
-  --bright:#ECEAE6; --steel:#A8A6A0;
-  --amber:#F0A32A; --amber-hi:#F5B24C; --amber-text:#F0A32A;
-  --amber-mark:#F0A32A; --on-amber:#121316; --focus:#F0A32A;
-  --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.18);
-  --ring:rgba(255,255,255,.08); --glow:rgba(240,163,42,.07);
-  --skel:#2A2D34; --skel-2:#343841;
-  color-scheme: dark;
-}
-:root[data-theme="light"] {
-  --carbon:#F1F0ED; --carbon-2:#E9E8E3; --carbon-3:#E0DFD9;
-  --bright:#17181B; --steel:#565550;
-  --amber:#C77F14; --amber-hi:#D18E2A; --amber-text:#855200;
-  --amber-mark:#B06E06; --on-amber:#17181B; --focus:#B06E06;
-  --line:rgba(0,0,0,.11); --line-strong:rgba(0,0,0,.24);
-  --ring:rgba(0,0,0,.10); --glow:rgba(255,255,255,.65);
-  --skel:#D9D8D1; --skel-2:#CCCBC3;
+/* ---- Theme values (01 §Color tokens; LIGHT is canonical/default) ---- */
+:root {                                   /* LIGHT = canonical / default */
+  --paper:#FBFAF8; --paper-2:#F3F1EC; --ink:#1B1A17; --ink-soft:#6C685F;
+  --line:rgba(20,18,15,.10); --line-strong:rgba(20,18,15,.20);
+  --ever:#175E4B; --ever-hover:#124C3C; --focus:var(--ever); --ring-media:rgba(20,18,15,.12);
   color-scheme: light;
 }
+[data-theme="dark"] {                     /* secondary */
+  --paper:#121211; --paper-2:#1C1B18; --ink:#EFEDE7; --ink-soft:#9A968C;
+  --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.16);
+  --ever:#4FB89C; --ever-hover:#46A98D; --ring-media:rgba(255,255,255,.10);
+  color-scheme: dark;
+}
 
+/* ---- Mode-independent tokens (01 §Typography, §Motion, §Spacing radius & depth) ---- */
+:root {
+  --font-display: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
+  --font-body:    var(--font-hanken), -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-mono:    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ease-out: cubic-bezier(0.22,1,0.36,1); --dur-fast:150ms; --dur-reveal:240ms;
+  --radius-xs:2px; --radius-ui:8px; --radius-media:10px; --radius-shot:6px;
+  --pad-section:clamp(96px,10vw,160px); --pad-inline:clamp(24px,5vw,64px);
+  --hero-top:clamp(60px,8vw,116px); --maxw:1180px;
+}
+
+/* ---- Tailwind v4 bridge (replaces the old @theme inline block) ---- */
 @theme inline {
-  --color-carbon: var(--carbon);       --color-carbon-2: var(--carbon-2);
-  --color-carbon-3: var(--carbon-3);   --color-bright: var(--bright);
-  --color-steel: var(--steel);         --color-amber: var(--amber);
-  --color-amber-hi: var(--amber-hi);   --color-amber-text: var(--amber-text);
-  --color-amber-mark: var(--amber-mark); --color-on-amber: var(--on-amber);
-  --color-focus: var(--focus);         --color-line: var(--line);
-  --color-line-strong: var(--line-strong); --color-ring-media: var(--ring);
-  --color-skel: var(--skel);           --color-skel-2: var(--skel-2);
-  --font-sans: var(--font-general-sans), -apple-system, "Segoe UI", "Helvetica Neue", sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --color-paper: var(--paper);           --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);               --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);             --color-line-strong: var(--line-strong);
+  --color-ever: var(--ever);             --color-ever-hover: var(--ever-hover);
+  --color-ring-media: var(--ring-media);
+  --font-display: var(--font-display);   --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+  --radius-xs: var(--radius-xs);         --radius-ui: var(--radius-ui);
+  --radius-media: var(--radius-media);   --radius-shot: var(--radius-shot);
   --spacing: 4px;
-  --radius-xs: 2px; --radius-sm: 4px; --radius: 6px; --radius-phone: 22px;
 }
 
 /* ============================================================
-   Base layer — 01-design-system.md §Platform mapping wiring rules
-   + §Motion tokens, reproduced from 05-directions/machineshop.html
+   COMPAT — remove in T44. Temporary aliases mapping the OLD token/utility names
+   to the nearest NEW tokens (all via var() indirection, so NO raw hex and NO literal
+   ms enter this file) so components/pages not yet migrated (M2/M3) still compile and
+   render sanely at every milestone boundary. T44 deletes this whole block after the
+   last component/page is migrated, then the dead-token NAME gate runs.
    ============================================================ */
-
 :root {
-  /* motion — 01 §Motion (mode-independent, same both themes) */
-  --dur-fast: 160ms;
-  --dur-base: 180ms;
-  --dur-slow: 240ms;
-  --ease: ease;
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-
-  /* layout rhythm — 01 §Spacing, radius & depth (Layout constants table) */
-  --sec: clamp(64px, 8vw, 112px);
-  --sec-tight: clamp(48px, 6vw, 72px);
-  --hero-top: clamp(56px, 7vw, 104px);
-  --gap-grid: 20px;
-  --gap-col: clamp(32px, 4vw, 64px);
+  /* old bare custom-properties read directly via var(--x) in un-migrated components */
+  --carbon: var(--paper); --carbon-2: var(--paper-2); --carbon-3: var(--paper-2);
+  --bright: var(--ink); --steel: var(--ink-soft);
+  --amber: var(--ever); --amber-hi: var(--ever); --amber-text: var(--ever); --amber-mark: var(--ever);
+  --on-amber: var(--paper); --ring: var(--ring-media); --glow: transparent;
+  --skel: var(--paper-2); --skel-2: var(--line-strong);
+  --radius: var(--radius-shot);
+  /* old layout rhythm + motion names, aliased to the new tokens (no literal ms here) */
+  --sec: clamp(64px,8vw,112px); --sec-tight: clamp(48px,6vw,72px);
+  --gap-grid: 20px; --gap-col: clamp(32px,4vw,64px);
+  --dur-base: var(--dur-fast); --dur-slow: var(--dur-reveal); --ease: var(--ease-out);
 }
+@theme inline {
+  --color-carbon: var(--paper);       --color-carbon-2: var(--paper-2);
+  --color-carbon-3: var(--paper-2);   --color-bright: var(--ink);
+  --color-steel: var(--ink-soft);     --color-amber: var(--ever);
+  --color-amber-hi: var(--ever);      --color-amber-text: var(--ever);
+  --color-amber-mark: var(--ever);    --color-on-amber: var(--paper);
+  --color-focus: var(--ever);         --color-skel: var(--paper-2);
+  --color-skel-2: var(--line-strong);
+}
+/* ============================================================ END COMPAT ============ */
+
+/* ============================================================
+   Base layer — 01 §Platform mapping wiring + §Typography + §Motion
+   ============================================================ */
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--carbon);
-  color: var(--bright);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.6;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  transition: background var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
+  /* NO theme-switch transition (01 §Motion no-animation list) — the background/color
+     change on theme flip is instant. */
 }
 
 a {
@@ -77,72 +95,59 @@ a {
   text-decoration: none;
 }
 
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+[id] {
+  scroll-margin-top: 5rem;   /* sticky header never occludes a focused/anchored heading */
+}
+
 ::selection {
-  background: var(--amber);
-  color: var(--on-amber);
+  background: var(--ever);
+  color: var(--paper);
 }
 
 :focus-visible {
   outline: 2px solid var(--focus);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition: none !important;
-    animation: none !important;
-  }
-  html {
-    scroll-behavior: auto;
-  }
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
 }
 
 .wrap {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 clamp(20px, 4vw, 48px);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad-inline);
 }
 
+/* tabular-figures utility — 01 §Typography; carries no case transform (TR İ/ı casing rule) */
 .mono {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
 }
 
-/* ============================================================
-   Motion layer — 01-design-system.md §Motion (T14)
-   The ONE orchestrated moment: odometer count-up (lib/motion/use-odometer.ts)
-   synchronized with the single status-dot pulse below (C12 header dot ONLY —
-   every other status dot sitewide is static). Entrance reveals (components/motion/
-   reveal.tsx) opacity+translateY, 240ms --ease-out, 40ms stagger via transition-delay.
-   prefers-reduced-motion kills all of this through the global rule above.
-   ============================================================ */
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-
-.pulse {
-  animation: pulse 2.4s var(--ease) infinite;
-}
-
+/* ---- Motion (01 §Motion) ---- */
+/* Entrance reveal — components/motion/reveal.tsx toggles .reveal-hidden on/off. */
 .reveal {
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity var(--dur-slow) var(--ease-out),
-    transform var(--dur-slow) var(--ease-out);
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
 }
-
 .reveal-hidden {
   opacity: 0;
   transform: translateY(8px);
+}
+
+/* Reduced motion — "gentler, not zero": keep opacity/color, remove movement (01 §Motion). */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-hidden { transform: none; }                 /* entrance = opacity fade only */
+  .btn:active, .figure:active, .theme-toggle:active { transform: none; }
+  .ghost:hover .arw { transform: none; }
 }

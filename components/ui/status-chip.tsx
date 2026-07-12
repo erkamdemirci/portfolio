@@ -1,9 +1,12 @@
 /**
- * C11 — Status chip (02-components.md §C11). Mono-label chip: dot mark (8px) + flag
- * (--amber-text, weight 500) + optional meta text (--steel). Color is never the only
- * signal — the flag text always states the status. No own hover/focus (static; sits
- * inside interactive parents). This dot never animates — the site's ONE motion moment
- * lives on the C12 Fleet Readout header dot only (01 §Motion, T14).
+ * StatusChip (02-components.md §StatusChip). Word-only neutral chip: Hanken 500 0.8rem,
+ * --ink-soft, --line border, radius-ui. No dot, no color-coding — the WORD states the
+ * status (color is never the only signal). Identical neutral styling for every variant;
+ * only the `flag` word differs (Canlı / Geliştirmede).
+ *
+ * The `StatusVariant` type is kept unchanged (lib/cases.ts imports it; the old
+ * `no-signal` member stays until the 404 conceit is dropped in M3). `variant`/`meta` are
+ * retained on the interface for build-green consumers but no longer affect styling.
  */
 
 export type StatusVariant = "live" | "in-dev" | "no-signal";
@@ -15,19 +18,12 @@ interface StatusChipProps {
   className?: string;
 }
 
-export function StatusChip({ variant, flag, meta, className }: StatusChipProps) {
-  const dotClasses =
-    variant === "live"
-      ? "h-2 w-2 shrink-0 rounded-full bg-amber-mark"
-      : "h-2 w-2 shrink-0 rounded-full border-[1.5px] border-amber-mark bg-transparent";
-
+export function StatusChip({ flag, className }: StatusChipProps) {
   return (
     <span
-      className={`mono inline-flex items-center gap-2 whitespace-nowrap text-steel ${className ?? ""}`}
+      className={`inline-flex items-center whitespace-nowrap rounded-ui border border-line px-[0.55rem] py-[0.2rem] font-body text-[0.8rem] font-medium leading-[1.3] text-ink-soft ${className ?? ""}`}
     >
-      <span aria-hidden="true" className={dotClasses} />
-      <b className="font-medium text-amber-text">{flag}</b>
-      {meta && <span>· {meta}</span>}
+      {flag}
     </span>
   );
 }

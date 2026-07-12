@@ -6,7 +6,7 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
  * TextLink (02-components.md §TextLink). Inline prose/link affordance — never a box button.
  *
  * - `inline` (default): evergreen text with a 1px underline at 3px offset, the underline
- *   drawn in `--ever` at 42% and rising to full `--ever` on hover (150ms). Email + in-prose
+ *   drawn in `--ever` at 42% and rising to full `--ever` on hover (--dur-fast). Email + in-prose
  *   links. No press scale (text links never scale — 01 §Motion).
  * - `external-mono`: same evergreen underline, but Geist Mono (figure-inline step) + a
  *   trailing lucide ArrowUpRight (aria-hidden). Replaces the dead ExternalTelLink — the "↗"

@@ -1,9 +1,8 @@
 /**
  * Turkish dictionary — TR is the default/canonical locale (01-design-system.md §Localization).
- * Strings are stored in SOURCE case, never pre-uppercased — the mono-label uppercase transform
- * is a CSS `text-transform: uppercase` rule so `lang="tr"` drives correct İ/I casing (01 §Typography).
- * Shared-chrome content only (G1/G2) — verbatim from 03-screens-and-flows.md §G1/§G2 and
- * 02-components.md §C24. Page-level dictionaries land with their screens (T21+).
+ * Strings carry their own source case — the redesign removed the old mono-label CSS re-casing,
+ * so `lang="tr"` İ/ı rendering is driven by the source text, never a style rule (01 §Typography
+ * TR-casing rule). Themed values here are the pre-rewrite copy; T23 de-themes them wholesale.
  */
 export const tr = {
   lang: "tr",

@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 
 /**
- * C9 — Section eyebrow (02-components.md §C9). Mono-label preceded by a 34×1px
- * --amber-mark tick rule (::before via Tailwind `before:`), gap 12px. Margin-bottom:
- * 28px on the hero, 20px inside section heads (A1-normalized 18→20).
+ * Eyebrow (02-components.md §Eyebrow). Plain kicker: Hanken 500 0.82rem, tracking 0.04em,
+ * --ink-soft. No leading index, no tick, no dot (the old accent-mark rule + numbering are
+ * rejected apparatus). Sentence case in source copy — never a CSS transform (TR İ/ı rule).
+ * The `variant` only sets the trailing margin (28px hero / 20px section); it carries no
+ * visual difference otherwise.
  */
 
 interface EyebrowProps {
@@ -16,7 +18,7 @@ export function Eyebrow({ children, variant = "section", className }: EyebrowPro
   const marginBottom = variant === "hero" ? "mb-7" : "mb-5";
   return (
     <p
-      className={`mono flex items-center gap-3 text-steel before:h-px before:w-[34px] before:shrink-0 before:bg-amber-mark ${marginBottom} ${className ?? ""}`}
+      className={`text-[0.82rem] font-medium leading-[1.3] tracking-[0.04em] text-ink-soft ${marginBottom} ${className ?? ""}`}
     >
       {children}
     </p>

@@ -2,7 +2,7 @@ import type { ElementType } from "react";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Button } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { KvBlock, type KvRow } from "@/components/telemetry/kv-block";
+import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 
 /**
  * ContactBand (02-components.md §ContactBand). Keeps the full | compact union.

@@ -12,7 +12,7 @@ import { CaseSpecList } from "@/components/case/case-spec-list";
 import { CasePager } from "@/components/case/case-pager";
 import { ContactBand } from "@/components/bands/contact-band";
 import { Reveal } from "@/components/motion/reveal";
-import { KvBlock, type KvRow } from "@/components/telemetry/kv-block";
+import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { cases, UNIT_IDENTITY, getCaseNeighbors, type CaseSlug, type ContentSegment } from "@/lib/cases";

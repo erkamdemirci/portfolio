@@ -3,7 +3,7 @@ import { alternatesFor, pageMetadata } from "@/lib/seo";
 import { HreflangLinks } from "@/components/seo/hreflang-links";
 import { SectionHead } from "@/components/layout/section-head";
 import { ServiceDetail } from "@/components/services/service-cell";
-import { KvBlock, type KvRow } from "@/components/telemetry/kv-block";
+import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 import { ContactBand } from "@/components/bands/contact-band";
 import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";

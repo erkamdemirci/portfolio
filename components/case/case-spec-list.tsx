@@ -1,4 +1,4 @@
-import { KvBlock, type KvRow } from "@/components/telemetry/kv-block";
+import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 
 /**
  * CaseSpecList (02-components.md §CaseSpecList — de-themed replacement for the "Telemetri" KV

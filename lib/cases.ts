@@ -75,8 +75,8 @@ export interface CaseFeature {
 }
 
 /** A plain data description of rich inline content — rendered into real React elements by
- *  app/[lang]/work/[slug]/page.tsx's `renderSegments`. `link` always renders via the site's
- *  ExternalTelLink (mono text + the ArrowUpRight icon, 01 Amendment A5 — never a literal ↗). */
+ *  app/[lang]/work/[slug]/page.tsx's `renderSegments`. `link` renders via TextLink external-mono
+ *  (mono text + the lucide ArrowUpRight icon — never a literal ↗ glyph). */
 export type ContentSegment = string | { bold: string } | { link: { href: string; label: string } };
 
 export interface CaseTelemetryRow {

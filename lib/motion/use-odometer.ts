@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * The ONE orchestrated moment (01-design-system.md §Motion): the stat-rail odometer.
+ * The ONE orchestrated moment (01-design-system.md §Motion): the StatBand odometer.
  * 0 -> value, 700ms --ease-out, 40ms stagger applied by the caller (per stat cell), once
  * per mount. Runs on a fixed-step `setInterval` (not requestAnimationFrame) so behavior
  * is deterministic under fake timers and never depends on real frame timing. Reduced

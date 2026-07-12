@@ -51,6 +51,17 @@ describe("MobileMenu", () => {
     expect(trigger).toHaveAttribute("aria-controls", "site-menu");
   });
 
+  it("renders the TR-only Blog link and the 'Teklif al' CTA inside the open panel", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(screen.getByRole("button", { name: "Menü" }));
+    // Blog is TR-only (A11) — the panel is rendered with lang="tr".
+    expect(screen.getByRole("link", { name: tr.nav.blog })).toBeInTheDocument();
+    // The CTA carries the transactional label, not the old "Proje başlat".
+    expect(screen.getByRole("link", { name: tr.nav.cta })).toBeInTheDocument();
+    expect(tr.nav.cta).toBe("Teklif al");
+  });
+
   it("opening sets aria-expanded=true and moves focus to the first nav link", async () => {
     const user = userEvent.setup();
     renderMenu();

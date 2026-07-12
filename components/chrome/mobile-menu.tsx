@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button";
 import { LocaleChip } from "./locale-chip";
 
 /**
- * C6 — Mobile menu (02-components.md §C6, binding keyboard/ARIA/focus contract).
- * Trigger stays inline in G1 (the visual anchor point); the overlay panel is portaled
- * to <body> as a full-viewport layer so `inert` can be applied to the REST of the page
- * (everything outside both the panel and the trigger's own container) without needing a
- * ref threaded down from Header. Panel: repeats the G1 row (wordmark + close X) → C3
- * links stacked → C7-accent CTA → the C5 locale chip (C4 stays in the bar — never
- * duplicated here, per 03 §G1).
+ * MobileMenu (02-components.md §MobileMenu). A 44×44 icon trigger (Menu→X) and a portaled
+ * full-viewport paper panel: wordmark + close → large nav links (Blog is TR-only, A11) →
+ * primary CTA → LocaleChip. Below 620px the header hands its nav to this menu.
+ *
+ * BINDING keyboard/ARIA/focus contract — do NOT alter: focus-trap, `inert` on the rest of
+ * the page, `Escape` to close, and body scroll-lock (the useEffect + close() below). Only
+ * visuals/tokens are restyled here.
  */
 
 const MENU_ID = "site-menu";
@@ -32,6 +32,9 @@ interface MobileMenuProps {
   navItems: NavItem[];
   contactHref: string;
 }
+
+// The blog is a TR-only surface (A11); its index lives at /blog.
+const BLOG_HREF = "/blog";
 
 export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
@@ -102,6 +105,9 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
   const triggerLabel = lang === "tr" ? "Menü" : "Menu";
   const closeLabel = lang === "tr" ? "Kapat" : "Close";
 
+  const linkClasses =
+    "border-b border-line py-4 text-[1.5rem] font-medium text-ink [@media(hover:hover)_and_(pointer:fine)]:hover:text-ink-soft";
+
   return (
     <>
       <button
@@ -110,10 +116,10 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
         aria-expanded={open}
         aria-controls={MENU_ID}
         onClick={() => setOpen((value) => !value)}
-        className="relative inline-flex h-5 w-5 items-center justify-center text-bright transition-colors duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-3 before:content-[''] hover:text-amber-text active:translate-y-px min-[850px]:hidden"
+        className="grid h-11 w-11 place-items-center rounded-ui border border-line bg-paper text-ink transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] motion-safe:active:[transform:scale(0.97)] [@media(hover:hover)_and_(pointer:fine)]:hover:border-ink-soft min-[621px]:hidden"
       >
         <span className="sr-only">{triggerLabel}</span>
-        <Menu aria-hidden="true" size={20} strokeWidth={1.5} />
+        <Menu aria-hidden="true" size={18} strokeWidth={1.5} />
       </button>
 
       {mounted &&
@@ -121,25 +127,24 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
           <div
             id={MENU_ID}
             ref={panelRef}
-            className={`fixed inset-0 z-50 flex flex-col overflow-y-auto bg-carbon transition-opacity duration-[var(--dur-base)] ease-[var(--ease-out)] ${
+            className={`fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper transition-opacity duration-[var(--dur-fast)] ease-[var(--ease-out)] ${
               open ? "" : "hidden pointer-events-none opacity-0"
             }`}
           >
             <div className="wrap flex h-16 shrink-0 items-center justify-between">
-              <span className="inline-flex items-baseline gap-3 text-[1.1rem] font-bold tracking-[-0.01em] text-bright">
-                <i
-                  aria-hidden="true"
-                  className="h-[9px] w-[9px] self-center rounded-[2px] bg-amber-mark"
-                />
+              <span className="inline-flex items-baseline gap-2 text-[1.06rem] font-bold tracking-[-0.01em] text-ink">
                 {dict.wordmark.name}
+                <span className="text-[0.86rem] font-normal text-ink-soft">
+                  {dict.wordmark.descriptor}
+                </span>
               </span>
               <button
                 type="button"
                 onClick={close}
-                className="relative inline-flex h-5 w-5 items-center justify-center text-bright before:absolute before:-inset-3 before:content-['']"
+                className="grid h-11 w-11 place-items-center rounded-ui text-ink transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] motion-safe:active:[transform:scale(0.97)] [@media(hover:hover)_and_(pointer:fine)]:hover:text-ink-soft"
               >
                 <span className="sr-only">{closeLabel}</span>
-                <X aria-hidden="true" size={20} strokeWidth={1.5} />
+                <X aria-hidden="true" size={18} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -151,13 +156,19 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
                   href={item.href}
                   prefetch={false}
                   onClick={close}
-                  className="border-b border-line py-4 text-[1.5rem] font-semibold tracking-[-0.02em] text-bright active:translate-y-px"
+                  className={linkClasses}
                 >
                   {item.label}
                 </Link>
               ))}
 
-              <Button variant="accent" href={contactHref} onClick={close} className="mt-8 w-full">
+              {lang === "tr" && (
+                <Link href={BLOG_HREF} prefetch={false} onClick={close} className={linkClasses}>
+                  {dict.nav.blog}
+                </Link>
+              )}
+
+              <Button variant="primary" href={contactHref} onClick={close} className="mt-8 w-full">
                 {dict.nav.cta}
               </Button>
 

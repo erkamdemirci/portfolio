@@ -16,7 +16,8 @@ export const en = {
     work: "Work",
     services: "Services",
     studio: "Studio",
-    cta: "Start a project",
+    blog: "Blog",
+    cta: "Get a quote",
   },
   modeChip: {
     dark: "mode / dark",

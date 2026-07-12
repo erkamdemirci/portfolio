@@ -16,7 +16,8 @@ export const tr = {
     work: "İşler",
     services: "Hizmetler",
     studio: "Stüdyo",
-    cta: "Proje başlat",
+    blog: "Blog",
+    cta: "Teklif al",
   },
   modeChip: {
     dark: "mod / koyu",

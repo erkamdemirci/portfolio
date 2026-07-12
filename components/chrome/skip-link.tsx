@@ -1,6 +1,7 @@
 /**
- * C1 — Skip link (02-components.md §C1). First focusable element in <body>; visually
- * hidden until :focus-visible, then fixed top-left with the accent-fill button treatment.
+ * SkipLink (02-components.md §SkipLink). First focusable element in <body>; visually
+ * hidden until focus, then revealed top-left as a paper chip (--line border, radius-ui,
+ * Hanken 500). Kept a11y contract: first-focusable + `#main` target + reveal-on-focus.
  */
 
 interface SkipLinkProps {
@@ -11,7 +12,7 @@ export function SkipLink({ label }: SkipLinkProps) {
   return (
     <a
       href="#main"
-      className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded focus-visible:bg-amber focus-visible:px-5 focus-visible:py-3 focus-visible:text-[0.95rem] focus-visible:font-semibold focus-visible:text-on-amber"
+      className="sr-only rounded-ui border border-line bg-paper px-[0.9rem] py-[0.55rem] font-medium text-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-4 focus:z-[60]"
     >
       {label}
     </a>

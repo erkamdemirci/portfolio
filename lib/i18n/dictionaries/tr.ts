@@ -293,11 +293,17 @@ export const tr = {
     heading: "Projeniz için teklif alın.",
     lede: "Ne inşa etmek istediğinizi birkaç cümleyle anlatın; en doğru başlangıç noktasını birlikte bulalım. Her mesaja 48 saat içinde yazılı yanıt veriyoruz.",
     protocolHeading: "Yanıt protokolü",
+    // Landmark labels for the two label-only sections (03 §6 heading outline).
+    formAria: "İletişim formu",
+    factsAria: "İletişim bilgileri",
     steps: [
       "01 Brief — e-posta ya da form yeterli, şablon yok",
       "02 Değerlendirme — 48 saat içinde yazılı yanıt",
       "03 Görüşme — uygunsa 30 dakikalık arama; teklif yazılı gelir",
     ],
+    // form.* also feeds ContactForm's `copy` prop (T48/T50). The last six are the form's own
+    // micro-copy (pending label + inline validation messages from 02 §ContactForm; mailto subject
+    // + reset), not in the 03 table — see DEVIATIONS T50.
     form: {
       nameLabel: "Ad soyad",
       emailLabel: "E-posta",
@@ -308,6 +314,12 @@ export const tr = {
       successTitle: "Aldık, teşekkürler.",
       successBody: "48 saat içinde yanıtlıyoruz.",
       errorText: "Gönderilemedi — doğrudan e-posta ile ulaşabilirsiniz:",
+      sending: "Gönderiliyor…",
+      nameRequired: "Ad soyadınızı girin.",
+      emailInvalid: "Geçerli bir e-posta girin.",
+      messageRequired: "Kısa bir mesaj yazın.",
+      mailtoSubject: "Web projesi teklif talebi",
+      reset: "Başka bir mesaj gönder",
     },
     actions: { email: "E-posta", call: "Ara", whatsapp: "WhatsApp" },
     kvkkConsent: "Kişisel verilerimin, talebimi yanıtlamak amacıyla KVKK kapsamında işlenmesini onaylıyorum.",

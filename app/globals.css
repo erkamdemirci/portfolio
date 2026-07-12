@@ -59,9 +59,13 @@ body {
      change on theme flip is instant. */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Layered so utilities (e.g. .text-paper on primary CTAs) keep precedence — an
+   unlayered element reset outranks every @layer rule and silently ate button colors. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 h1, h2, h3 {

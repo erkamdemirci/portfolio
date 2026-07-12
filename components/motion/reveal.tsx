@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
- * Entrance reveal (01-design-system.md §Motion): opacity 0->1 + translateY(8px)->0,
- * 240ms --ease-out, 40ms stagger, triggered once at ~20% intersection. Progressive
- * enhancement is BINDING (io's measured failure class): default render is always fully
- * visible; the pre-animation hidden state is applied by JS only after mount, and only
- * when IntersectionObserver exists AND reduced-motion is off. `prefers-reduced-motion`
- * also gets a global `transition: none !important` kill in app/globals.css, so even the
- * hidden->visible cross-fade never runs under reduced motion.
+ * Entrance reveal (01-design-system.md §Motion): opacity 0→1 + an 8px rise, on the
+ * --dur-reveal / --ease-out curve — both supplied by globals via the .reveal / .reveal-hidden
+ * classes (T02), never hard-coded here — triggered once at ~20% intersection, with a per-item
+ * stagger applied through transition-delay (index × the step, 01 §Motion). Progressive
+ * enhancement is BINDING (io's measured failure class): the default render is always fully
+ * visible; the pre-animation hidden state is applied by JS only after mount, and only when
+ * IntersectionObserver exists AND reduced-motion is off. Under prefers-reduced-motion the
+ * component never hides (opacity stays 1) and the globals surgical block drops the movement
+ * (.reveal-hidden { transform: none }) — motion removed, not a blanket transition kill.
  */
 
 function prefersReducedMotion(): boolean {
@@ -19,7 +21,8 @@ function prefersReducedMotion(): boolean {
 
 interface RevealProps {
   children: ReactNode;
-  /** Position within a reveal group — delay = index * 40ms (01 §Motion stagger). */
+  /** Position within a reveal group — the transition-delay is index × the stagger step
+   *  (01 §Motion). 0 (the default) means no delay. */
   index?: number;
   className?: string;
 }

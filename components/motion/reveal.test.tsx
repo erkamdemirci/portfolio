@@ -3,9 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Reveal } from "./reveal";
 
 /**
- * Entrance reveal (01-design-system.md §Motion): opacity 0->1 + translateY(8px)->0,
- * 240ms, 40ms stagger, once at ~20% intersection. Progressive enhancement is binding
- * (io's measured failure class): content is fully visible in server-rendered HTML; the
+ * Entrance reveal (01-design-system.md §Motion): opacity 0→1 + an 8px rise on the
+ * --dur-reveal curve, per-item stagger via transition-delay, once at ~20% intersection.
+ * Progressive enhancement is binding (io's measured failure class): content is fully
+ * visible in server-rendered HTML; the
  * hidden pre-animation state is applied by JS only when JS runs, IntersectionObserver
  * exists, AND reduced-motion is off.
  */

@@ -1,4 +1,4 @@
-import type { ElementType } from "react";
+import type { ElementType, ReactNode } from "react";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Button } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
@@ -44,6 +44,8 @@ interface ContactBandFullProps extends ContactBandBase {
   ghostLabel: string;
   kvRows: KvRow[];
   kvAriaLabel: string;
+  /** ContactActions-compact row (T49) — mounted into the full band on home (03 §1). */
+  actions?: ReactNode;
 }
 
 interface ContactBandCompactProps extends ContactBandBase {
@@ -79,6 +81,7 @@ export function ContactBand(props: ContactBandProps) {
             </Button>
             {isFull && <ArrowLink href={props.ghostHref}>{props.ghostLabel}</ArrowLink>}
           </div>
+          {isFull && props.actions && <div className="mt-6">{props.actions}</div>}
         </div>
         {isFull && <KvBlock ariaLabel={props.kvAriaLabel} rows={props.kvRows} className="self-start" />}
       </div>

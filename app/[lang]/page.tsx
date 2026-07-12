@@ -11,6 +11,7 @@ import { OpenSlotCell } from "@/components/work/open-slot-cell";
 import { StatBand } from "@/components/bands/stat-band";
 import { ServiceGrid, type ServiceCellContent } from "@/components/services/service-cell";
 import { ContactBand } from "@/components/bands/contact-band";
+import { ContactActions } from "@/components/contact/contact-actions";
 import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { cases, type CaseSlug } from "@/lib/cases";
@@ -204,6 +205,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           ghostHref={WORK_HREF[lang]}
           ghostLabel={h.contactBand.ghostLabel}
           kvAriaLabel={h.contactBand.kvAriaLabel}
+          actions={<ContactActions variant="compact" labels={dict.contactPage.actions} />}
           kvRows={[
             {
               key: h.contactBand.kvEmail.key,

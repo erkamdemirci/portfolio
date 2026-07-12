@@ -185,13 +185,13 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ lang
         />
 
         <ReservedBay
-          slotLabel={h.bay06.slotLabel}
-          capacityLabel={h.bay06.capacityLabel}
-          title={h.bay06.title}
-          body={h.bay06.body}
+          slotLabel={h.openSlot.label}
+          capacityLabel=""
+          title={h.openSlot.title}
+          body={h.openSlot.body}
           ctaHref={CONTACT_HREF[lang]}
-          ctaLabel={dict.nav.cta}
-          note={h.bay06.note}
+          ctaLabel={h.openSlot.cta}
+          note=""
         />
       </div>
       </section>

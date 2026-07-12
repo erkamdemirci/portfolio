@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
 /**
- * C4 — Mode chip / theme toggle (02-components.md §C4). Hand-rolled `<button>`: toggles
- * `data-theme` on <html>, persists `localStorage("theme")`. Accessible name is the
- * ACTION (localized, flips on toggle) — this is a mode cycler, not a pressed toggle, so
- * it carries no pressed-state ARIA attribute. No sun/moon icon (01 named decision) —
- * mono text chip only.
+ * ThemeToggle / ModeChip (02-components.md §ThemeToggle). Hand-rolled 44×44 icon button:
+ * flips `data-theme` on <html> and persists localStorage("theme"). The kept mechanism is
+ * unchanged in shape — only the default resolves to LIGHT now (T03), and the visible
+ * "mod / koyu" text chip becomes an icon.
+ *
+ * Icon follows the theme via CSS on <html data-theme> (Moon in light → offers dark; Sun in
+ * dark → offers light), so it is correct before hydration with no flash. The accessible
+ * name is the ACTION and flips with state; it is a mode cycler, so it carries no
+ * aria-pressed. NO transition on the theme-swap path — only `transform` is transitioned
+ * (the press), so flipping the theme never animates the button's colors.
  */
 
 type Theme = "dark" | "light";
@@ -19,11 +25,11 @@ interface ModeChipProps {
 }
 
 export function ModeChip({ dict, className }: ModeChipProps) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const current = document.documentElement.getAttribute("data-theme");
-    setTheme(current === "light" ? "light" : "dark");
+    setTheme(current === "dark" ? "dark" : "light");
   }, []);
 
   function toggle() {
@@ -37,7 +43,6 @@ export function ModeChip({ dict, className }: ModeChipProps) {
     setTheme(next);
   }
 
-  const label = theme === "light" ? dict.light : dict.dark;
   const ariaLabel = theme === "light" ? dict.ariaToDark : dict.ariaToLight;
 
   return (
@@ -45,9 +50,20 @@ export function ModeChip({ dict, className }: ModeChipProps) {
       type="button"
       onClick={toggle}
       aria-label={ariaLabel}
-      className={`mono relative inline-flex items-center justify-center whitespace-nowrap rounded border border-line px-3 py-2 text-steel transition-[color,border-color] duration-[var(--dur-base)] ease-[var(--ease)] before:absolute before:-inset-2 before:content-[''] hover:border-line-strong hover:text-bright active:translate-y-px ${className ?? ""}`}
+      className={`grid h-11 w-11 place-items-center rounded-ui border border-line bg-paper text-ink transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] motion-safe:active:[transform:scale(0.97)] [@media(hover:hover)_and_(pointer:fine)]:hover:border-ink-soft ${className ?? ""}`}
     >
-      {label}
+      <Moon
+        aria-hidden="true"
+        size={18}
+        strokeWidth={1.5}
+        className="[html[data-theme=dark]_&]:hidden"
+      />
+      <Sun
+        aria-hidden="true"
+        size={18}
+        strokeWidth={1.5}
+        className="hidden [html[data-theme=dark]_&]:block"
+      />
     </button>
   );
 }

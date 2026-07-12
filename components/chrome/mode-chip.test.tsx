@@ -5,9 +5,12 @@ import { tr } from "@/lib/i18n/dictionaries/tr";
 import { ModeChip } from "./mode-chip";
 
 /**
- * C4 — Mode chip behavior contract (02-components.md §C4): toggles `data-theme` on
- * <html>, persists localStorage("theme"), accessible name is the ACTION (not a pressed
- * state) and flips with it, never `aria-pressed` (mode cycler, not a pressed toggle).
+ * ThemeToggle / ModeChip behavior contract (02-components.md §ThemeToggle): a 44×44
+ * icon-only button that flips `data-theme` on <html> and persists localStorage("theme").
+ * The accessible name is the ACTION (localized, state-reflecting), never `aria-pressed`
+ * (mode cycler, not a pressed toggle). Icon-only — the old visible "mod / koyu" text chip
+ * is gone. Light is the canonical default (T03), so with no stored theme the button offers
+ * switching TO dark.
  */
 describe("ModeChip", () => {
   beforeEach(() => {
@@ -19,38 +22,38 @@ describe("ModeChip", () => {
     cleanup();
   });
 
-  it("renders the TR dark label by default", () => {
+  it("is icon-only (no visible mode text) and its label reflects the light default", () => {
     render(<ModeChip dict={tr.modeChip} />);
-    expect(screen.getByRole("button")).toHaveTextContent("mod / koyu");
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("aria-label", tr.modeChip.ariaToDark);
+    expect(button).not.toHaveTextContent("mod");
   });
 
-  it("click switches to light: sets data-theme, persists localStorage, flips the label", async () => {
-    const user = userEvent.setup();
-    render(<ModeChip dict={tr.modeChip} />);
-    await user.click(screen.getByRole("button"));
-    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
-    expect(localStorage.getItem("theme")).toBe("light");
-    expect(screen.getByRole("button")).toHaveTextContent("mod / açık");
-  });
-
-  it("second click returns to dark", async () => {
+  it("click switches to dark: sets data-theme, persists localStorage, flips the aria-label", async () => {
     const user = userEvent.setup();
     render(<ModeChip dict={tr.modeChip} />);
     const button = screen.getByRole("button");
-    await user.click(button);
     await user.click(button);
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
     expect(localStorage.getItem("theme")).toBe("dark");
-    expect(button).toHaveTextContent("mod / koyu");
+    expect(button).toHaveAttribute("aria-label", tr.modeChip.ariaToLight);
   });
 
-  it("aria-label announces the action and flips with state", async () => {
+  it("second click returns to light", async () => {
     const user = userEvent.setup();
     render(<ModeChip dict={tr.modeChip} />);
     const button = screen.getByRole("button");
-    expect(button).toHaveAttribute("aria-label", "Açık temaya geç");
     await user.click(button);
-    expect(button).toHaveAttribute("aria-label", "Koyu temaya geç");
+    await user.click(button);
+    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+    expect(localStorage.getItem("theme")).toBe("light");
+    expect(button).toHaveAttribute("aria-label", tr.modeChip.ariaToDark);
+  });
+
+  it("reads an existing dark data-theme on mount and offers switching to light", () => {
+    document.documentElement.setAttribute("data-theme", "dark");
+    render(<ModeChip dict={tr.modeChip} />);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-label", tr.modeChip.ariaToLight);
   });
 
   it("never sets aria-pressed (mode cycler, not a pressed toggle)", () => {

@@ -85,11 +85,11 @@ function pngToIco(pngBuffer, size) {
   return Buffer.concat([header, entry, pngBuffer]);
 }
 
-// Mirrors app/icon.svg's exact geometry (32×32 canvas; carbon ground; a 14×14, radius-3
-// rounded-square amber tick at 9,9) — kept in sync by hand since it's a handful of numbers;
-// update both files together if the mark's proportions ever change.
-const FAVICON_BG = "#121316";
-const FAVICON_MARK = "#F0A32A";
+// Mirrors app/icon.svg's exact geometry (32×32 canvas; evergreen ground; a 14×14, radius-3
+// rounded-square paper mark at 9,9) — kept in sync by hand since it's a handful of numbers;
+// update both files together if the mark's proportions ever change (01 §Iconography).
+const FAVICON_BG = "#175E4B";
+const FAVICON_MARK = "#FBFAF8";
 
 async function generateFavicon(browser) {
   // Drawn on a <canvas> and exported via toDataURL rather than screenshotted — a full-page

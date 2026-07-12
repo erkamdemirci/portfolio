@@ -1,5 +1,4 @@
 import type { StatusVariant } from "@/components/ui/status-chip";
-import type { SlotBar, SlotLabelContent } from "@/components/frames/slot-pattern";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
@@ -53,13 +52,11 @@ interface CaseFrameBrowser {
   kind: "browser";
   domain: string;
   image?: CaseImageSpec;
-  slotBars?: SlotBar[];
 }
 
 interface CaseFramePhone {
   kind: "phone";
   image?: CaseImageSpec;
-  slotBars?: SlotBar[];
 }
 
 export type CaseFrame = CaseFrameBrowser | CaseFramePhone;
@@ -67,10 +64,9 @@ export type CaseFrame = CaseFrameBrowser | CaseFramePhone;
 interface CaseFeatureLocaleContent {
   title: string;
   body: string;
-  /** Required when `frame.image` is set (01 §Imagery — descriptive, localized alt text). */
+  /** Required when `frame.image` is set (01 §Imagery — descriptive, localized alt text). A
+   *  feature with no image renders text-forward (03 §3 image map). */
   imageAlt?: string;
-  /** Required when `frame.image` is absent (C17 slot fallback). */
-  slotLabel?: SlotLabelContent;
 }
 
 export interface CaseFeature {
@@ -142,30 +138,17 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
         },
       },
       {
-        // No real capture exists for this feature (recon: getvaaz.com has no distinct
-        // daily-tracking/streak screen). Interim placeholder geometry, removed when this
-        // feature becomes text-forward at T40 (03 §3 image map). No invented bar positions.
-        frame: {
-          kind: "phone",
-          slotBars: [
-            { top: "36px", left: "14%", width: "44%", height: "12px" },
-            { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
-            { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
-            { top: "128px", left: "14%", width: "72%", height: "52px" },
-            { top: "192px", left: "14%", width: "72%", height: "52px" },
-            { bottom: "0", left: "14%", width: "72%", height: "40px", tone: "skel-2" },
-          ],
-        },
+        // No real capture for this feature (recon: getvaaz.com has no distinct daily-tracking
+        // screen) → renders text-forward (03 §3 image map).
+        frame: { kind: "phone" },
         locale: {
           tr: {
             title: "Günlük takip",
             body: "Kılınan vakitler ve seri, baskı kurmadan işlenir; kaçan gün sessizce telafiye açılır.",
-            slotLabel: { title: "Görsel yakında", body: "günlük takip ekranı — kılınan vakitler ve seri" },
           },
           en: {
             title: "Daily tracking",
             body: "Prayed times and streaks are logged without pressure; a missed day quietly opens to make-up.",
-            slotLabel: { title: "Visual coming", body: "daily tracking screen — prayed times and streak" },
           },
         },
       },
@@ -441,53 +424,29 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
     isRoadStatus: true,
     features: [
       {
-        // ALL Oasis frames are placeholders by design (01 §Imagery source table: "missing ->
-        // flagged"; no live URL yet). Interim placeholder geometry, removed when these features
-        // become text-forward at T40 (03 §3 image map).
-        frame: {
-          kind: "phone",
-          slotBars: [
-            { top: "36px", left: "14%", width: "72%", height: "88px", tone: "skel-2" },
-            { top: "138px", left: "14%", width: "20%", height: "7px", tone: "amber" },
-            { top: "158px", left: "14%", width: "72%", height: "30px" },
-            { top: "196px", left: "14%", width: "52%", height: "30px" },
-            { bottom: "0", left: "14%", width: "72%", height: "40px", tone: "skel-2" },
-          ],
-        },
+        // ALL Oasis features render text-forward (01 §Imagery: no captures, no live URL yet).
+        frame: { kind: "phone" },
         locale: {
           tr: {
             title: "Bakım döngüsü",
             body: "Günlük ritüeller oyunun kendisi: bak, besle, düzenle. Seri bozulunca ceza yok, dönüş var.",
-            slotLabel: { title: "Görsel yakında", body: "bakım döngüsü ana ekranı, sıcak krem arayüz" },
           },
           en: {
             title: "The care loop",
             body: "Daily rituals are the game itself: tend, feed, arrange. A broken streak costs nothing — you just come back.",
-            slotLabel: { title: "Visual coming", body: "care-loop home screen, warm cream UI" },
           },
         },
       },
       {
-        frame: {
-          kind: "phone",
-          slotBars: [
-            { top: "36px", left: "14%", width: "72%", height: "88px", tone: "skel-2" },
-            { top: "138px", left: "14%", width: "20%", height: "7px", tone: "amber" },
-            { top: "158px", left: "14%", width: "72%", height: "30px" },
-            { top: "196px", left: "14%", width: "52%", height: "30px" },
-            { bottom: "0", left: "14%", width: "72%", height: "40px", tone: "skel-2" },
-          ],
-        },
+        frame: { kind: "phone" },
         locale: {
           tr: {
             title: "Sıcak krem dünya",
             body: "Arayüz yumuşak, örüntü net: oyun görselleri sıcak krem, tipografi sakin.",
-            slotLabel: { title: "Görsel yakında", body: "oyun görselleri sıcak krem, tipografi sakin" },
           },
           en: {
             title: "A warm cream world",
             body: "The interface is soft, the pattern is clear: warm cream visuals, calm typography.",
-            slotLabel: { title: "Visual coming", body: "warm cream game visuals, calm typography" },
           },
         },
       },
@@ -525,10 +484,9 @@ export const cases: Partial<Record<CaseSlug, CaseRecord>> = {
   },
 };
 
-/** Circular neighbor lookup over the fixed fleet order (mirrors components/case/unit-pager.tsx
- *  getCircularNeighbors — kept local here so lib/cases.ts has no component-layer dependency).
- *  Works for any slug in CASE_ORDER regardless of whether `cases[slug]` is populated, since
- *  pager links only need routing + UNIT_IDENTITY, not the full case record. */
+/** Circular neighbor lookup over CASE_ORDER (feeds CasePager). Kept local so lib/cases.ts has
+ *  no component-layer dependency. Works for any slug in CASE_ORDER regardless of whether
+ *  `cases[slug]` is populated, since pager links only need routing + UNIT_IDENTITY.title. */
 export function getCaseNeighbors(slug: CaseSlug): { prev: CaseSlug; next: CaseSlug } {
   const index = CASE_ORDER.indexOf(slug);
   const len = CASE_ORDER.length;

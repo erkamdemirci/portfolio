@@ -43,7 +43,10 @@ interface PlateProps {
   className?: string;
 }
 
-const MAT = "rounded-media border border-line bg-paper-2 p-[clamp(10px,1.3vw,16px)]";
+// `plate-mat` is a hook (no visual effect alone) so a parent card can warm the mat border
+// on hover (ProductCard T27, CaseFeature T34); the border-color transition rides --dur-fast.
+const MAT =
+  "plate-mat rounded-media border border-line bg-paper-2 p-[clamp(10px,1.3vw,16px)] transition-[border-color] duration-[var(--dur-fast)] ease-[var(--ease-out)]";
 
 export function Plate({
   variant,

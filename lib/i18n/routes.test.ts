@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getAlternate, localePairs, toInternal } from "./routes";
+import { generateStaticParams as blogIndexParams } from "@/app/[lang]/blog/page";
+import { generateStaticParams as blogSlugParams } from "@/app/[lang]/blog/[slug]/page";
 
 describe("toInternal", () => {
   it("maps a TR case-study path to its internal /tr route (English canonical segment)", () => {
@@ -68,5 +70,40 @@ describe("getAlternate", () => {
 
   it("unknown EN path falls back to the TR home (03 §G3)", () => {
     expect(getAlternate("/en/olmayan")).toBe("/");
+  });
+});
+
+// T52 — blog is TR-only (A11). The bare-TR fall-through in toInternal already resolves /blog and
+// /blog/<slug> to the tr segment (no localePairs entry, no routes.ts change); these lock that in.
+describe("blog routing (TR-only, A11)", () => {
+  it("resolves bare /blog to the internal tr segment", () => {
+    expect(toInternal("/blog")).toEqual({ lang: "tr", path: "/tr/blog" });
+  });
+
+  it("resolves /blog/<slug> to the internal tr segment", () => {
+    expect(toInternal("/blog/kurumsal-web-sitesi-nasil-olmali")).toEqual({
+      lang: "tr",
+      path: "/tr/blog/kurumsal-web-sitesi-nasil-olmali",
+    });
+  });
+
+  it("blog has no EN pair — getAlternate('/blog') falls back to the EN home (F3)", () => {
+    expect(getAlternate("/blog")).toBe("/en");
+    expect(getAlternate("/blog/kurumsal-web-sitesi-nasil-olmali")).toBe("/en");
+  });
+
+  it("the 10 frozen pairs never include a blog path", () => {
+    expect(localePairs.some((p) => p.tr.includes("/blog") || p.en.includes("/blog"))).toBe(false);
+  });
+
+  it("blog index generateStaticParams is TR-only (no EN params generated)", () => {
+    expect(blogIndexParams()).toEqual([{ lang: "tr" }]);
+  });
+
+  it("blog [slug] generateStaticParams yields TR-only params for every post (no EN)", () => {
+    const params = blogSlugParams();
+    expect(params).toHaveLength(10);
+    expect(params.every((p) => p.lang === "tr")).toBe(true);
+    expect(params.some((p) => p.lang === "en")).toBe(false);
   });
 });

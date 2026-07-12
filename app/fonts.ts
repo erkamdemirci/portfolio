@@ -1,25 +1,33 @@
-import localFont from 'next/font/local';
-import { IBM_Plex_Mono } from 'next/font/google';
+import { Instrument_Serif, Hanken_Grotesk, Geist_Mono } from "next/font/google";
 
-export const generalSans = localFont({
-  src: './fonts/GeneralSans-Variable.woff2',
-  weight: '400 700',
-  display: 'swap',
-  variable: '--font-general-sans',
+// 01-design-system.md §Typography (Loading plan). Two faces + one data mono, all
+// self-hosted via next/font/google, subsets latin + latin-ext (TR-glyph-verified in
+// 03-design-research.md). Preload exactly ONE face — the one rendering the LCP element
+// (the hero serif h1) — never two (the T32 LCP-competition lesson).
+
+export const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-instrument-serif",
+  preload: true, // the hero h1 = LCP text element
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
-export const plexMono = IBM_Plex_Mono({
-  weight: ['400', '500'],
-  subsets: ['latin', 'latin-ext'],
-  display: 'swap',
-  variable: '--font-plex-mono',
-  // preload: false — T32 perf fix (see DEVIATIONS.md). Every declared font subset/weight gets
-  // an eager <link rel="preload"> by default; IBM Plex Mono (4 weight x subset files) isn't
-  // the LCP element's font (the hero h1 is General Sans) but was competing for the same
-  // throttled-connection bandwidth priority as GeneralSans-Variable.woff2, delaying it (and,
-  // per Chrome's LCP algorithm, text using a still-loading web font defers its LCP timestamp
-  // to font-load completion) past the 2500ms budget on Lighthouse's mobile preset. Mono text
-  // still loads (via the normal @font-face discovery path, just without the early preload
-  // hint) — display: 'swap' keeps a visible fallback in the meantime either way.
-  preload: false,
+export const hanken = Hanken_Grotesk({
+  // variable wght axis; CSS uses 400/500/700
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-hanken",
+  preload: false, // not the LCP element; swap + metric-matched fallback
+  fallback: ["-apple-system", "Segoe UI", "Helvetica Neue", "sans-serif"],
+});
+
+export const geistMono = Geist_Mono({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-geist-mono",
+  preload: false, // figures only, never LCP
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 });

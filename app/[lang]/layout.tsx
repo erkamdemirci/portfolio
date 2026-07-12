@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { generalSans, plexMono } from "@/app/fonts";
+import { instrumentSerif, hanken, geistMono } from "@/app/fonts";
 import { Footer } from "@/components/chrome/footer";
 import { Header } from "@/components/chrome/header";
 import { SkipLink } from "@/components/chrome/skip-link";
@@ -42,7 +42,7 @@ export default async function RootLayout({
       lang={lang}
       data-theme="dark"
       suppressHydrationWarning
-      className={`${generalSans.variable} ${plexMono.variable}`}
+      className={`${instrumentSerif.variable} ${hanken.variable} ${geistMono.variable}`}
     >
       <body>
         {/*

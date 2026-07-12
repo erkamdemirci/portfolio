@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
 import { alternatesFor, pageMetadata } from "@/lib/seo";
 import { HreflangLinks } from "@/components/seo/hreflang-links";
-import { Button } from "@/components/ui/button";
-import { ArrowLink } from "@/components/ui/arrow-link";
 import { Eyebrow } from "@/components/ui/eyebrow";
-import { FleetReadout } from "@/components/telemetry/fleet-readout";
-import { StatRail } from "@/components/telemetry/stat-rail";
-import { BrowserBay } from "@/components/frames/browser-bay";
-import { PhoneBay } from "@/components/frames/phone-bay";
-import { UnitCard, ExternalTelLink } from "@/components/fleet/unit-card";
-import { ReservedBay } from "@/components/fleet/reserved-bay";
+import { Button } from "@/components/ui/button";
+import { TextLink } from "@/components/ui/text-link";
+import { ArrowLink } from "@/components/ui/arrow-link";
 import { SectionHead } from "@/components/layout/section-head";
+import { ProductCard } from "@/components/work/product-card";
+import { OpenSlotCell } from "@/components/work/open-slot-cell";
+import { StatBand } from "@/components/bands/stat-band";
 import { ServiceGrid, type ServiceCellContent } from "@/components/services/service-cell";
 import { ContactBand } from "@/components/bands/contact-band";
+import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { cases, type CaseSlug } from "@/lib/cases";
 import type { Lang } from "@/lib/i18n/routes";
 
 /**
- * 1 — Home (03-screens-and-flows.md §1; 04-tasks.md T21). Ordered sections: hero (no raster
- * image — LCP is the h1 text, 01 §Imagery) → fleet teaser (five C14 + C18) → services teaser
- * (C19 linked ×4 + C8) → studio teaser band → contact band (C21 full). Copy verbatim from
- * lib/i18n/dictionaries/{tr,en}.ts `home` block (sourced from 03 §1 / 02-components.md).
+ * 1 — Home (03-screens-and-flows.md §1). Section order: hero (eyebrow, H1 with the italic-ever
+ * turn, lede, actions) → work proof (3 marquee products as typographic-plate ProductCards + the
+ * OpenSlotCell) → services digest → studio digest → StatBand (aria-labelled, no h2) → ContactBand
+ * full. Home imagery is TYPOGRAPHIC ONLY (amendment #6). The ContactBand full ships WITHOUT the
+ * ContactActions row in M3 (03 §1 note; T49 wires it). Heading outline: single h1; work/services/
+ * studio/contact are h2; the stat band is a labelled section.
  */
 
 export async function generateMetadata({
@@ -37,46 +39,35 @@ const SERVICES_HREF: Record<Lang, string> = { tr: "/hizmetler", en: "/en/service
 const STUDIO_HREF: Record<Lang, string> = { tr: "/studyo", en: "/en/studio" };
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
 
-const CASE_HREF: Record<Lang, Record<"vaaz" | "akitle" | "linkden" | "characterdex" | "oasis", string>> = {
+const CASE_HREF: Record<Lang, Record<CaseSlug, string>> = {
   tr: {
     vaaz: "/isler/vaaz",
     akitle: "/isler/akitle",
     linkden: "/isler/linkden",
     characterdex: "/isler/characterdex",
-    oasis: "/isler/oasis-and-mind",
+    "oasis-and-mind": "/isler/oasis-and-mind",
   },
   en: {
     vaaz: "/en/work/vaaz",
     akitle: "/en/work/akitle",
     linkden: "/en/work/linkden",
     characterdex: "/en/work/characterdex",
-    oasis: "/en/work/oasis-and-mind",
+    "oasis-and-mind": "/en/work/oasis-and-mind",
   },
 };
 
-// Descriptive, localized alt text (01 §Imagery — never "screenshot"). Not spec-cited verbatim
-// (03/02 don't pin exact alt strings); implementer-authored per the 01 rule's own example.
-const IMAGE_ALT: Record<Lang, Record<"vaaz" | "akitle" | "linkden" | "characterdex", string>> = {
-  tr: {
-    vaaz: "VAAZ namaz vakti geri sayım ekranı — İstanbul, sonraki vakit kartı",
-    akitle: "Akitle kira sözleşmesi editörü — satır kalemleri ve imzalandı rozeti",
-    linkden: "Linkden dokümantasyon paneli — arama gecikme rozetleriyle",
-    characterdex: "CharacterDex uygulama paneli — üç kolonlu tip profili düzeni",
-  },
-  en: {
-    vaaz: "VAAZ prayer-time countdown screen — Istanbul, next-prayer card",
-    akitle: "Akitle rental contract editor — line items and signed badge",
-    linkden: "Linkden documentation panel — with search latency badges",
-    characterdex: "CharacterDex app panel — three-column type-profile layout",
-  },
-};
+/** "v2.4 · iOS · Android" → { version, platform } so the version can carry mono (02 §ProductCard). */
+function splitMeta(meta: string, domain?: string) {
+  const [version, ...rest] = meta.split(" · ");
+  return { version, platform: rest.join(" · "), domain };
+}
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = (await params) as { lang: Lang };
   const dict = getDictionary(lang);
   const h = dict.home;
   const caseHref = CASE_HREF[lang];
-  const alt = IMAGE_ALT[lang];
+  const claimOf = (slug: CaseSlug) => cases[slug]?.locale[lang].claim ?? "";
 
   const serviceCells: ServiceCellContent[] = [
     { ...h.services.cellOne, href: SERVICES_HREF[lang] },
@@ -89,243 +80,141 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     <>
       <HreflangLinks alt={alternatesFor("home")} />
 
-      {/* ---------- Hero — no raster image; LCP is the h1 text (01 §Imagery) ---------- */}
-      <section className="wrap pt-[var(--hero-top)]">
-        <div className="grid grid-cols-[minmax(0,7fr)_minmax(0,5fr)] grid-rows-[auto_auto] gap-x-[var(--gap-col)] max-[1020px]:grid-cols-1 max-[1020px]:grid-rows-[auto_auto_auto]">
-          <div className="col-start-1 row-start-1 pb-[clamp(48px,5vw,72px)]">
-            <Eyebrow variant="hero">{h.eyebrow}</Eyebrow>
-            <h1 className="max-w-[14ch] text-balance text-[clamp(2.8rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]">
-              {h.h1Lead}
-              <span className="block pl-[0.9ch]">
-                <span
-                  aria-hidden="true"
-                  className="mr-[0.18em] inline-block h-[0.62em] w-[0.42em] translate-y-[0.02em] rounded-xs bg-amber-mark"
-                />
-                {h.h1Turn}
-              </span>
-            </h1>
-            <p className="mt-[26px] max-w-[52ch] text-[1.1rem] text-steel">{h.lede}</p>
-            <div className="mt-[34px] flex flex-wrap items-center gap-5">
-              <Button variant="accent" href={CONTACT_HREF[lang]}>
-                {dict.nav.cta}
-              </Button>
-              {/* .mono minus its uppercase, as explicit utilities: an email is a code
-                  artifact (01 §Typography exemption) — TR's transform would render
-                  HELLO@ERKAMDEMİRCİ.COM. (.mono is unlayered CSS and outranks the
-                  normal-case utility, so the class can't be used here at all.) */}
-              <span className="font-mono text-xs tracking-[0.08em] text-steel">
-                <a
-                  href={`mailto:${h.email}`}
-                  className="transition-colors duration-[var(--dur-base)] ease-[var(--ease)] hover:text-amber-text"
-                >
-                  {h.email}
-                </a>
-              </span>
+      {/* ---------- Hero — H1 is the LCP text (01 §Imagery: no raster hero image) ---------- */}
+      <Reveal>
+        <section className="wrap pt-[var(--hero-top)] pb-[var(--pad-section)]">
+          <Eyebrow variant="hero">{h.eyebrow}</Eyebrow>
+          <h1 className="max-w-[18ch] font-display text-[clamp(3rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.005em] text-ink text-balance [&_em]:italic [&_em]:text-ever">
+            {h.h1Lead}
+            <em>{h.h1Turn}</em>
+          </h1>
+          <p className="mt-8 max-w-[60ch] text-[clamp(1.08rem,1.4vw,1.22rem)] leading-[1.6] text-ink-soft text-pretty">
+            {h.lede}
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Button variant="primary" href={CONTACT_HREF[lang]}>
+              {dict.nav.cta}
+            </Button>
+            <TextLink href={`mailto:${h.email}`}>{h.email}</TextLink>
+            <ArrowLink href={WORK_HREF[lang]}>{h.contactBand.ghostLabel}</ArrowLink>
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ---------- Work proof — typographic plates only (amendment #6) ---------- */}
+      <section className="wrap border-t border-line py-[var(--pad-section)]">
+        <SectionHead heading={h.fleet.heading} sideText={h.fleet.side} headingLevel="h2" />
+
+        <div className="mt-[clamp(40px,5vw,72px)] flex flex-col gap-[clamp(48px,6vw,88px)]">
+          <Reveal>
+            <ProductCard
+              variant="feature"
+              href={caseHref.akitle}
+              title={h.cards.akitle.title}
+              status={{ variant: "live", flag: h.cards.akitle.flag }}
+              meta={splitMeta(h.cards.akitle.meta, h.cards.akitle.domain)}
+              description={h.cards.akitle.description}
+              plate={{ status: h.cards.akitle.flag, name: h.cards.akitle.title, claim: claimOf("akitle"), ratio: "3/2" }}
+            />
+          </Reveal>
+
+          <div className="grid grid-cols-3 gap-[clamp(28px,4vw,48px)] max-[900px]:grid-cols-1">
+            <Reveal index={0}>
+              <ProductCard
+                variant="compact"
+                href={caseHref.vaaz}
+                title={h.cards.vaaz.title}
+                status={{ variant: "live", flag: h.cards.vaaz.flag }}
+                meta={splitMeta(h.cards.vaaz.meta, h.cards.vaaz.domain)}
+                description={h.cards.vaaz.description}
+                plate={{ status: h.cards.vaaz.flag, name: h.cards.vaaz.title, claim: claimOf("vaaz"), ratio: "700/728" }}
+                proof={
+                  <>
+                    <span className="mono text-ink">{h.cards.vaaz.rating}</span> {h.cards.vaaz.ratingSuffix}
+                  </>
+                }
+              />
+            </Reveal>
+            <Reveal index={1}>
+              <ProductCard
+                variant="compact"
+                href={caseHref["oasis-and-mind"]}
+                title={h.cards.oasis.title}
+                status={{ variant: "in-dev", flag: h.cards.oasis.flag }}
+                meta={splitMeta(h.cards.oasis.meta)}
+                description={h.cards.oasis.description}
+                plate={{ status: h.cards.oasis.flag, name: h.cards.oasis.title, claim: claimOf("oasis-and-mind"), ratio: "700/728" }}
+              />
+            </Reveal>
+            <Reveal index={2}>
+              <OpenSlotCell
+                label={h.openSlot.label}
+                title={h.openSlot.title}
+                body={h.openSlot.body}
+                ctaHref={CONTACT_HREF[lang]}
+                ctaLabel={h.openSlot.cta}
+              />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Services digest — 4 linked cells ---------- */}
+      <Reveal>
+        <section className="wrap border-t border-line py-[var(--pad-section)]">
+          <SectionHead heading={h.services.heading} sideText={h.services.side} headingLevel="h2" />
+          <ServiceGrid variant="linked" cells={serviceCells} className="mt-[clamp(32px,4vw,56px)]" />
+          <div className="mt-8">
+            <ArrowLink href={SERVICES_HREF[lang]}>{h.services.ctaLabel}</ArrowLink>
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ---------- Studio digest ---------- */}
+      <Reveal>
+        <section className="wrap border-t border-line py-[var(--pad-section)]">
+          <div className="max-w-[52ch]">
+            <SectionHead heading={h.studio.heading} headingLevel="h2" />
+            <p className="mt-5 text-[1.05rem] leading-[1.6] text-ink-soft text-pretty">{h.studio.lede}</p>
+            <div className="mt-8">
+              <ArrowLink href={STUDIO_HREF[lang]}>{h.studio.ctaLabel}</ArrowLink>
             </div>
           </div>
+        </section>
+      </Reveal>
 
-          <FleetReadout
-            lang={lang}
-            ariaLabel={h.fleetReadoutAria}
-            className="col-start-2 row-start-1 self-start max-[1020px]:col-start-1 max-[1020px]:row-start-2 max-[1020px]:mb-11"
-          />
-
-          <StatRail
-            ariaLabel={h.statRailAria}
-            cells={[h.statRail.products, h.statRail.platforms, h.statRail.response, h.statRail.openSlot]}
-            className="col-span-2 row-start-2 self-end max-[1020px]:col-span-1 max-[1020px]:row-start-3"
-          />
-        </div>
-      </section>
-
-      {/* ---------- Fleet teaser — 01 — işler / üretimde kanıt ---------- */}
-      <section className="wrap border-t border-line py-[var(--sec)]">
-        <SectionHead
-          eyebrow={h.fleet.eyebrow}
-          heading={h.fleet.heading}
-          sideText={h.fleet.side}
-          headingLevel="h2"
+      {/* ---------- Stat band — the one orchestrated moment; labelled section, no h2 ---------- */}
+      <Reveal>
+        <StatBand
+          ariaLabel={h.statRailAria}
+          cells={[h.statRail.products, h.statRail.platforms, h.statRail.response, h.statRail.openSlot]}
         />
+      </Reveal>
 
-        <div className="grid grid-cols-12 gap-[var(--gap-grid)]">
-          <UnitCard
-            span={5}
-            unitLabel={h.cards.vaaz.unitLabel}
-            status={{ variant: "live", flag: h.cards.vaaz.flag, meta: h.cards.vaaz.meta }}
-            frame={
-              <PhoneBay
-                image={{
-                  src: "/screens/vaaz/times-390.png",
-                  alt: alt.vaaz,
-                  width: 700,
-                  height: 728,
-                }}
-              />
-            }
-            href={caseHref.vaaz}
-            title={h.cards.vaaz.title}
-            description={h.cards.vaaz.description}
-            telLine1={<ExternalTelLink href={`https://${h.cards.vaaz.domain}`} label={h.cards.vaaz.domain} />}
-            telLine2={
-              <>
-                <b>{h.cards.vaaz.rating}</b> {h.cards.vaaz.ratingSuffix}
-              </>
-            }
-          />
-
-          <UnitCard
-            span={7}
-            unitLabel={h.cards.akitle.unitLabel}
-            status={{ variant: "live", flag: h.cards.akitle.flag, meta: h.cards.akitle.meta }}
-            frame={
-              <BrowserBay
-                domain={h.cards.akitle.domain}
-                span={7}
-                image={{
-                  src: "/screens/akitle/editor-1600.png",
-                  alt: alt.akitle,
-                  width: 894,
-                  height: 754,
-                }}
-              />
-            }
-            href={caseHref.akitle}
-            title={h.cards.akitle.title}
-            description={h.cards.akitle.description}
-            telLine1={<ExternalTelLink href={`https://${h.cards.akitle.domain}`} label={h.cards.akitle.domain} />}
-            telLine2={h.cards.akitle.telLine2}
-          />
-
-          <UnitCard
-            span={5}
-            unitLabel={h.cards.linkden.unitLabel}
-            status={{ variant: "live", flag: h.cards.linkden.flag, meta: h.cards.linkden.meta }}
-            frame={
-              <BrowserBay
-                domain={h.cards.linkden.domain}
-                span={5}
-                image={{
-                  src: "/screens/linkden/panel-1600.png",
-                  alt: alt.linkden,
-                  width: 1180,
-                  height: 784,
-                }}
-              />
-            }
-            href={caseHref.linkden}
-            title={h.cards.linkden.title}
-            description={h.cards.linkden.description}
-            telLine1={<ExternalTelLink href={`https://${h.cards.linkden.domain}`} label={h.cards.linkden.domain} />}
-            telLine2={h.cards.linkden.telLine2}
-          />
-
-          <UnitCard
-            span={7}
-            unitLabel={h.cards.characterdex.unitLabel}
-            status={{ variant: "live", flag: h.cards.characterdex.flag, meta: h.cards.characterdex.meta }}
-            frame={
-              <BrowserBay
-                domain={h.cards.characterdex.domain}
-                span={7}
-                image={{
-                  src: "/screens/characterdex/profiles-1600.png",
-                  alt: alt.characterdex,
-                  width: 1600,
-                  height: 1000,
-                }}
-              />
-            }
-            href={caseHref.characterdex}
-            title={h.cards.characterdex.title}
-            description={h.cards.characterdex.description}
-            telLine1={
-              <ExternalTelLink href={`https://${h.cards.characterdex.domain}`} label={h.cards.characterdex.domain} />
-            }
-            telLine2={h.cards.characterdex.telLine2}
-          />
-
-          <UnitCard
-            span={5}
-            unitLabel={h.cards.oasis.unitLabel}
-            status={{ variant: "in-dev", flag: h.cards.oasis.flag, meta: h.cards.oasis.meta }}
-            frame={
-              <PhoneBay
-                slot={{
-                  bars: [
-                    { top: "36px", left: "14%", width: "44%", height: "12px" },
-                    { top: "58px", left: "14%", width: "72%", height: "34px", tone: "skel-2" },
-                    { top: "106px", left: "14%", width: "26%", height: "7px", tone: "amber" },
-                  ],
-                  label: { title: h.cards.oasis.slotTitle, body: h.cards.oasis.slotBody },
-                }}
-              />
-            }
-            href={caseHref.oasis}
-            title={h.cards.oasis.title}
-            description={h.cards.oasis.description}
-            telLine1={h.cards.oasis.telLine1}
-            telLine2={h.cards.oasis.telLine2}
-          />
-
-          <ReservedBay
-            slotLabel={h.openSlot.label}
-            capacityLabel=""
-            title={h.openSlot.title}
-            body={h.openSlot.body}
-            ctaHref={CONTACT_HREF[lang]}
-            ctaLabel={h.openSlot.cta}
-            note=""
-          />
-        </div>
-      </section>
-
-      {/* ---------- Services teaser — 02 — hizmetler / neler üstleniyoruz ---------- */}
-      <section className="wrap border-t border-line py-[var(--sec-tight)]">
-        <SectionHead
-          eyebrow={h.services.eyebrow}
-          heading={h.services.heading}
-          sideText={h.services.side}
+      {/* ---------- Contact band (full) — NO ContactActions row in M3 (T49 wires it) ---------- */}
+      <Reveal>
+        <ContactBand
+          variant="full"
           headingLevel="h2"
+          heading={h.contactBand.heading}
+          turn={h.contactBand.headingTurn}
+          lede={h.contactBand.lede}
+          accentHref={CONTACT_HREF[lang]}
+          accentLabel={h.contactBand.accentLabel}
+          ghostHref={WORK_HREF[lang]}
+          ghostLabel={h.contactBand.ghostLabel}
+          kvAriaLabel={h.contactBand.kvAriaLabel}
+          kvRows={[
+            {
+              key: h.contactBand.kvEmail.key,
+              value: <TextLink href={`mailto:${h.contactBand.kvEmail.value}`}>{h.contactBand.kvEmail.value}</TextLink>,
+            },
+            { key: h.contactBand.kvBase.key, value: h.contactBand.kvBase.value },
+            { key: h.contactBand.kvResponse.key, value: h.contactBand.kvResponse.value, mono: true },
+            { key: h.contactBand.kvStack.key, value: h.contactBand.kvStack.value },
+          ]}
         />
-        <ServiceGrid variant="linked" cells={serviceCells} />
-        <div className="mt-8">
-          <ArrowLink href={SERVICES_HREF[lang]}>{h.services.ctaLabel}</ArrowLink>
-        </div>
-      </section>
-
-      {/* ---------- Studio teaser band — 03 — stüdyo / dmrc kimdir (extrapolated, 03 §1) ---------- */}
-      <section className="wrap border-t border-line py-[var(--sec-tight)]">
-        <div className="max-w-[46ch]">
-          <Eyebrow variant="section">{h.studio.eyebrow}</Eyebrow>
-          <h2 className="text-balance text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.08] font-semibold tracking-[-0.025em]">
-            {h.studio.heading}
-          </h2>
-          <p className="mt-5 max-w-[52ch] text-[1rem] text-steel">{h.studio.lede}</p>
-          <div className="mt-8">
-            <ArrowLink href={STUDIO_HREF[lang]}>{h.studio.ctaLabel}</ArrowLink>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- Contact band (full) — 04 — iletişim / slot-06 ---------- */}
-      <ContactBand
-        variant="full"
-        headingLevel="h2"
-        eyebrow={h.contactBand.eyebrow}
-        heading={h.contactBand.heading}
-        lede={h.contactBand.lede}
-        accentHref={CONTACT_HREF[lang]}
-        accentLabel={h.contactBand.accentLabel}
-        ghostHref={WORK_HREF[lang]}
-        ghostLabel={h.contactBand.ghostLabel}
-        kvAriaLabel={h.contactBand.kvAriaLabel}
-        kvRows={[
-          { key: h.contactBand.kvEmail.key, value: <a href={`mailto:${h.contactBand.kvEmail.value}`}>{h.contactBand.kvEmail.value}</a> },
-          { key: h.contactBand.kvBase.key, value: h.contactBand.kvBase.value },
-          { key: h.contactBand.kvResponse.key, value: h.contactBand.kvResponse.value },
-          { key: h.contactBand.kvStack.key, value: h.contactBand.kvStack.value },
-        ]}
-      />
+      </Reveal>
     </>
   );
 }

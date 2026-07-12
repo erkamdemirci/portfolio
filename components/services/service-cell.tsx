@@ -77,7 +77,8 @@ interface ServiceDetailProps {
   anchor: string;
   title: string;
   body: string;
-  included: string[];
+  /** readonly — the dict's `as const` details make this a readonly tuple. */
+  included: readonly string[];
   includedLabel: string;
   /** h3 — offerings sit under one h2 "Hizmetler" (03 §4 outline). */
   titleLevel?: ElementType;

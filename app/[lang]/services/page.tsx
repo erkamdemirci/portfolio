@@ -5,6 +5,7 @@ import { SectionHead } from "@/components/layout/section-head";
 import { ServiceDetail } from "@/components/services/service-cell";
 import { KvBlock, type KvRow } from "@/components/bands/kv-block";
 import { ContactBand } from "@/components/bands/contact-band";
+import { JsonLd, serviceSchemas, faqPageSchema } from "@/components/seo/json-ld";
 import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
@@ -41,6 +42,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
   return (
     <>
       <HreflangLinks alt={alternatesFor("services")} />
+      {/* Service ×4 (offerings) + FAQPage (the four Q/A pairs) — 03 §SEO table. */}
+      <JsonLd data={serviceSchemas(s.details)} />
+      <JsonLd data={faqPageSchema(s.faq)} />
 
       {/* ---------- Head + intro ---------- */}
       <Reveal>

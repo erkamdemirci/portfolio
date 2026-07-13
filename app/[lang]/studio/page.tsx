@@ -7,6 +7,7 @@ import { ServiceGrid, type ServiceCellContent } from "@/components/services/serv
 import { StatusChip, type StatusVariant } from "@/components/ui/status-chip";
 import { StatBand } from "@/components/bands/stat-band";
 import { ContactBand } from "@/components/bands/contact-band";
+import { JsonLd, personSchema } from "@/components/seo/json-ld";
 import { Reveal } from "@/components/motion/reveal";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { CaseSlug } from "@/lib/cases";
@@ -66,6 +67,8 @@ export default async function StudioPage({ params }: { params: Promise<{ lang: s
   return (
     <>
       <HreflangLinks alt={alternatesFor("studio")} />
+      {/* Person — Erkam Demirci (03 §SEO table: Person on /studyo). */}
+      <JsonLd data={personSchema(lang)} />
 
       {/* ---------- Head + founder lede ---------- */}
       <Reveal>

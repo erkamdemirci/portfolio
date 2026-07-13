@@ -8,6 +8,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { setRequestLang } from "@/lib/i18n/request-lang";
 import { SITE_URL } from "@/lib/seo";
+import { JsonLd, organizationSchema, websiteSchema } from "@/components/seo/json-ld";
 import { THEME_SCRIPT } from "@/lib/theme-script";
 import "../globals.css";
 
@@ -52,6 +53,9 @@ export default async function RootLayout({
           interpolated from external data, so there is no injection surface to sanitize.
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* Sitewide structured data — Organization (Bursa, contactPoint from site-config) + WebSite. */}
+        <JsonLd data={organizationSchema()} />
+        <JsonLd data={websiteSchema(lang)} />
         <SkipLink label={dict.skipLink} />
         <Header lang={lang} dict={dict} />
         <main id="main">{children}</main>

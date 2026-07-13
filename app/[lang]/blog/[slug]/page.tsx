@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/seo";
 import { getPost, postSlugs } from "@/lib/blog/posts";
+import { JsonLd } from "@/components/seo/json-ld";
 import { PostMeta } from "@/components/blog/post-meta";
 import { PostProse } from "@/components/blog/post-prose";
 import { TextLink } from "@/components/ui/text-link";
@@ -62,11 +63,37 @@ export default async function BlogPostPage({
 
   const dict = getDictionary(lang);
   const cb = dict.home.contactBand;
+  const url = `${SITE_URL}/blog/${slug}`;
+
+  // Article + BreadcrumbList (03 §SEO table). The breadcrumb itemListElement mirrors the visible
+  // "Blog → <title>" trail exactly.
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.meta.title,
+    description: post.meta.excerpt,
+    datePublished: post.meta.datePublished,
+    dateModified: post.meta.datePublished,
+    inLanguage: "tr",
+    mainEntityOfPage: url,
+    author: { "@type": "Person", name: "Erkam Demirci", url: `${SITE_URL}/studyo` },
+    publisher: { "@type": "Organization", name: "DMRC", url: SITE_URL },
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 2, name: post.meta.title, item: url },
+    ],
+  };
 
   return (
     <>
       <link rel="alternate" href={`${SITE_URL}/blog/${slug}`} {...({ hreflang: "tr" } as Record<string, string>)} />
       <link rel="alternate" href={`${SITE_URL}/blog/${slug}`} {...({ hreflang: "x-default" } as Record<string, string>)} />
+      <JsonLd data={articleSchema} />
+      <JsonLd data={breadcrumbSchema} />
 
       {/* ---------- Breadcrumb (matches BreadcrumbList JSON-LD, T68) ---------- */}
       <nav aria-label="breadcrumb" className="wrap pt-[var(--hero-top)]">

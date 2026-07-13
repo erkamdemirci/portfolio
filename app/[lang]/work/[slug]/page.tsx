@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { alternatesFor, pageMetadata } from "@/lib/seo";
+import { alternatesFor, pageMetadata, SITE_URL } from "@/lib/seo";
 import { HreflangLinks } from "@/components/seo/hreflang-links";
+import { JsonLd } from "@/components/seo/json-ld";
 import { StatusChip } from "@/components/ui/status-chip";
 import { TextLink } from "@/components/ui/text-link";
 import { CaseHero } from "@/components/case/case-hero";
@@ -103,9 +104,20 @@ export default async function CaseStudyPage({
     ...content.telemetryExtra.map((row) => ({ key: row.key, value: renderSegments(row.value) })),
   ];
 
+  // BreadcrumbList (03 §SEO table) — itemListElement mirrors the visible "İşler → <title>" trail.
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: dict.nav.work, item: `${SITE_URL}${WORK_HREF[lang]}` },
+      { "@type": "ListItem", position: 2, name: identity.title, item: `${SITE_URL}${caseHref[slug]}` },
+    ],
+  };
+
   return (
     <>
       <HreflangLinks alt={alternatesFor(slug)} />
+      <JsonLd data={breadcrumbSchema} />
 
       {/* ---------- Mini-breadcrumb (matches BreadcrumbList JSON-LD, T68) ---------- */}
       <nav aria-label="breadcrumb" className="wrap pt-[var(--hero-top)]">

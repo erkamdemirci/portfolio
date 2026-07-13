@@ -37,6 +37,13 @@ export function Reveal({ children, index = 0, className }: RevealProps) {
     const node = ref.current;
     if (!node) return;
 
+    // Above-fold guard (T72 LCP fix): content already in the viewport at hydration is NEVER
+    // hidden — hiding it after SSR paint and re-showing it post-hydration re-rasters the hero
+    // and becomes the page's LCP under CPU throttle (measured 3.3s → the fix restores
+    // first-paint LCP). It also matches the restraint rule: no entrance animation for what
+    // the visitor already sees. Reveal remains a below-fold entrance.
+    if (node.getBoundingClientRect().top < window.innerHeight) return;
+
     setHidden(true); // JS + IntersectionObserver + motion all confirmed available now
 
     const observer = new IntersectionObserver(

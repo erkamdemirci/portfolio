@@ -46,15 +46,33 @@ describe("Reveal", () => {
     expect(container.firstElementChild).not.toHaveClass("reveal-hidden");
   });
 
-  it("hides only after mount when IntersectionObserver exists AND reduced-motion is off", () => {
+  it("hides only after mount when IntersectionObserver exists AND reduced-motion is off (below-fold element)", () => {
     mockMatchMedia(false);
     vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+    // jsdom rects are all 0 (= above-fold) — place the element below the viewport so the
+    // T72 above-fold guard doesn't short-circuit the hide.
+    const rectSpy = vi
+      .spyOn(HTMLDivElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({ top: 2000, bottom: 2400, left: 0, right: 0, width: 0, height: 400, x: 0, y: 2000, toJSON: () => ({}) } as DOMRect);
     const { container } = render(
       <Reveal>
         <p>content</p>
       </Reveal>,
     );
     expect(container.firstElementChild).toHaveClass("reveal-hidden");
+    rectSpy.mockRestore();
+  });
+
+  it("above-fold element at hydration (T72 LCP guard): never hides", () => {
+    mockMatchMedia(false);
+    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+    // jsdom default rect top = 0 → inside the viewport → the guard keeps it visible.
+    const { container } = render(
+      <Reveal>
+        <p>content</p>
+      </Reveal>,
+    );
+    expect(container.firstElementChild).not.toHaveClass("reveal-hidden");
   });
 
   it("reduced-motion true: never hides, even with IntersectionObserver present", () => {

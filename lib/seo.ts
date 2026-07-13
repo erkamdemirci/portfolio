@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { localePairs, type Lang } from "@/lib/i18n/routes";
 import type { CaseSlug } from "@/lib/cases";
+import { postSlugs } from "@/lib/blog/posts";
 
 /**
  * SEO source of truth (04-tasks.md T30/T31; 03-screens-and-flows.md §Meta, titles & OG).
@@ -230,14 +231,16 @@ export function pageMetadata(page: PageKey, lang: Lang): Metadata {
 
 export interface SitemapEntry {
   url: string;
-  languages: { tr: string; en: string };
+  /** hreflang → URL. Frozen pages carry `tr` + `en`; TR-only blog carries `tr` + `x-default`. */
+  languages: Record<string, string>;
 }
 
 /**
- * The full 20-URL sitemap surface (10 route pairs x 2 locales — each locale's own URL is its
- * own `<url>` entry, both carrying the SAME pair of hreflang alternates, per Next's own
- * "Generate a localized Sitemap" convention). Consumed by app/sitemap.ts; also the seo.test.ts
- * behavior-test target directly (no dev-only route, no 404, ever appears here).
+ * The 31-URL sitemap surface: the 20 frozen route URLs (10 pairs x 2 locales, each its own
+ * `<url>` entry carrying the SAME tr+en alternates, per Next's localized-sitemap convention) PLUS
+ * the TR-only blog (T69): `/blog` + the 10 posts, each emitting `tr` + `x-default` only — no `en`
+ * pair (A11). Consumed by app/sitemap.ts; also the seo.test.ts behavior-test target directly (no
+ * dev-only route, no /api, no 404, ever appears here).
  */
 export function sitemap(): SitemapEntry[] {
   const entries: SitemapEntry[] = [];
@@ -245,6 +248,12 @@ export function sitemap(): SitemapEntry[] {
     const languages = { tr: `${SITE_URL}${pair.tr}`, en: `${SITE_URL}${pair.en}` };
     entries.push({ url: `${SITE_URL}${pair.tr}`, languages });
     entries.push({ url: `${SITE_URL}${pair.en}`, languages });
+  }
+  // Blog (TR-only, A11): /blog + the 10 post URLs, hreflang tr + x-default only.
+  const blogPaths = ["/blog", ...postSlugs.map((slug) => `/blog/${slug}`)];
+  for (const path of blogPaths) {
+    const url = `${SITE_URL}${path}`;
+    entries.push({ url, languages: { tr: url, "x-default": url } });
   }
   return entries;
 }

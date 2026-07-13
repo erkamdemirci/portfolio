@@ -63,21 +63,34 @@ describe("alternatesForPath", () => {
 
 describe("sitemap", () => {
   const entries = sitemap();
+  const blog = entries.filter((e) => e.url.includes("/blog"));
+  const frozen = entries.filter((e) => !e.url.includes("/blog"));
 
-  it("returns exactly 20 entries (10 route pairs x 2 locales)", () => {
-    expect(entries).toHaveLength(20);
+  it("returns exactly 31 entries (20 frozen + /blog + 10 posts) — T69", () => {
+    expect(entries).toHaveLength(31);
   });
 
-  it("every entry carries both language alternates", () => {
-    for (const entry of entries) {
+  it("keeps the 20 frozen entries with both tr + en alternates (A1)", () => {
+    expect(frozen).toHaveLength(20);
+    for (const entry of frozen) {
       expect(entry.languages.tr).toMatch(/^https:\/\//);
       expect(entry.languages.en).toMatch(/^https:\/\//);
     }
   });
 
-  it("no sitemap entry contains /dev/ or the 404 route", () => {
+  it("adds 11 blog entries (/blog + 10 posts) with tr + x-default only — no en (A11)", () => {
+    expect(blog).toHaveLength(11);
+    for (const entry of blog) {
+      expect(entry.languages.tr).toMatch(/^https:\/\//);
+      expect(entry.languages["x-default"]).toMatch(/^https:\/\//);
+      expect(entry.languages.en).toBeUndefined();
+    }
+  });
+
+  it("no sitemap entry contains /dev/, /api/, or the 404 route", () => {
     for (const entry of entries) {
       expect(entry.url).not.toContain("/dev/");
+      expect(entry.url).not.toContain("/api/");
       expect(entry.url).not.toContain("olmayan");
     }
   });

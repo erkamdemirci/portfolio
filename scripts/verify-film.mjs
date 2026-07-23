@@ -23,14 +23,14 @@ const OUT = flag("out", ".playwright-mcp/film");
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
-// Chapter beats as (scene selector, fraction through its pin) — the harness measures the
-// real pin-spacer ranges per viewport first, then derives each jump (self-calibrating).
+// Chapter beats as fractions of the film driver's scrub range (the beat envelopes'
+// peaks) — the harness measures the enhanced driver per viewport, then derives jumps.
 const BEATS = [
-  { name: "01-web", sel: ".scene-web", frac: 0.68 },
-  { name: "02-mobile", sel: ".scene-mobile", frac: 0.62 },
-  { name: "03-custom", sel: ".scene-custom", frac: 0.66 },
-  { name: "04-rail", sel: ".scene-how", frac: 0.55 },
-  { name: "05-who", sel: ".scene-who", frac: 0.82 },
+  { name: "01-web", frac: 0.27 },
+  { name: "02-mobile", frac: 0.47 },
+  { name: "03-custom", frac: 0.67 },
+  { name: "04-sign", frac: 0.9 },
+  { name: "05-who-after", frac: 1.08 }, // just past the film: the WHO after-block
 ];
 
 const PLAIN_SHOTS = [
@@ -45,33 +45,26 @@ const PLAIN_SHOTS = [
 async function measureBeats(browser, base, vp) {
   const context = await browser.newContext({ viewport: vp, deviceScaleFactor: 1 });
   const page = await context.newPage();
-  await page.goto(`${base}?jump=0`, { waitUntil: "load", timeout: 20000 });
-  await page.waitForFunction(() => window.__ready === true, null, { timeout: 15000 });
-  const ranges = await page.evaluate((sels) => {
-    const out = {};
-    for (const sel of sels) {
-      const el = document.querySelector(sel);
-      if (!el) continue;
-      const spacer = el.parentElement?.classList?.contains("pin-spacer")
-        ? el.parentElement
-        : el;
-      const r = spacer.getBoundingClientRect();
-      out[sel] = { top: Math.round(r.top + scrollY), height: Math.round(r.height) };
-    }
-    return out;
-  }, BEATS.map((b) => b.sel));
+  await page.goto(`${base}?jump=0`, { waitUntil: "load", timeout: 60000 });
+  await page.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
+  const range = await page.evaluate(() => {
+    const el = document.querySelector(".film-driver");
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { top: Math.round(r.top + scrollY), height: Math.round(r.height) };
+  });
   await context.close();
-  return ranges;
+  return range;
 }
 
-function buildShots(prefix, basePath, vp, ranges) {
+function buildShots(prefix, basePath, vp, range) {
   const shots = [{ name: `${prefix}00-hero`, url: `${basePath}?jump=0`, vp }];
-  for (const beat of BEATS) {
-    const r = ranges[beat.sel];
-    if (!r) continue;
-    const pinScroll = Math.max(r.height - vp.height, 0);
-    const y = Math.round(r.top + pinScroll * beat.frac);
-    shots.push({ name: `${prefix}${beat.name}`, url: `${basePath}?jump=${y}`, vp });
+  if (range) {
+    const scrub = Math.max(range.height - vp.height, 0);
+    for (const beat of BEATS) {
+      const y = Math.round(range.top + scrub * beat.frac);
+      shots.push({ name: `${prefix}${beat.name}`, url: `${basePath}?jump=${y}`, vp });
+    }
   }
   shots.push({ name: `${prefix}06-finale`, url: `${basePath}?jump=99999`, vp });
   return shots;
@@ -113,8 +106,8 @@ async function main() {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(250);
       } else {
-        await page.waitForFunction(() => window.__ready === true, null, { timeout: 15000 });
-        await page.waitForTimeout(120);
+        await page.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
+        await page.waitForTimeout(150);
       }
       await page.screenshot({
         path: path.join(OUT, `${shot.name}.png`),
@@ -138,7 +131,7 @@ async function main() {
     const context = await browser.newContext({ viewport: DESKTOP });
     const page = await context.newPage();
     await page.goto(`${BASE}/`, { waitUntil: "load", timeout: 20000 });
-    await page.waitForFunction(() => window.__ready === true, null, { timeout: 15000 });
+    await page.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
     const maxDelta = await page.evaluate(async () => {
       let max = 0;
       let last = performance.now();

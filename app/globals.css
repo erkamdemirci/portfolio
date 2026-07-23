@@ -1,7 +1,10 @@
 /* app/globals.css — THE token source of truth.
    2026-07 "Tek Kalemde / In One Stroke" system: bone + ink + one cobalt stroke.
    LIGHT stays canonical for the inner pages (blog / services / contact); the home
-   scroll-film runs on its own fixed night-ink scope (.film) independent of theme. */
+   scroll-film runs on its own fixed night-ink scope (.film) independent of theme.
+   The film is FOOTAGE (fal Seedance, canvas-scrubbed): without JS / under reduced
+   motion the beats stack as a readable editorial page over the chapter keyframes;
+   `.film-enhanced` (set by the engine) switches to the sticky scrub stage. */
 @import "tailwindcss";
 
 /* ---- Theme values (LIGHT = canonical / default) ---- */
@@ -100,6 +103,9 @@ h1, h2, h3 {
   background: var(--ever);
   color: var(--paper);
 }
+input, textarea {
+  caret-color: var(--ever);
+}
 
 :focus-visible {
   outline: 2px solid var(--focus);
@@ -143,23 +149,20 @@ h1, h2, h3 {
 }
 
 /* ============================================================
-   The scroll-film (home) — "Tek Kalemde / In One Stroke"
-   Default (no JS, reduced motion): every scene is a normal, fully
-   readable stacked section, every stroke fully drawn. GSAP only
-   ENHANCES: pinning, scrubbing, char rises, the traveling pen.
+   The scroll-film (home) — footage scrub engine
    ============================================================ */
 
 .film {
   background: var(--film-bg);
   color: var(--film-ink);
-  overflow-x: clip; /* horizontal rail + expanded type never leak a scrollbar */
+  overflow-x: clip;
 }
 .film ::selection {
   background: var(--film-accent);
   color: var(--film-ink);
 }
 
-/* Cinema grain — static SVG noise, barely-there; skipped for reduced motion. */
+/* Cinema grain — static SVG noise, barely-there. */
 .film-grain {
   position: fixed;
   inset: 0;
@@ -170,57 +173,122 @@ h1, h2, h3 {
   background-size: 240px 240px;
 }
 
-/* Scenes: full-viewport chapters in normal flow; ScrollTrigger pins them in place. */
-.film-scene {
+/* ---- The driver + stage. Default (no JS / reduced motion): beats stack as normal
+   full-height sections over their chapter keyframes. Enhanced: 170svh of scroll per
+   chapter, sticky viewport stage, canvas underneath, beats as absolute overlays. ---- */
+.film-driver {
+  position: relative;
+}
+.film-stage {
+  position: relative;
+}
+.film-canvas,
+.film-vignette {
+  display: none;
+}
+
+.fbeat {
   position: relative;
   min-height: 100svh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
   padding-block: clamp(56px, 8vh, 96px);
+  overflow: clip;
+}
+.fbeat-hero {
+  align-items: flex-end;
+}
+.fbeat-low {
+  align-items: flex-end;
+}
+/* Fallback chapter art (hidden in enhanced mode — the canvas replaces it) */
+.fbeat-kf {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
 }
 
-/* Stroke SVGs — fully drawn by default; JS hides + redraws when enhancing. */
-.stroke-svg {
+.film-enhanced .film-driver {
+  height: 850svh;
+}
+.film-enhanced .film-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: clip;
+}
+.film-enhanced .film-canvas {
+  display: block;
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+.film-enhanced .film-vignette {
+  display: block;
+  position: absolute;
+  inset: 0;
   pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(4, 4, 8, 0.55) 100%);
+  opacity: 0.8;
 }
-/* NOTE: no vector-effect here — non-scaling-stroke breaks pathLength-normalized dash
-   drawing in Chromium (the dash pattern gets computed in the wrong space and the "full"
-   dash truncates). Widths are tuned per svg below instead; the slight width modulation
-   from viewBox scaling reads as a real pen nib. */
-.stroke-svg path,
-.stroke-svg circle {
-  fill: none;
-  stroke: var(--film-accent);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.hero-stroke path { stroke-width: 2.2; }
-.scene-web .stroke-svg path,
-.scene-custom .stroke-svg path { stroke-width: 1.8; }
-.phone .stroke-svg path { stroke-width: 2.6; }
-.who-ring circle { stroke-width: 2.3; }
-
-/* The traveling pen — JS-driven; invisible until the film engine places it. */
-.film-pen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 6;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  border-radius: 9999px;
-  background: var(--film-accent);
-  box-shadow: 0 0 14px 2px rgba(74, 88, 255, 0.45);
+.film-enhanced .fbeat {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  will-change: transform, opacity;
+  will-change: opacity, transform;
+}
+.film-enhanced .fbeat-kf {
+  display: none;
+}
+
+/* Loader — bottom-center pill; exists only in enhanced mode. */
+.film-loader {
+  display: none;
+}
+.film-enhanced .film-loader {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.film-loader-track {
+  display: block;
+  width: 120px;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--film-line);
+}
+.film-loader-bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: var(--film-accent);
+}
+
+/* Word/char split mechanics (chapter words + finale). */
+.film .word {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em; /* keep descenders inside the clip */
+  margin-bottom: -0.06em;
+  padding-top: 0.14em; /* TR diacritics (Ö/İ dots) sit above cap height — never clip them */
+  margin-top: -0.14em;
 }
 
 /* Colossal chapter word */
@@ -228,13 +296,13 @@ h1, h2, h3 {
   font-family: var(--font-display);
   font-stretch: 125%;
   font-weight: 780;
-  line-height: 0.94;
+  line-height: 0.96;
   letter-spacing: -0.028em;
   text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(4, 4, 8, 0.55);
 }
 .film-word .ch {
   display: inline-block;
-  will-change: transform;
 }
 
 /* Beat copy (the small narrative voice over the film) */
@@ -244,6 +312,7 @@ h1, h2, h3 {
   font-size: clamp(1.02rem, 1.3vw, 1.18rem);
   line-height: 1.6;
   text-wrap: pretty;
+  text-shadow: 0 1px 14px rgba(4, 4, 8, 0.6);
 }
 .film-tags {
   font-family: var(--font-mono);
@@ -278,47 +347,30 @@ h1, h2, h3 {
   pointer-events: none;
 }
 
-/* Horizontal principles rail */
-.rail-viewport {
-  overflow: hidden;
-  width: 100%;
+/* Static stroke accents (the WHO portrait ring). */
+.stroke-svg path,
+.stroke-svg circle {
+  fill: none;
+  stroke: var(--film-accent);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.rail-track {
-  display: flex;
-  align-items: stretch;
-  width: max-content;
-  will-change: transform;
+.who-ring {
+  position: absolute;
+  inset: -9%;
+  width: 118%;
+  height: 118%;
 }
-.rail-station {
-  width: min(74vw, 520px);
-  flex: none;
-  padding: clamp(24px, 4vh, 48px) clamp(24px, 3vw, 44px);
-  border-left: 1px solid var(--film-line);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 14px;
-  min-height: min(52svh, 420px);
-}
-.rail-station .idx {
-  font-family: var(--font-mono);
-  color: var(--film-accent-text);
-  font-size: 0.85rem;
-}
-@media (max-width: 640px) {
-  .rail-station { width: 82vw; }
-}
-
-/* Portrait (small by design — the head is the whole photo) */
 .who-portrait {
-  width: clamp(116px, 15vw, 190px);
-  height: clamp(116px, 15vw, 190px);
+  width: clamp(116px, 14vw, 176px);
+  height: clamp(116px, 14vw, 176px);
   border-radius: 9999px;
   object-fit: cover;
   filter: grayscale(0.2) contrast(1.04);
 }
 
-/* Marquee above the finale footer */
+/* Marquee above the film footer */
 .film-marquee {
   overflow: hidden;
   border-block: 1px solid var(--film-line);
@@ -375,6 +427,16 @@ h1, h2, h3 {
   .film-cta:hover { background: #5866ff; }
 }
 
+/* Scroll cue pulse */
+@keyframes cue-pulse {
+  0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+.hero-cue-line {
+  transform-origin: top;
+  animation: cue-pulse 1.9s var(--ease-out) infinite;
+}
+
 /* Film scope — remaps the site tokens to film values so token-driven chrome
    (header chips, mobile menu panel) restyles itself on the film page for free. */
 .film-scope {
@@ -395,79 +457,20 @@ h1, h2, h3 {
   color: var(--film-ink);
 }
 
-/* Word/char split mechanics: each word is an overflow-hidden clip so chars rise into
-   view; the wrapper spans keep natural word wrapping + spaces. */
-.film .word {
-  display: inline-flex;
-  overflow: hidden;
-  vertical-align: bottom;
-  padding-bottom: 0.06em; /* keep descenders inside the clip */
-  margin-bottom: -0.06em;
-  padding-top: 0.14em; /* TR diacritics (Ö/İ dots) sit above cap height — never clip them */
-  margin-top: -0.14em;
-}
-
-/* Pre-paint JS gate (.film-js is added by an inline script BEFORE first paint, so these
-   states never un-paint content — the T71 law). ONLY the hero is CSS-gated; below-fold
-   scenes get their initial states from GSAP after hydration. */
-.film-js .film-hero .film-word .ch {
-  transform: translateY(118%);
-}
-.film-js .film-hero .hero-stroke path {
-  stroke-dasharray: 1.02 1.02;
-  stroke-dashoffset: 1.02;
-}
-.film-js .film-hero .hero-cue {
-  opacity: 0;
-}
-
-/* Scroll cue pulse */
-@keyframes cue-pulse {
-  0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
-  50% { transform: scaleY(1); opacity: 1; }
-}
-.hero-cue-line {
-  transform-origin: top;
-  animation: cue-pulse 1.9s var(--ease-out) infinite;
-}
-
-/* The rail's drawn line runs through the station field — the stations hang on it. */
-.rail-line {
-  position: absolute;
-  inset-inline: 0;
-  top: 46%;
-  height: 2px;
-  width: 100%;
-}
-
-/* Portrait ring overrides the full-bleed stroke-svg placement. */
-.who-ring {
-  position: absolute;
-  inset: -9%;
-  width: 118%;
-  height: 118%;
-}
-
 /* The film ends the page — overscroll glow must stay night, not paper. */
 html:has(.film), body:has(.film) {
   background: var(--film-bg);
 }
 
-/* ---- Reduced motion — "gentler, not zero": film degrades to a readable editorial page. */
+/* ---- Reduced motion — "gentler, not zero": the film page reads as a complete
+   stacked editorial page over the chapter keyframes; no engine, no pinning. ---- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal-hidden { transform: none; }
   .btn:active, .figure:active, .theme-toggle:active { transform: none; }
   .ghost:hover .arw { transform: none; }
-  .film-grain, .film-pen, .film-cursor, .film-progress, .film-readout { display: none; }
+  .film-grain, .film-cursor, .film-progress, .film-readout, .film-loader { display: none; }
   .film-word .ch { transform: none !important; opacity: 1 !important; }
-  .film-js .film-hero .hero-stroke path,
-  .film .stroke-svg path,
-  .film .stroke-svg circle {
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
-  }
-  .film-js .film-hero .hero-cue { opacity: 1; }
   .hero-cue-line { animation: none; }
   .film-marquee .row { transform: none !important; }
 }

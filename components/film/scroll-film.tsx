@@ -9,28 +9,30 @@ import { useGSAP } from "@gsap/react";
 import Lenis from "lenis";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
+import manifest from "@/lib/film-manifest.json";
 
 /**
- * "Tek Kalemde / In One Stroke" — the home scroll-film. One cobalt stroke travels the
- * whole page and never lifts: hero underline → web baseline + frame → phone outline →
- * custom route → principles rail → portrait ring + signature (the pen lifts for the first
- * time) → the finale hands the turn to the client.
+ * "Tek Kalemde / In One Stroke" — the footage scroll-film. The page IS a generated
+ * cinematic shot (fal Seedance, 5 chained chapters, one night-ink world): an ink drop
+ * births a cobalt filament → a corridor of glass screens (web) → an obsidian slab
+ * (mobile) → a dive through woven light-circuits (custom) → the line writes the
+ * signature. Scroll scrubs it frame-by-frame on a canvas; the DOM type system rides on
+ * top as beat overlays.
  *
- * Engineering law honored here:
- * - Progressive enhancement: server HTML is a fully readable stacked page. Strokes are
- *   fully drawn by default; ONLY when JS is present (`.film-js`, added by a pre-paint
- *   inline script) do the hero's chars/stroke start hidden. Below-fold initial states are
- *   set post-hydration (below-fold hiding is T71-safe). Reduced motion gets the complete
- *   editorial page with zero pinning.
- * - LCP: the h1 is plain text, never animated, painted with the first HTML.
- * - Stroke drawing: every path carries pathLength=1 and animates stroke-dashoffset
- *   1.02 → 0 (manual dash technique; the .02 hides the round-cap dot of an undrawn path).
- * - The pen: position:fixed, placed per frame via path.getPointAtLength + getScreenCTM
- *   (viewport coords — valid under pin transforms and non-uniform viewBox scaling).
- * - Pin order: pinned scenes are created strictly in DOM order, ambient triggers after
- *   (creation order IS refresh order).
- * - Dev contract: `?jump=<y>` lands pre-scrolled with Lenis skipped and triggers settled;
- *   `window.__ready = true` only fires once everything is loaded and settled.
+ * Engine law (skill references/engine.md + playbook §6):
+ * - Canvas + pre-extracted JPEGs, never <video> scrubbing. Lerped playhead
+ *   (current += (target-current)*0.14). DPR capped at 1.5.
+ * - ImageBitmap sliding window (±18 decode-ahead, evict beyond ±28, close() on evict)
+ *   so every draw is a pure GPU blit — no main-thread JPEG decode spikes.
+ * - Two-pass loader: a coarse spread first (every 6th frame) so the scrub works within
+ *   ~1s, then the fill; nearestFrame() fallback so a missing frame never blanks.
+ * - ONE server-rendered DOM, two layouts: without `.film-enhanced` (no JS, reduced
+ *   motion, data-saver) the beats stack as normal full-height sections with the chapter
+ *   keyframes as art — fully readable, crawler-visible. With it, the driver grows to
+ *   170vh/chapter, the stage goes sticky, beats become absolute overlays with
+ *   progress envelopes.
+ * - Dev contract: ?jump=<y> lands pre-scrolled + force-settled (Lenis skipped);
+ *   window.__ready fires only after fonts + ALL frames are loaded and drawn.
  */
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -50,6 +52,26 @@ const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" 
 const SERVICES_HREF: Record<Lang, string> = { tr: "/hizmetler", en: "/en/services" };
 const BLOG_HREF = "/blog";
 
+const FRAME_COUNT = manifest.count;
+const SEAM = manifest.seam;
+const frameSrc = (i: number) => `/film/frames/f_${String(i + 1).padStart(4, "0")}.jpg`;
+
+/* Beat envelopes on film progress p (0..1). Chapters: birth .0–.2, web .2–.4,
+   mobile .4–.6, custom .6–.8, signature .8–1. */
+const ENVELOPES: Record<string, { in: number; peak: number; out: number }> = {
+  hero: { in: -0.1, peak: 0, out: 0.09 },
+  web: { in: 0.21, peak: 0.27, out: 0.38 },
+  mobile: { in: 0.41, peak: 0.47, out: 0.58 },
+  custom: { in: 0.61, peak: 0.67, out: 0.78 },
+  sign: { in: 0.845, peak: 0.9, out: 0.975 },
+};
+
+function beatAlpha(env: { in: number; peak: number; out: number }, p: number) {
+  if (p < env.in || p > env.out) return 0;
+  if (p < env.peak) return (p - env.in) / Math.max(1e-4, env.peak - env.in);
+  return 1 - (p - env.peak) / Math.max(1e-4, env.out - env.peak);
+}
+
 /* ---------- split helpers (deterministic — identical on server and client) ---------- */
 
 function SplitChars({ text }: { text: string }) {
@@ -58,20 +80,19 @@ function SplitChars({ text }: { text: string }) {
       {text.split(" ").map((word, wi, arr) => (
         <span key={wi}>
           <span className="word">
-          {Array.from(word).map((ch, ci) => (
-            <span key={ci} className="ch">
-              {ch}
-            </span>
-          ))}
+            {Array.from(word).map((ch, ci) => (
+              <span key={ci} className="ch">
+                {ch}
+              </span>
+            ))}
           </span>
-          {wi < arr.length - 1 ? " " : ""}
+          {wi < arr.length - 1 ? " " : ""}
         </span>
       ))}
     </>
   );
 }
 
-/** Heading whose visual layer is char-split; screen readers get the plain string. */
 function SplitHeading({
   as: Tag,
   text,
@@ -96,19 +117,24 @@ function SplitHeading({
 export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
   const h = dict.home;
   const root = useRef<HTMLDivElement>(null);
-  const penRef = useRef<HTMLDivElement>(null);
+  const driverRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const loaderBarRef = useRef<HTMLSpanElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const readoutLabelRef = useRef<HTMLSpanElement>(null);
   const readoutRef = useRef<HTMLDivElement>(null);
+  const readoutLabelRef = useRef<HTMLSpanElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const vignetteRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const rootEl = root.current;
-      if (!rootEl) return;
+      const driver = driverRef.current;
+      const canvas = canvasRef.current;
+      if (!rootEl || !driver || !canvas) return;
 
-      // Belt-and-suspenders for client-side navigation (the inline pre-paint script only
-      // runs on the initial document parse).
       document.documentElement.classList.add("film-js");
 
       const params = new URLSearchParams(window.location.search);
@@ -117,12 +143,9 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
       if (hasJump) history.scrollRestoration = "manual";
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      // Non-GSAP teardown (window listeners, rAF loops) — the gsap context only reverts
-      // its own tweens/triggers.
       const cleanups: (() => void)[] = [];
 
-      /* ---------- dev jank meter (judge p95/max, never average) ---------- */
+      /* ---------- dev jank meter (judge max, never average) ---------- */
       if (process.env.NODE_ENV === "development") {
         let alive = true;
         cleanups.push(() => {
@@ -145,8 +168,8 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
         requestAnimationFrame(tick);
       }
 
-      /* ---------- reduced motion: the complete editorial page, no engine ---------- */
-      if (reduced) {
+      /* ---------- reduced motion: the stacked editorial page, no engine ---------- */
+      if (reduced || FRAME_COUNT === 0) {
         const settle = () => {
           if (hasJump) window.scrollTo(0, Number(jumpParam) || 0);
           window.__ready = true;
@@ -162,7 +185,10 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
         };
       }
 
-      /* ---------- smooth scroll (skipped under ?jump per the dev contract) ---------- */
+      /* ---------- enhanced mode: flipped on ONLY once frame 0 is drawable, so the
+         stacked page never gives way to a black canvas or a blinked-out hero. ---------- */
+      let enhanced = false;
+
       let lenis: Lenis | null = null;
       if (!hasJump) {
         lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
@@ -171,289 +197,297 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
         gsap.ticker.lagSmoothing(0);
       }
 
-      const $ = (sel: string) => rootEl.querySelector<HTMLElement>(sel);
-      const $$ = (sel: string) => Array.from(rootEl.querySelectorAll<HTMLElement>(sel));
+      /* ---------- frame store + two-pass loader ---------- */
+      const isNarrow = window.matchMedia("(max-width: 767px)").matches;
+      const stride = isNarrow ? 2 : 1; // phones load every 2nd frame (half payload)
+      const wanted: number[] = [];
+      for (let i = 0; i < FRAME_COUNT; i += stride) wanted.push(i);
+      if (wanted[wanted.length - 1] !== FRAME_COUNT - 1) wanted.push(FRAME_COUNT - 1);
 
-      /* ---------- the pen ---------- */
-      const pen = penRef.current!;
-      const penX = gsap.quickSetter(pen, "x", "px") as (v: number) => void;
-      const penY = gsap.quickSetter(pen, "y", "px") as (v: number) => void;
+      const images: (HTMLImageElement | undefined)[] = new Array(FRAME_COUNT);
+      const bitmaps = new Map<number, ImageBitmap>();
+      const decoding = new Set<number>();
+      let loadedCount = 0;
+      let coarseReady = false;
+      let allReady = false;
 
-      /** Returns a dash-draw tween config for a stroke path + keeps the pen on its tip. */
-      const draw = (path: SVGPathElement | SVGCircleElement, vars: gsap.TweenVars = {}) => {
-        const geo = path as SVGPathElement;
-        const total = geo.getTotalLength();
-        const proxy = { p: 0 };
-        return gsap.fromTo(
-          proxy,
-          { p: 0 },
-          {
-            p: 1,
-            ease: "none",
-            ...vars,
-            onUpdate() {
-              gsap.set(path, { strokeDashoffset: 1.02 * (1 - proxy.p) });
-              const pt = geo.getPointAtLength(proxy.p * total);
-              const m = geo.getScreenCTM();
-              if (m) {
-                penX(m.a * pt.x + m.c * pt.y + m.e);
-                penY(m.b * pt.x + m.d * pt.y + m.f);
+      // Coarse pass = every 6th wanted frame (scrub works almost immediately),
+      // then the fill pass completes the set.
+      const coarse = wanted.filter((_, idx) => idx % 6 === 0);
+      const fill = wanted.filter((_, idx) => idx % 6 !== 0);
+      const coarseSet = new Set(coarse);
+      let coarseLoaded = 0;
+
+      const loaderEl = loaderRef.current!;
+      const loaderBar = loaderBarRef.current!;
+
+      const onFrameLoaded = (i: number) => {
+        loadedCount++;
+        if (coarseSet.has(i)) coarseLoaded++;
+        const pct = loadedCount / wanted.length;
+        loaderBar.style.transform = `scaleX(${pct})`;
+        if (!coarseReady && coarseLoaded >= coarse.length) {
+          coarseReady = true;
+          gsap.to(loaderEl, { autoAlpha: 0, duration: 0.5, delay: 0.15 });
+        }
+        if (loadedCount >= wanted.length) {
+          allReady = true;
+          loaderEl.style.display = "none";
+        }
+        if (!enhanced && images[0]) enhance();
+        else if (enhanced && i === displayed) drawFrame(i, true);
+      };
+
+      let pumpAlive = true;
+      cleanups.push(() => {
+        pumpAlive = false;
+      });
+      const queue = [...coarse, ...fill];
+      let inFlight = 0;
+      const pump = () => {
+        if (!pumpAlive) return;
+        while (inFlight < 10 && queue.length) {
+          const i = queue.shift()!;
+          inFlight++;
+          const img = new window.Image();
+          img.decoding = "async";
+          img.onload = () => {
+            inFlight--;
+            images[i] = img;
+            onFrameLoaded(i);
+            pump();
+          };
+          img.onerror = () => {
+            inFlight--;
+            onFrameLoaded(i);
+            pump();
+          };
+          img.src = frameSrc(i);
+        }
+      };
+      pump();
+
+      /* ---------- ImageBitmap sliding window (the anti-jank core) ---------- */
+      /* createImageBitmap does REAL synchronous work on the calling thread in Chromium
+         (profiled here: it was the whole jank budget when 30+ fired in one burst). So
+         window refills are AMORTIZED: ensureBitmaps only computes the want-list; the
+         tick drains at most 2 creations per frame — a few ms each, never a spike. */
+      const B_AHEAD = 18;
+      const B_KEEP = 28;
+      let bmpCenter = -999;
+      let wantQueue: number[] = [];
+      function ensureBitmaps(center: number) {
+        if (Math.abs(center - bmpCenter) < 6) return;
+        bmpCenter = center;
+        const lo = Math.max(0, center - B_AHEAD);
+        const hi = Math.min(FRAME_COUNT - 1, center + B_AHEAD);
+        const want: number[] = [];
+        for (let d = 0; d <= hi - lo; d++) {
+          // center-out order so the playhead's neighbourhood decodes first
+          const a = center + d;
+          const b = center - d;
+          if (a <= hi && !bitmaps.has(a) && !decoding.has(a) && images[a]) want.push(a);
+          if (d > 0 && b >= lo && !bitmaps.has(b) && !decoding.has(b) && images[b]) want.push(b);
+        }
+        wantQueue = want;
+        for (const k of Array.from(bitmaps.keys())) {
+          if (k < center - B_KEEP || k > center + B_KEEP) {
+            bitmaps.get(k)!.close();
+            bitmaps.delete(k);
+          }
+        }
+      }
+      function drainDecodes(budget: number) {
+        while (budget > 0 && wantQueue.length) {
+          const i = wantQueue.shift()!;
+          if (bitmaps.has(i) || decoding.has(i) || !images[i]) continue;
+          budget--;
+          decoding.add(i);
+          createImageBitmap(images[i]!)
+            .then((b) => {
+              decoding.delete(i);
+              if (Math.abs(i - bmpCenter) > B_KEEP) {
+                b.close();
+                return;
               }
-            },
-          },
-        );
-      };
-
-      /** Sets a path to its undrawn state (JS-owned; CSS only pre-hides the hero). */
-      const undraw = (sel: string) => {
-        $$(sel).forEach((el) =>
-          gsap.set(el, { strokeDasharray: "1.02 1.02", strokeDashoffset: 1.02 }),
-        );
-      };
-
-      const scenes: { el: HTMLElement; label: string }[] = [];
-
-      /* ================= HERO (no pin — the opening frame) =================
-         The eyebrow + h1 are NEVER hidden (T71: entrance must not un-paint above-fold
-         content; the h1 is the LCP). Only the wordmark chars, the stroke, and the cue
-         start hidden — via `.film-js` CSS, applied pre-paint, so nothing ever flashes.
-         The chars' CSS state is translateY(118%), which computes to a px matrix — tween
-         `y: 0` (px), not yPercent, or GSAP would tween a separate, still-zero unit. */
-      const heroStroke = $(".hero-stroke path") as SVGPathElement | null;
-      const heroTl = gsap.timeline({ delay: 0.15 });
-      heroTl.to(".film-hero .ch", {
-        y: 0,
-        duration: 0.9,
-        ease: "power4.out",
-        stagger: 0.045,
-      });
-      if (heroStroke) {
-        heroTl.add(draw(heroStroke, { duration: 0.7, ease: "power2.inOut" }), "-=0.35");
-        heroTl.to(pen, { opacity: 1, duration: 0.2 }, "<");
-      }
-      heroTl.to(".film-hero .hero-cue", { autoAlpha: 1, duration: 0.5 }, "-=0.2");
-
-      // As the opening frame scrolls away, the pen bows out (next scene re-introduces it).
-      gsap.to(pen, {
-        opacity: 0,
-        scrollTrigger: { trigger: ".film-hero", start: "8% top", end: "30% top", scrub: true },
-      });
-
-      /* ================= SCENE 1 — WEB (pin) ================= */
-      {
-        const scene = $(".scene-web")!;
-        scenes.push({ el: scene, label: h.web.label });
-        const base = scene.querySelector<SVGPathElement>(".web-base")!;
-        const frame = scene.querySelector<SVGPathElement>(".web-frame")!;
-        undraw(".scene-web .stroke-svg path");
-        gsap.set(scene.querySelectorAll(".film-word .ch"), { yPercent: 118 });
-        gsap.set(scene.querySelectorAll(".scene-copy"), { autoAlpha: 0, y: 16 });
-        gsap.set(scene.querySelector(".scene-label"), { autoAlpha: 0, y: 10 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: scene,
-            start: "top top",
-            end: "+=150%",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-          },
-        });
-        tl.to(pen, { opacity: 1, duration: 0.08 }, 0)
-          .to(scene.querySelector(".scene-label"), { autoAlpha: 1, y: 0, duration: 0.1 }, 0.04)
-          .add(draw(base, { duration: 0.3 }), 0.02)
-          .to(
-            scene.querySelectorAll(".film-word .ch"),
-            { yPercent: 0, stagger: 0.012, duration: 0.34, ease: "power3.out" },
-            0.1,
-          )
-          .add(draw(frame, { duration: 0.28 }), 0.42)
-          .to(scene.querySelectorAll(".scene-copy"), { autoAlpha: 1, y: 0, duration: 0.18, stagger: 0.05 }, 0.5)
-          .to(scene.querySelector(".scene-inner"), { yPercent: -5, autoAlpha: 0, duration: 0.16 }, 0.84)
-          .to(pen, { opacity: 0, duration: 0.08 }, 0.86);
-      }
-
-      /* ================= SCENE 2 — MOBILE (pin) ================= */
-      {
-        const scene = $(".scene-mobile")!;
-        scenes.push({ el: scene, label: h.mobile.label });
-        const outline = scene.querySelector<SVGPathElement>(".phone-outline")!;
-        undraw(".scene-mobile .stroke-svg path");
-        gsap.set(scene.querySelectorAll(".film-word .ch"), { yPercent: 118 });
-        gsap.set(scene.querySelectorAll(".scene-copy"), { autoAlpha: 0, y: 16 });
-        gsap.set(scene.querySelector(".scene-label"), { autoAlpha: 0, y: 10 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: scene,
-            start: "top top",
-            end: "+=150%",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-          },
-        });
-        tl.to(pen, { opacity: 1, duration: 0.08 }, 0)
-          .to(scene.querySelector(".scene-label"), { autoAlpha: 1, y: 0, duration: 0.1 }, 0.04)
-          .add(draw(outline, { duration: 0.34 }), 0.02)
-          .fromTo(
-            scene.querySelector(".phone-feed"),
-            { yPercent: 16 },
-            { yPercent: -16, duration: 0.6, ease: "none" },
-            0.2,
-          )
-          .to(
-            scene.querySelectorAll(".film-word .ch"),
-            { yPercent: 0, stagger: 0.012, duration: 0.3, ease: "power3.out" },
-            0.3,
-          )
-          .to(scene.querySelectorAll(".scene-copy"), { autoAlpha: 1, y: 0, duration: 0.18, stagger: 0.05 }, 0.52)
-          .to(scene.querySelector(".scene-inner"), { yPercent: -5, autoAlpha: 0, duration: 0.16 }, 0.84)
-          .to(pen, { opacity: 0, duration: 0.08 }, 0.86);
-      }
-
-      /* ================= SCENE 3 — CUSTOM SOFTWARE (pin) ================= */
-      {
-        const scene = $(".scene-custom")!;
-        scenes.push({ el: scene, label: h.custom.label });
-        const desktopRoute = scene.querySelector<SVGPathElement>(".route-desktop")!;
-        const mobileRoute = scene.querySelector<SVGPathElement>(".route-mobile")!;
-        const isNarrow = window.matchMedia("(max-width: 899px)").matches;
-        const route = isNarrow ? mobileRoute : desktopRoute;
-        undraw(".scene-custom .stroke-svg path");
-        const chars = scene.querySelectorAll<HTMLElement>(".film-word .ch");
-        chars.forEach((ch, i) => {
-          gsap.set(ch, {
-            yPercent: 118,
-            rotation: Math.sin(i * 2.7) * 10,
-          });
-        });
-        gsap.set(scene.querySelectorAll(".scene-copy"), { autoAlpha: 0, y: 16 });
-        gsap.set(scene.querySelector(".scene-label"), { autoAlpha: 0, y: 10 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: scene,
-            start: "top top",
-            end: "+=160%",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-          },
-        });
-        tl.to(pen, { opacity: 1, duration: 0.08 }, 0)
-          .to(scene.querySelector(".scene-label"), { autoAlpha: 1, y: 0, duration: 0.1 }, 0.04)
-          .add(draw(route, { duration: 0.52 }), 0.02)
-          .to(
-            chars,
-            { yPercent: 0, rotation: 0, stagger: 0.014, duration: 0.34, ease: "back.out(1.4)" },
-            0.18,
-          )
-          .to(scene.querySelectorAll(".scene-copy"), { autoAlpha: 1, y: 0, duration: 0.18, stagger: 0.05 }, 0.58)
-          .to(scene.querySelector(".scene-inner"), { yPercent: -5, autoAlpha: 0, duration: 0.16 }, 0.84)
-          .to(pen, { opacity: 0, duration: 0.08 }, 0.86);
-      }
-
-      /* ================= SCENE 4 — HOW (horizontal rail, pin) ================= */
-      {
-        const scene = $(".scene-how")!;
-        scenes.push({ el: scene, label: h.how.label });
-        const track = scene.querySelector<HTMLElement>(".rail-track")!;
-        const railLine = scene.querySelector<SVGPathElement>(".rail-line path")!;
-        undraw(".scene-how .stroke-svg path");
-        gsap.set(scene.querySelectorAll(".rail-station"), { autoAlpha: 0.25 });
-
-        const distance = () => track.scrollWidth - window.innerWidth;
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: scene,
-            start: "top top",
-            end: () => "+=" + Math.max(distance() * 1.15, window.innerHeight),
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-        tl.to(pen, { opacity: 1, duration: 0.04 }, 0)
-          .to(track, { x: () => -distance(), ease: "none", duration: 0.94 }, 0.02)
-          .add(draw(railLine, { duration: 0.94 }), 0.02)
-          .to(
-            scene.querySelectorAll(".rail-station"),
-            { autoAlpha: 1, stagger: 0.16, duration: 0.12 },
-            0.04,
-          )
-          .to(pen, { opacity: 0, duration: 0.06 }, 0.96);
-      }
-
-      /* ================= SCENE 5 — WHO (pin) ================= */
-      {
-        const scene = $(".scene-who")!;
-        scenes.push({ el: scene, label: h.who.label });
-        const ring = scene.querySelector<SVGCircleElement>(".who-ring circle")!;
-        const sig = scene.querySelector<SVGPathElement>(".who-signature path")!;
-        gsap.set(ring, { strokeDasharray: "1.02 1.02", strokeDashoffset: 1.02 });
-        gsap.set(sig, { strokeDasharray: "1.02 1.02", strokeDashoffset: 1.02 });
-        gsap.set(scene.querySelector(".who-portrait-wrap"), { autoAlpha: 0, scale: 0.92 });
-        gsap.set(scene.querySelectorAll(".who-copy"), { autoAlpha: 0, y: 16 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: scene,
-            start: "top top",
-            end: "+=150%",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-          },
-        });
-        tl.to(pen, { opacity: 1, duration: 0.08 }, 0)
-          .add(draw(ring, { duration: 0.24 }), 0.02)
-          .to(
-            scene.querySelector(".who-portrait-wrap"),
-            { autoAlpha: 1, scale: 1, duration: 0.2, ease: "power2.out" },
-            0.08,
-          )
-          .to(scene.querySelectorAll(".who-copy"), { autoAlpha: 1, y: 0, duration: 0.16, stagger: 0.06 }, 0.28)
-          .add(draw(sig, { duration: 0.3 }), 0.52)
-          // The pen lifts — the only lift on the whole page.
-          .to(pen, { scale: 2.1, opacity: 0, duration: 0.12, ease: "power2.in" }, 0.9);
-      }
-
-      /* ================= ambient (created AFTER all pins — refresh-order law) ========= */
-
-      // Finale entrance (once, not scrubbed — the film hands over to normal scroll).
-      const finale = $(".film-finale")!;
-      gsap.set(finale.querySelectorAll(".film-word .ch"), { yPercent: 118 });
-      gsap.set(finale.querySelectorAll(".finale-copy"), { autoAlpha: 0, y: 18 });
-      ScrollTrigger.create({
-        trigger: finale,
-        start: "top 72%",
-        once: true,
-        onEnter: () => {
-          const tl = gsap
-            .timeline()
-            .to(finale.querySelectorAll(".film-word .ch"), {
-              yPercent: 0,
-              stagger: 0.03,
-              duration: 0.8,
-              ease: "power4.out",
+              bitmaps.set(i, b);
             })
-            .to(
-              finale.querySelectorAll(".finale-copy"),
-              { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.08 },
-              "-=0.45",
-            );
-          // Screenshot contract: a ?jump landing must never catch a mid-flight entrance.
-          if (hasJump) tl.progress(1);
-        },
+            .catch(() => decoding.delete(i));
+        }
+      }
+      cleanups.push(() => {
+        bitmaps.forEach((b) => b.close());
+        bitmaps.clear();
+      });
+
+      function nearestFrame(i: number): number {
+        if (images[i]) return i;
+        for (let d = 1; d < FRAME_COUNT; d++) {
+          if (i - d >= 0 && images[i - d]) return i - d;
+          if (i + d < FRAME_COUNT && images[i + d]) return i + d;
+        }
+        return -1;
+      }
+
+      /* ---------- canvas ---------- */
+      const ctx = canvas.getContext("2d")!;
+      let cw = 0;
+      let chh = 0;
+      const resizeCanvas = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        cw = canvas.clientWidth;
+        chh = canvas.clientHeight;
+        canvas.width = Math.round(cw * dpr);
+        canvas.height = Math.round(chh * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (displayed >= 0) drawFrame(displayed, true);
+      };
+
+      /** Nearest already-decoded bitmap — a fast scrub must NEVER sync-decode a JPEG
+          on the main thread (that decode spike IS the jank); a neighbouring frame for
+          one tick is invisible at speed, and the exact frame swaps in on decode. */
+      function nearestBitmap(i: number): { idx: number; bmp: ImageBitmap } | null {
+        const hit = bitmaps.get(i);
+        if (hit) return { idx: i, bmp: hit };
+        for (let d = 1; d <= B_KEEP; d++) {
+          const lo = bitmaps.get(i - d);
+          if (lo) return { idx: i - d, bmp: lo };
+          const hi = bitmaps.get(i + d);
+          if (hi) return { idx: i + d, bmp: hi };
+        }
+        return null;
+      }
+
+      let displayed = -1;
+      function drawFrame(i: number, force = false) {
+        if (!enhanced || i < 0 || (!force && i === displayed)) return;
+        const near = nearestBitmap(i);
+        const src = near?.bmp ?? images[i];
+        if (!src) return;
+        displayed = near ? near.idx : i;
+        // cover-fit
+        const sw = manifest.width;
+        const sh = manifest.height;
+        const scale = Math.max(cw / sw, chh / sh);
+        const dw = sw * scale;
+        const dh = sh * scale;
+        ctx.clearRect(0, 0, cw, chh);
+        ctx.drawImage(src, (cw - dw) / 2, (chh - dh) / 2, dw, dh);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      cleanups.push(() => window.removeEventListener("resize", resizeCanvas));
+
+      /* ---------- beats ---------- */
+      const beats = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-beat]")).map(
+        (el) => ({
+          el,
+          env: ENVELOPES[el.dataset.beat!],
+        }),
+      );
+      const labelEl = readoutLabelRef.current!;
+      const labels = [h.openingLabel, h.web.label, h.mobile.label, h.custom.label, h.sign.label];
+      let lastLabel = -1;
+
+      const setProgressBar = gsap.quickSetter(progressRef.current!, "scaleX") as (
+        v: number,
+      ) => void;
+
+      /* ---------- the scrub loop ---------- */
+      let p = 0;
+      let current = 0;
+      let rafAlive = true;
+      cleanups.push(() => {
+        rafAlive = false;
+      });
+
+      const computeP = () => {
+        const r = driver.getBoundingClientRect();
+        p = Math.max(0, Math.min(1, -r.top / (r.height - window.innerHeight)));
+      };
+
+      const applyBeats = (instant = false) => {
+        for (const b of beats) {
+          if (!b.env) continue;
+          const a = beatAlpha(b.env, p);
+          b.el.style.opacity = String(a);
+          const dir = p < b.env.peak ? 1 : -1;
+          b.el.style.transform = `translateY(${(1 - a) * 18 * dir}px)`;
+          b.el.style.visibility = a <= 0.001 ? "hidden" : "visible";
+          if (instant) b.el.style.transition = "none";
+        }
+        // readout + progress + vignette handoff
+        const li = Math.min(4, Math.floor(p * 5));
+        if (li !== lastLabel) {
+          lastLabel = li;
+          labelEl.textContent = labels[li];
+        }
+        setProgressBar(p);
+        const fade = p > 0.92 ? 1 - (p - 0.92) / 0.08 : 1;
+        vignetteRef.current!.style.opacity = String(0.8 * fade);
+        const grain = rootEl.querySelector<HTMLElement>(".film-grain");
+        if (grain) grain.style.opacity = String(0.05 * fade);
+      };
+
+      const tick = () => {
+        if (!rafAlive) return;
+        computeP();
+        const target = p * (FRAME_COUNT - 1);
+        const vel = Math.abs(target - current);
+        current += (target - current) * 0.14;
+        if (vel < 0.4) current = target;
+        const idx = nearestFrame(Math.round(current));
+        ensureBitmaps(Math.round(current));
+        drainDecodes(2);
+        drawFrame(idx);
+        applyBeats();
+        requestAnimationFrame(tick);
+      };
+
+      /** The upgrade moment: stacked page → live film, with frame 0 already drawable. */
+      function enhance() {
+        if (enhanced) return;
+        enhanced = true;
+        rootEl!.classList.add("film-enhanced");
+        resizeCanvas();
+        drawFrame(0, true);
+        ensureBitmaps(0);
+        computeP();
+        current = p * (FRAME_COUNT - 1);
+        applyBeats(true);
+        ScrollTrigger.refresh();
+        requestAnimationFrame(tick);
+      }
+
+      /* ---------- chrome fades (readout/progress appear after the opening) ---------- */
+      gsap.to([readoutRef.current, progressRef.current], {
+        opacity: 1,
+        scrollTrigger: { trigger: driver, start: "3% top", end: "8% top", scrub: true },
+      });
+      gsap.to([readoutRef.current, progressRef.current], {
+        opacity: 0,
+        scrollTrigger: { trigger: driver, start: "94% bottom", end: "99% bottom", scrub: true },
+      });
+
+      /* ---------- after-film entrances (below the fold — T71-safe) ---------- */
+      const afterSections = rootEl.querySelectorAll<HTMLElement>(".after-block");
+      afterSections.forEach((sec) => {
+        gsap.set(sec, { autoAlpha: 0, y: 24 });
+        ScrollTrigger.create({
+          trigger: sec,
+          start: "top 82%",
+          once: true,
+          onEnter: () => {
+            const tl = gsap.to(sec, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out" });
+            if (hasJump) tl.progress(1);
+          },
+        });
       });
 
       // Marquee drift + velocity skew.
-      const marqueeRow = $(".film-marquee .row");
+      const marqueeRow = rootEl.querySelector<HTMLElement>(".film-marquee .row");
       if (marqueeRow) {
-        gsap.to(marqueeRow, { xPercent: -50, duration: 26, ease: "none", repeat: -1 });
+        const drift = gsap.to(marqueeRow, { xPercent: -50, duration: 26, ease: "none", repeat: -1 });
         const skewTo = gsap.quickTo(marqueeRow, "skewX", { duration: 0.4, ease: "power2.out" });
         ScrollTrigger.create({
           trigger: rootEl,
@@ -461,40 +495,18 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
           end: "bottom bottom",
           onUpdate: (self) => skewTo(gsap.utils.clamp(-4, 4, self.getVelocity() / -260)),
         });
+        const slow = () => drift.timeScale(0.25);
+        const fast = () => drift.timeScale(1);
+        marqueeRow.parentElement!.addEventListener("mouseenter", slow);
+        marqueeRow.parentElement!.addEventListener("mouseleave", fast);
+        cleanups.push(() => {
+          marqueeRow.parentElement?.removeEventListener("mouseenter", slow);
+          marqueeRow.parentElement?.removeEventListener("mouseleave", fast);
+        });
       }
 
-      // Chapter readout + film progress hairline.
-      const readout = readoutRef.current!;
-      const progressBar = progressRef.current!;
-      const label = readoutLabelRef.current!;
-      const setProgress = gsap.quickSetter(progressBar, "scaleX") as (v: number) => void;
-      scenes.forEach((s) => {
-        ScrollTrigger.create({
-          trigger: s.el,
-          start: "top center",
-          end: "bottom center",
-          onToggle: (self) => {
-            if (self.isActive) label.textContent = s.label;
-          },
-        });
-      });
-      ScrollTrigger.create({
-        trigger: rootEl,
-        start: "top top",
-        end: () => "+=" + (rootEl.scrollHeight - window.innerHeight),
-        onUpdate: (self) => setProgress(self.progress),
-      });
-      gsap.to([readout, progressBar], {
-        opacity: 1,
-        scrollTrigger: { trigger: rootEl, start: "4% top", end: "9% top", scrub: true },
-      });
-      gsap.to([readout, progressBar], {
-        opacity: 0,
-        scrollTrigger: { trigger: finale, start: "top 60%", end: "top 30%", scrub: true },
-      });
-
       // Magnetic CTA (fine pointers only).
-      const cta = $(".film-cta");
+      const cta = rootEl.querySelector<HTMLElement>(".film-cta");
       if (cta && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
         const xTo = gsap.quickTo(cta, "x", { duration: 0.35, ease: "power3.out" });
         const yTo = gsap.quickTo(cta, "y", { duration: 0.35, ease: "power3.out" });
@@ -546,11 +558,36 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
         if (document.fonts?.ready) await document.fonts.ready;
         ScrollTrigger.refresh();
         if (hasJump) {
-          heroTl.progress(1); // entrance is not scroll-owned; settle it FIRST so the
-          // active scene's scrubbed onUpdate (fired by the update() below) owns the pen.
           const y = Number(jumpParam) || 0;
           window.scrollTo(0, y);
           ScrollTrigger.update();
+          computeP();
+          current = p * (FRAME_COUNT - 1);
+          applyBeats(true);
+        }
+        // __ready only when EVERY wanted frame is in — screenshots must never race the pump.
+        const waitAll = () =>
+          new Promise<void>((resolve) => {
+            const check = () => {
+              if (allReady || !pumpAlive) resolve();
+              else setTimeout(check, 120);
+            };
+            check();
+          });
+        await waitAll();
+        if (hasJump) {
+          // Re-issue the jump on the FINAL layout — a scrollTo that raced enhance()
+          // clamped against the short pre-enhance page.
+          const y = Number(jumpParam) || 0;
+          window.scrollTo(0, y);
+          ScrollTrigger.update();
+          computeP();
+          current = p * (FRAME_COUNT - 1);
+          ensureBitmaps(Math.round(current));
+          drainDecodes(40); // one-off pre-screenshot fill; no user is scrolling yet
+          await new Promise((r) => setTimeout(r, 250));
+          drawFrame(nearestFrame(Math.round(current)), true);
+          applyBeats(true);
         }
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
@@ -563,6 +600,7 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
       return () => {
         cleanups.forEach((fn) => fn());
         lenis?.destroy();
+        rootEl.classList.remove("film-enhanced");
         document.documentElement.classList.remove("film-js");
       };
     },
@@ -571,8 +609,7 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
 
   return (
     <div ref={root} className="film" aria-label={h.filmAria}>
-      {/* Pre-paint gate: hero starts in its undrawn state ONLY when JS will animate it.
-          Fixed repo-owned constant — nothing interpolated, no injection surface. */}
+      {/* Pre-paint gate — fixed repo-owned constant, nothing interpolated. */}
       <script
         dangerouslySetInnerHTML={{
           __html: "document.documentElement.classList.add('film-js')",
@@ -580,231 +617,166 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
       />
 
       <div className="film-grain" aria-hidden="true" />
-      <div ref={penRef} className="film-pen" aria-hidden="true" />
       <div ref={cursorRef} className="film-cursor" aria-hidden="true" />
-
       <div ref={readoutRef} className="film-readout" aria-hidden="true">
         <span className="mono text-[0.78rem] text-[var(--film-accent-text)]">
           <span ref={readoutLabelRef} />
         </span>
       </div>
       <div ref={progressRef} className="film-progress" aria-hidden="true" />
+      <div ref={loaderRef} className="film-loader" aria-hidden="true">
+        <span className="mono text-[0.75rem] text-[var(--film-soft)]">{h.loader}</span>
+        <span className="film-loader-track">
+          <span ref={loaderBarRef} className="film-loader-bar" />
+        </span>
+      </div>
 
-      {/* ================= HERO ================= */}
-      <section className="film-hero film-scene items-start justify-end min-h-[100svh]">
-        <div className="wrap w-full pb-[clamp(48px,9vh,110px)]">
-          <p className="hero-copy label-cond text-[var(--film-accent-text)]">{h.eyebrow}</p>
-          <p
-            aria-hidden="true"
-            className="film-word mt-4 text-[clamp(4.6rem,17vw,15.5rem)] text-[var(--film-ink)]"
-          >
-            <SplitChars text="DMRC" />
-          </p>
-          <div className="relative mt-1 h-[clamp(18px,4vw,40px)] w-[min(92%,760px)]">
-            <svg
-              className="stroke-svg hero-stroke"
-              viewBox="0 0 600 40"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path pathLength={1} d="M 3 31 C 150 23, 380 35, 597 17" />
-            </svg>
+      {/* ================= THE FILM DRIVER ================= */}
+      <section ref={driverRef} className="film-driver">
+        <div ref={stageRef} className="film-stage">
+          <canvas ref={canvasRef} className="film-canvas" aria-hidden="true" />
+          <div ref={vignetteRef} className="film-vignette" aria-hidden="true" />
+
+          {/* CH1 — opening / brand */}
+          <div data-beat="hero" className="fbeat fbeat-hero">
+            <img src="/film/k/K0.jpg" alt="" aria-hidden="true" className="fbeat-kf" />
+            <div className="wrap w-full">
+              <p className="label-cond text-[var(--film-accent-text)]">{h.eyebrow}</p>
+              <p
+                aria-hidden="true"
+                className="film-word mt-4 text-[clamp(4.2rem,15vw,13.5rem)] text-[var(--film-ink)]"
+              >
+                DMRC
+              </p>
+              <h1 className="mt-6 max-w-[34ch] text-[clamp(1.2rem,2vw,1.6rem)] font-medium leading-[1.35] text-[var(--film-ink)]">
+                {h.h1}
+              </h1>
+              <p className="hero-cue mono mt-9 flex items-center gap-3 text-[0.78rem] text-[var(--film-soft)]">
+                <span className="hero-cue-line inline-block h-[26px] w-px bg-[var(--film-accent)]" />
+                {h.scrollCue}
+              </p>
+            </div>
           </div>
-          <h1 className="hero-copy mt-7 max-w-[34ch] text-[clamp(1.25rem,2.1vw,1.7rem)] font-medium leading-[1.35] text-[var(--film-ink)]">
-            {h.h1}
-          </h1>
-          <p className="hero-cue mono mt-10 flex items-center gap-3 text-[0.78rem] text-[var(--film-soft)]">
-            <span className="hero-cue-line inline-block h-[26px] w-px bg-[var(--film-accent)]" />
-            {h.scrollCue}
-          </p>
-        </div>
-      </section>
 
-      {/* ================= 01 WEB ================= */}
-      <section className="scene-web film-scene">
-        <div className="scene-inner wrap grid w-full items-end gap-10 min-[900px]:grid-cols-[1.5fr_1fr]">
-          <div className="relative">
-            <svg
-              className="stroke-svg"
-              viewBox="0 0 1000 600"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path className="web-base" pathLength={1} d="M -20 470 L 1020 470" />
-              <path
-                className="web-frame"
-                pathLength={1}
-                d="M 15 470 L 15 60 L 960 60 L 960 470"
+          {/* CH2 — WEB (the glass-screen corridor) */}
+          <div data-beat="web" className="fbeat fbeat-left">
+            <img src="/film/k/K2.jpg" alt="" aria-hidden="true" className="fbeat-kf" />
+            <div className="wrap w-full">
+              <p className="label-cond text-[var(--film-accent-text)]">{h.web.label}</p>
+              <SplitHeading
+                as="h2"
+                text={h.web.word}
+                className="film-word mt-3 max-w-[10ch] text-[clamp(2.6rem,6.4vw,5.6rem)] text-[var(--film-ink)]"
               />
-            </svg>
-            <p className="label-cond scene-label text-[var(--film-accent-text)]">{h.web.label}</p>
-            <SplitHeading
-              as="h2"
-              text={h.web.word}
-              className="film-word relative mt-4 pb-[clamp(20px,4vh,44px)] text-[clamp(2.6rem,7.2vw,6.4rem)] text-[var(--film-ink)]"
-            />
+              <p className="film-beat mt-5 max-w-[38ch]">{h.web.beat}</p>
+              <p className="film-tags mt-3">{h.web.tags}</p>
+            </div>
           </div>
-          <div className="pb-[clamp(20px,4vh,44px)]">
-            <p className="film-beat scene-copy">{h.web.beat}</p>
-            <p className="film-tags scene-copy mt-4">{h.web.tags}</p>
-          </div>
-        </div>
-      </section>
 
-      {/* ================= 02 MOBILE ================= */}
-      <section className="scene-mobile film-scene">
-        <div className="scene-inner wrap grid w-full items-center gap-[clamp(28px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
-          <div className="order-2 min-w-0 min-[900px]:order-1">
-            <p className="label-cond scene-label text-[var(--film-accent-text)]">{h.mobile.label}</p>
-            <SplitHeading
-              as="h2"
-              text={h.mobile.word}
-              className="film-word mt-4 text-[clamp(2rem,3.4vw,3.2rem)] text-[var(--film-ink)]"
-            />
-          </div>
-          <div className="phone order-1 relative mx-auto h-[min(56svh,540px)] aspect-[300/620] min-[900px]:order-2">
-            <svg className="stroke-svg" viewBox="0 0 300 620" aria-hidden="true">
-              <path
-                className="phone-outline"
-                pathLength={1}
-                d="M 150 8 H 222 Q 292 8 292 78 V 542 Q 292 612 222 612 H 78 Q 8 612 8 542 V 78 Q 8 8 78 8 H 150"
-              />
-            </svg>
-            <div className="phone-mask absolute inset-[7px] overflow-hidden rounded-[34px]">
-              <div className="phone-feed flex h-[130%] flex-col justify-center gap-5 px-6 opacity-60">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} aria-hidden="true">
-                    <div className="h-2 w-1/2 rounded-full bg-[var(--film-line-strong)]" />
-                    <div className="mt-2 h-2 w-5/6 rounded-full bg-[var(--film-line)]" />
-                    <div className="mt-2 h-2 w-2/3 rounded-full bg-[var(--film-line)]" />
-                  </div>
-                ))}
+          {/* CH3 — MOBILE (the obsidian slab) */}
+          <div data-beat="mobile" className="fbeat fbeat-right">
+            <img src="/film/k/K3.jpg" alt="" aria-hidden="true" className="fbeat-kf" />
+            <div className="wrap flex w-full justify-end">
+              <div className="max-w-[44ch] text-right">
+                <p className="label-cond text-[var(--film-accent-text)]">{h.mobile.label}</p>
+                <SplitHeading
+                  as="h2"
+                  text={h.mobile.word}
+                  className="film-word mt-3 text-[clamp(2rem,4.2vw,3.7rem)] text-[var(--film-ink)]"
+                />
+                <p className="film-beat mt-5 ml-auto max-w-[36ch]">{h.mobile.beat}</p>
+                <p className="film-tags mt-3">{h.mobile.tags}</p>
               </div>
             </div>
           </div>
-          <div className="order-3 min-w-0 max-w-[36ch]">
-            <p className="film-beat scene-copy">{h.mobile.beat}</p>
-            <p className="film-tags scene-copy mt-4">{h.mobile.tags}</p>
+
+          {/* CH4 — CUSTOM (the woven circuit dive) */}
+          <div data-beat="custom" className="fbeat fbeat-low">
+            <img src="/film/k/K4.jpg" alt="" aria-hidden="true" className="fbeat-kf" />
+            <div className="wrap w-full">
+              <p className="label-cond text-[var(--film-accent-text)]">{h.custom.label}</p>
+              <SplitHeading
+                as="h2"
+                text={h.custom.word}
+                className="film-word mt-3 max-w-[12ch] text-[clamp(2.6rem,6.4vw,5.6rem)] text-[var(--film-ink)]"
+              />
+              <p className="film-beat mt-5 max-w-[40ch]">{h.custom.beat}</p>
+              <p className="film-tags mt-3">{h.custom.tags}</p>
+            </div>
+          </div>
+
+          {/* CH5 — THE SIGNATURE */}
+          <div data-beat="sign" className="fbeat fbeat-center">
+            <img src="/film/k/K5.jpg" alt="" aria-hidden="true" className="fbeat-kf" />
+            <div className="wrap w-full text-center">
+              <p className="label-cond text-[var(--film-accent-text)]">{h.sign.label}</p>
+              <SplitHeading
+                as="p"
+                text={h.sign.line}
+                className="film-word mx-auto mt-3 max-w-[16ch] text-[clamp(2rem,4.4vw,3.6rem)] text-[var(--film-ink)]"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ================= 03 CUSTOM ================= */}
-      <section className="scene-custom film-scene">
-        <svg
-          className="stroke-svg"
-          viewBox="0 0 1000 600"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path
-            className="route-desktop max-[899px]:hidden"
-            pathLength={1}
-            d="M -20 120 L 240 120 L 305 262 L 560 262 L 622 140 L 800 140 L 862 430 L 1020 430"
-          />
-          <path
-            className="route-mobile min-[900px]:hidden"
-            pathLength={1}
-            d="M -20 90 L 300 90 L 380 250 L 700 250 L 780 460 L 1020 460"
-          />
-        </svg>
-        <div className="scene-inner wrap w-full">
-          <p className="label-cond scene-label text-[var(--film-accent-text)]">{h.custom.label}</p>
-          <SplitHeading
-            as="h2"
-            text={h.custom.word}
-            className="film-word mt-4 text-[clamp(2.6rem,7.2vw,6.4rem)] text-[var(--film-ink)]"
-          />
-          <div className="mt-[clamp(20px,4vh,40px)] max-w-[52ch]">
-            <p className="film-beat scene-copy">{h.custom.beat}</p>
-            <p className="film-tags scene-copy mt-4">{h.custom.tags}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 04 HOW — the rail ================= */}
-      <section className="scene-how film-scene justify-center overflow-hidden">
-        <div className="wrap w-full">
-          <p className="label-cond text-[var(--film-accent-text)]">{h.how.label}</p>
-          <SplitHeading
-            as="h2"
-            text={h.how.heading}
-            className="film-word mt-3 text-[clamp(1.9rem,3.6vw,3rem)] text-[var(--film-ink)]"
-          />
-        </div>
-        <div className="rail-viewport relative mt-[clamp(24px,5vh,48px)]">
-          <svg
-            className="stroke-svg rail-line"
-            viewBox="0 0 100 2"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path pathLength={1} d="M 0 1 L 100 1" />
-          </svg>
-          <div className="rail-track pt-[clamp(28px,5vh,52px)]">
-            {h.how.stations.map((st) => (
-              <article key={st.idx} className="rail-station">
-                <span className="idx">{st.idx}</span>
-                <h3 className="text-[clamp(1.5rem,2.6vw,2.2rem)] leading-[1.05] text-[var(--film-ink)]">
-                  {st.title}
-                </h3>
-                <p className="film-beat text-[0.98rem]">{st.body}</p>
-              </article>
-            ))}
-            <div className="rail-station" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 05 WHO ================= */}
-      <section className="scene-who film-scene">
-        <div className="wrap grid w-full items-center gap-[clamp(32px,5vw,72px)] min-[900px]:grid-cols-[auto_1fr]">
-          <div className="who-portrait-wrap relative mx-auto w-fit">
+      {/* ================= AFTER THE FILM ================= */}
+      <div className="film-after" style={{ background: `linear-gradient(${SEAM}, var(--film-bg) 320px)` }}>
+        {/* WHO */}
+        <section className="after-block wrap grid items-center gap-[clamp(28px,5vw,64px)] py-[clamp(72px,10vh,128px)] min-[900px]:grid-cols-[auto_1fr]">
+          <div className="relative mx-auto w-fit">
             <Image
               src="/portrait/erkam-demirci.jpg"
               alt={h.who.portraitAlt}
               width={400}
               height={400}
               quality={82}
-              sizes="(max-width: 900px) 128px, 190px"
+              sizes="(max-width: 900px) 128px, 176px"
               className="who-portrait"
             />
             <svg className="stroke-svg who-ring" viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="96" pathLength={1} />
+              <circle cx="100" cy="100" r="96" />
             </svg>
           </div>
           <div>
-            <p className="label-cond who-copy text-[var(--film-accent-text)]">{h.who.label}</p>
-            <SplitHeading
-              as="p"
-              text={h.who.name}
-              className="film-word mt-4 text-[clamp(2.2rem,5vw,4.2rem)] text-[var(--film-ink)]"
-            />
-            <p className="who-copy mt-3 text-[1.05rem] font-medium text-[var(--film-ink)]">{h.who.role}</p>
-            <p className="who-copy film-beat mt-2">{h.who.line}</p>
-            <div className="who-signature relative mt-[clamp(20px,4vh,36px)] h-[clamp(64px,10vw,110px)] w-[min(88%,380px)]">
-              <svg className="stroke-svg" viewBox="0 0 400 120" preserveAspectRatio="xMinYMid meet" aria-hidden="true">
-                <path
-                  pathLength={1}
-                  d="M 18 82 C 55 18, 105 108, 148 58 S 226 20, 258 68 C 274 94, 300 96, 330 56 L 374 38"
-                />
-              </svg>
-            </div>
+            <p className="label-cond text-[var(--film-accent-text)]">{h.who.label}</p>
+            <p className="film-word mt-3 text-[clamp(2rem,4.4vw,3.6rem)] text-[var(--film-ink)]">
+              {h.who.name}
+            </p>
+            <p className="mt-3 text-[1.02rem] font-medium text-[var(--film-ink)]">{h.who.role}</p>
+            <p className="film-beat mt-2">{h.who.line}</p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ================= FINALE — the client's turn ================= */}
-      <section className="film-finale film-scene min-h-[92svh]">
-        <div className="wrap w-full">
-          <p className="label-cond finale-copy text-[var(--film-accent-text)]">{h.finale.label}</p>
+        {/* HOW — principles */}
+        <section className="after-block wrap border-t border-[var(--film-line)] py-[clamp(64px,9vh,112px)]">
+          <p className="label-cond text-[var(--film-accent-text)]">{h.how.label}</p>
+          <h2 className="film-word mt-3 text-[clamp(1.8rem,3.4vw,2.8rem)] text-[var(--film-ink)]">
+            {h.how.heading}
+          </h2>
+          <div className="mt-[clamp(28px,4vh,48px)] grid gap-x-[clamp(24px,3vw,44px)] gap-y-9 min-[700px]:grid-cols-2 min-[1080px]:grid-cols-4">
+            {h.how.stations.map((st) => (
+              <article key={st.idx} className="border-t border-[var(--film-line)] pt-5">
+                <span className="mono text-[0.85rem] text-[var(--film-accent-text)]">{st.idx}</span>
+                <h3 className="mt-3 text-[1.25rem] leading-[1.15] text-[var(--film-ink)]">
+                  {st.title}
+                </h3>
+                <p className="film-beat mt-2 text-[0.95rem]">{st.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* FINALE — the client's turn */}
+        <section className="after-block wrap border-t border-[var(--film-line)] py-[clamp(72px,10vh,128px)]">
+          <p className="label-cond text-[var(--film-accent-text)]">{h.finale.label}</p>
           <SplitHeading
             as="h2"
             text={h.finale.display}
-            className="film-word mt-4 max-w-[14ch] text-[clamp(2.8rem,8vw,7rem)] text-[var(--film-ink)]"
+            className="film-word mt-4 max-w-[14ch] text-[clamp(2.8rem,7.5vw,6.6rem)] text-[var(--film-ink)]"
           />
-          <p className="finale-copy film-beat mt-7 max-w-[46ch]">{h.finale.lede}</p>
-          <div className="finale-copy mt-9 flex flex-wrap items-center gap-x-7 gap-y-5">
+          <p className="film-beat mt-7 max-w-[46ch]">{h.finale.lede}</p>
+          <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-5">
             <Link href={CONTACT_HREF[lang]} prefetch={false} className="film-cta" data-cursor>
               {h.finale.cta}
             </Link>
@@ -818,53 +790,51 @@ export function ScrollFilm({ lang, dict }: ScrollFilmProps) {
               </a>
             </p>
           </div>
-          <p className="finale-copy mono mt-8 text-[0.8rem] text-[var(--film-soft)]">
-            {h.finale.capacity}
-          </p>
-        </div>
-      </section>
+          <p className="mono mt-8 text-[0.8rem] text-[var(--film-soft)]">{h.finale.capacity}</p>
+        </section>
 
-      {/* marquee + the film's own footer */}
-      <div className="film-marquee" aria-hidden="true">
-        <div className="row">
-          {[0, 1, 2, 3].map((i) => (
-            <span key={i}>{h.finale.marquee}</span>
-          ))}
+        {/* marquee + the film's own footer */}
+        <div className="film-marquee" aria-hidden="true">
+          <div className="row">
+            {[0, 1, 2, 3].map((i) => (
+              <span key={i}>{h.finale.marquee}</span>
+            ))}
+          </div>
         </div>
-      </div>
-      <footer role="contentinfo" className="film-scope">
-        <div className="wrap flex flex-wrap items-center justify-between gap-5 py-8">
-          <p className="text-[0.95rem] text-[var(--film-soft)]">{dict.footer.brand}</p>
-          <nav aria-label="Footer" className="flex items-center gap-6">
-            <Link
-              href={SERVICES_HREF[lang]}
-              prefetch={false}
-              className="text-[0.92rem] font-medium text-[var(--film-soft)] transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--film-ink)]"
-            >
-              {dict.nav.services}
-            </Link>
-            {lang === "tr" && (
+        <footer role="contentinfo" className="film-scope">
+          <div className="wrap flex flex-wrap items-center justify-between gap-5 py-8">
+            <p className="text-[0.95rem] text-[var(--film-soft)]">{dict.footer.brand}</p>
+            <nav aria-label="Footer" className="flex items-center gap-6">
               <Link
-                href={BLOG_HREF}
+                href={SERVICES_HREF[lang]}
                 prefetch={false}
                 className="text-[0.92rem] font-medium text-[var(--film-soft)] transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--film-ink)]"
               >
-                {dict.nav.blog}
+                {dict.nav.services}
               </Link>
-            )}
-            <Link
-              href={CONTACT_HREF[lang]}
-              prefetch={false}
-              className="text-[0.92rem] font-medium text-[var(--film-soft)] transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--film-ink)]"
-            >
-              {dict.nav.contact}
-            </Link>
-          </nav>
-          <p className="text-[0.82rem] text-[var(--film-soft)]">
-            © 2026 DMRC · <span className="mono">erkamdemirci.com</span>
-          </p>
-        </div>
-      </footer>
+              {lang === "tr" && (
+                <Link
+                  href={BLOG_HREF}
+                  prefetch={false}
+                  className="text-[0.92rem] font-medium text-[var(--film-soft)] transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--film-ink)]"
+                >
+                  {dict.nav.blog}
+                </Link>
+              )}
+              <Link
+                href={CONTACT_HREF[lang]}
+                prefetch={false}
+                className="text-[0.92rem] font-medium text-[var(--film-soft)] transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--film-ink)]"
+              >
+                {dict.nav.contact}
+              </Link>
+            </nav>
+            <p className="text-[0.82rem] text-[var(--film-soft)]">
+              © 2026 DMRC · <span className="mono">erkamdemirci.com</span>
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

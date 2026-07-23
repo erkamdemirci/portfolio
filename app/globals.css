@@ -11,13 +11,13 @@
 :root {
   --paper:#F7F5F0; --paper-2:#EDEAE2; --ink:#141310; --ink-soft:#6D695F;
   --line:rgba(20,18,14,.11); --line-strong:rgba(20,18,14,.22);
-  --ever:#2B39E2; --ever-hover:#1F2CC7; --focus:var(--ever); --ring-media:rgba(20,18,14,.12);
+  --ever:#C2410C; --ever-hover:#9A3412; --focus:var(--ever); --ring-media:rgba(20,18,14,.12);
   color-scheme: light;
 }
 [data-theme="dark"] {
-  --paper:#0F0E0C; --paper-2:#1A1915; --ink:#F4F1EA; --ink-soft:#9A968B;
+  --paper:#0F0E0C; --paper-2:#1A1610; --ink:#F4F1EA; --ink-soft:#9A968B;
   --line:rgba(244,241,234,.12); --line-strong:rgba(244,241,234,.20);
-  --ever:#8A94FF; --ever-hover:#A0A8FF; --ring-media:rgba(244,241,234,.10);
+  --ever:#FFB868; --ever-hover:#FFC98A; --ring-media:rgba(244,241,234,.10);
   color-scheme: dark;
 }
 
@@ -32,10 +32,10 @@
   --hero-top:clamp(60px,8vw,116px); --maxw:1180px;
 
   /* Film world — fixed, theme-independent (the film is a night shot by design) */
-  --film-bg:#0F0E0C; --film-bg-2:#161511; --film-ink:#F4F1EA; --film-soft:#9A968B;
+  --film-bg:#0F0E0C; --film-bg-2:#1A1610; --film-ink:#F4F1EA; --film-soft:#9A968B;
   --film-line:rgba(244,241,234,.14); --film-line-strong:rgba(244,241,234,.24);
-  --film-accent:#4A58FF;        /* the stroke — graphic use */
-  --film-accent-text:#8A94FF;   /* accent as TEXT on the night ground (AA-safe) */
+  --film-accent:#FFA53D;        /* the molten stroke — graphic use */
+  --film-accent-text:#FFC372;   /* accent as TEXT on the night ground (AA-safe) */
 }
 
 /* ---- Tailwind v4 bridge ---- */
@@ -159,7 +159,7 @@ input, textarea {
 }
 .film ::selection {
   background: var(--film-accent);
-  color: var(--film-ink);
+  color: #171310;
 }
 
 /* Cinema grain — static SVG noise, barely-there. */
@@ -233,7 +233,7 @@ input, textarea {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(4, 4, 8, 0.55) 100%);
+  background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(8, 5, 2, 0.55) 100%);
   opacity: 0.8;
 }
 .film-enhanced .fbeat {
@@ -418,13 +418,13 @@ input, textarea {
   padding: 0.9rem 1.7rem;
   border-radius: var(--radius-ui);
   background: var(--film-accent);
-  color: var(--film-ink);
+  color: #171310; /* dark on amber — ~10:1 */
   font-weight: 600;
   font-size: 1rem;
   will-change: transform;
 }
 @media (hover: hover) and (pointer: fine) {
-  .film-cta:hover { background: #5866ff; }
+  .film-cta:hover { background: #ffb55e; }
 }
 
 /* Scroll cue pulse */
@@ -447,15 +447,12 @@ input, textarea {
   --line: var(--film-line);
   --line-strong: var(--film-line-strong);
   --ever: var(--film-accent);
-  --ever-hover: #5866ff;
+  --ever-hover: #ffb55e;
   --ring-media: rgba(244, 241, 234, 0.1);
   color-scheme: dark;
 }
-/* Inside the film scope --paper is the night ground, so a primary CTA's `text-paper`
-   would go dark-on-cobalt; force the bone ink instead. */
-.film-scope .bg-ever.text-paper {
-  color: var(--film-ink);
-}
+/* With the amber accent, a primary CTA's `text-paper` (= the night ground in this
+   scope) is exactly right: dark text on amber. No override needed. */
 
 /* The film ends the page — overscroll glow must stay night, not paper. */
 html:has(.film), body:has(.film) {

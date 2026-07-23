@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="DMRC">
   <!--
-    2026-07 "Tek Kalemde" mark: ONE unbroken bone stroke on the cobalt tile — the brand's
-    never-lifting pen at favicon scale. FAVICON_BG = #2B39E2 (light --ever), FAVICON_MARK =
-    #F7F5F0 (--paper). Hex literals are the sanctioned exception to the token gate (a static
-    SVG asset has no custom-property scope; the favicon stays fixed regardless of theme).
-    Keep the two values + the stroke geometry in sync with scripts/generate-og.mjs.
+    2026-07 "Tek Kalemde" mark, amber edition: ONE unbroken molten stroke on the night
+    tile. FAVICON_BG = #131210 (night), FAVICON_MARK = #FFA53D (--film-accent). Hex
+    literals are the sanctioned exception to the token gate (a static SVG asset has no
+    custom-property scope; the favicon stays fixed regardless of theme). Keep the two
+    values + the stroke geometry in sync with scripts/generate-og.mjs.
   -->
-  <rect width="32" height="32" fill="#2B39E2" />
-  <path d="M 6 21.5 C 12 9.5, 18 26.5, 26 11.5" fill="none" stroke="#F7F5F0" stroke-width="3.2" stroke-linecap="round" />
+  <rect width="32" height="32" fill="#131210" />
+  <path d="M 6 21.5 C 12 9.5, 18 26.5, 26 11.5" fill="none" stroke="#FFA53D" stroke-width="3.2" stroke-linecap="round" />
 </svg>

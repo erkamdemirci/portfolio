@@ -29,7 +29,7 @@ export default async function OgTemplatePage({ params }: { params: Promise<{ lan
 
   return (
     <div className="fixed inset-0 z-[999] flex flex-col justify-center overflow-hidden bg-[#0F0E0C] px-[110px]">
-      <p className="label-cond text-[26px] text-[#8A94FF]">{dict.home.eyebrow}</p>
+      <p className="label-cond text-[26px] text-[#FFC372]">{dict.home.eyebrow}</p>
       <span
         className="mt-2 font-display text-[220px] leading-[0.95] text-[#F4F1EA]"
         style={{ fontStretch: "125%", fontWeight: 780, letterSpacing: "-0.028em" }}
@@ -40,7 +40,7 @@ export default async function OgTemplatePage({ params }: { params: Promise<{ lan
         <path
           d="M 3 31 C 150 23, 380 35, 597 17"
           fill="none"
-          stroke="#4A58FF"
+          stroke="#FFA53D"
           strokeWidth="4"
           strokeLinecap="round"
         />

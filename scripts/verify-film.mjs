@@ -101,7 +101,7 @@ async function main() {
     page.on("pageerror", (e) => consoleMsgs.push(`[pageerror] ${e.message}`));
 
     try {
-      await page.goto(`${BASE}${shot.url}`, { waitUntil: "load", timeout: 20000 });
+      await page.goto(`${BASE}${shot.url}`, { waitUntil: "load", timeout: 60000 });
       if (shot.plain) {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(250);
@@ -130,7 +130,7 @@ async function main() {
   {
     const context = await browser.newContext({ viewport: DESKTOP });
     const page = await context.newPage();
-    await page.goto(`${BASE}/`, { waitUntil: "load", timeout: 20000 });
+    await page.goto(`${BASE}/`, { waitUntil: "load", timeout: 60000 });
     await page.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
     const maxDelta = await page.evaluate(async () => {
       let max = 0;

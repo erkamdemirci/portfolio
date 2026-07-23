@@ -89,8 +89,8 @@ function pngToIco(pngBuffer, size) {
 // "Tek Kalemde" swoosh M6 21.5 C12 9.5, 18 26.5, 26 11.5 at 3.2px round-cap) — kept in
 // sync by hand since it's a handful of numbers; update both files together if the mark's
 // proportions ever change.
-const FAVICON_BG = "#2B39E2";
-const FAVICON_MARK = "#F7F5F0";
+const FAVICON_BG = "#131210";
+const FAVICON_MARK = "#FFA53D";
 
 async function generateFavicon(browser) {
   // Drawn on a <canvas> and exported via toDataURL rather than screenshotted — a full-page

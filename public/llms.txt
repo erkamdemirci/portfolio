@@ -1,0 +1,28 @@
+# DMRC — erkamdemirci.com
+
+> DMRC is Erkam Demirci's software studio in Bursa, Türkiye, working worldwide.
+> It designs and builds websites, mobile apps, and custom software — end to end,
+> by one founder who runs design, code, launch, and maintenance himself.
+
+Primary language: Turkish (canonical at /). English mirror at /en.
+
+## Pages
+
+- [Home (TR)](https://erkamdemirci.com/): the studio, its three crafts (websites,
+  mobile apps, custom software), how it works, and the founder.
+- [Home (EN)](https://erkamdemirci.com/en)
+- [Services (TR)](https://erkamdemirci.com/hizmetler): web design & development,
+  corporate websites, mobile apps, brand identity & design systems — with FAQ.
+- [Services (EN)](https://erkamdemirci.com/en/services)
+- [Contact (TR)](https://erkamdemirci.com/iletisim): brief → written quote within
+  48 hours. Email: hello@erkamdemirci.com
+- [Contact (EN)](https://erkamdemirci.com/en/contact)
+- [Blog (TR only)](https://erkamdemirci.com/blog): guides on corporate websites,
+  web costs, mobile app process, SEO, Core Web Vitals, and design systems.
+
+## Facts
+
+- Founder: Erkam Demirci — full-stack developer & UI designer.
+- Location: Bursa, Türkiye; serves clients worldwide (TR + EN).
+- Response time: written reply within 48 hours on working days.
+- Stack: Next.js, Expo, Convex.

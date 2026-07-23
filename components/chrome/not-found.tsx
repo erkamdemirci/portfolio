@@ -4,8 +4,8 @@ import { ArrowLink } from "@/components/ui/arrow-link";
 /**
  * NotFound (02-components.md §NotFound; 03 §9 — replaces case/route-readout + g3-not-found).
  * A calm 404: heading (the document's only h1) + the attempted path echoed in Geist Mono
- * `--ink-soft` + two links (home ghost button, work arrow-link). The old machine-readout status
- * conceit is dropped.
+ * `--ink-soft` + two links (home ghost button, a secondary arrow-link — services, since the
+ * work surface retired with the 2026-07 scroll-film rebuild).
  */
 
 interface NotFoundProps {
@@ -13,12 +13,12 @@ interface NotFoundProps {
   path: string;
   homeHref: string;
   homeLabel: string;
-  workHref: string;
-  workLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
   className?: string;
 }
 
-export function NotFound({ heading, path, homeHref, homeLabel, workHref, workLabel, className }: NotFoundProps) {
+export function NotFound({ heading, path, homeHref, homeLabel, secondaryHref, secondaryLabel, className }: NotFoundProps) {
   return (
     <section className={`wrap py-[var(--pad-section)] ${className ?? ""}`}>
       <div className="max-w-[48ch]">
@@ -28,7 +28,7 @@ export function NotFound({ heading, path, homeHref, homeLabel, workHref, workLab
           <Button variant="ghost" href={homeHref}>
             {homeLabel}
           </Button>
-          <ArrowLink href={workHref}>{workLabel}</ArrowLink>
+          <ArrowLink href={secondaryHref}>{secondaryLabel}</ArrowLink>
         </div>
       </div>
     </section>

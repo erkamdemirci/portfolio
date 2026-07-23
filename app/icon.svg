@@ -1,14 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="DMRC">
   <!--
-    T45; 01-design-system.md §Iconography: "Favicon / icon.svg: new mark = paper wordmark on an
-    evergreen tile (legible at 16px, carries the one brand color). FAVICON_BG = #175E4B (--ever
-    light), FAVICON_MARK = #FBFAF8 (--paper)." The mark alone (no wordmark text — illegible at
-    favicon sizes) is the same 14×14 rounded square from the header, filled paper on the evergreen
-    ground. Hex literals are the T45-sanctioned exception to the token gate (05 token-drift row
-    allowlists this exact file) — a static SVG asset has no CSS custom-property scope, and the
-    favicon must stay a fixed evergreen mark regardless of the viewer's OS/browser theme. Keep the
-    two fills in sync with scripts/generate-og.mjs's FAVICON_BG / FAVICON_MARK.
+    2026-07 "Tek Kalemde" mark: ONE unbroken bone stroke on the cobalt tile — the brand's
+    never-lifting pen at favicon scale. FAVICON_BG = #2B39E2 (light --ever), FAVICON_MARK =
+    #F7F5F0 (--paper). Hex literals are the sanctioned exception to the token gate (a static
+    SVG asset has no custom-property scope; the favicon stays fixed regardless of theme).
+    Keep the two values + the stroke geometry in sync with scripts/generate-og.mjs.
   -->
-  <rect width="32" height="32" fill="#175E4B" />
-  <rect x="9" y="9" width="14" height="14" rx="3" fill="#FBFAF8" />
+  <rect width="32" height="32" fill="#2B39E2" />
+  <path d="M 6 21.5 C 12 9.5, 18 26.5, 26 11.5" fill="none" stroke="#F7F5F0" stroke-width="3.2" stroke-linecap="round" />
 </svg>

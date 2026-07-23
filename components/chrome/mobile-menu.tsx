@@ -32,12 +32,14 @@ interface MobileMenuProps {
   dict: Dictionary;
   navItems: NavItem[];
   contactHref: string;
+  /** Home scroll-film mode — the portaled panel re-scopes the tokens to the film world. */
+  film?: boolean;
 }
 
 // The blog is a TR-only surface (A11); its index lives at /blog.
 const BLOG_HREF = "/blog";
 
-export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProps) {
+export function MobileMenu({ lang, dict, navItems, contactHref, film = false }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -128,7 +130,7 @@ export function MobileMenu({ lang, dict, navItems, contactHref }: MobileMenuProp
           <div
             id={MENU_ID}
             ref={panelRef}
-            className={`fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper transition-opacity duration-[var(--dur-fast)] ease-[var(--ease-out)] ${
+            className={`${film ? "film-scope " : ""}fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper transition-opacity duration-[var(--dur-fast)] ease-[var(--ease-out)] ${
               open ? "" : "hidden pointer-events-none opacity-0"
             }`}
           >

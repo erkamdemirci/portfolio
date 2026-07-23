@@ -57,13 +57,17 @@ export function websiteSchema(lang: string): Schema {
 }
 
 export function personSchema(lang: string): Schema {
+  // The studio page retired with the 2026-07 scroll-film rebuild — the founder chapter
+  // lives on the home film now, so Person anchors to the locale home.
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Erkam Demirci",
-    url: `${SITE_URL}${lang === "en" ? "/en/studio" : "/studyo"}`,
+    url: `${SITE_URL}${lang === "en" ? "/en" : "/"}`,
+    image: `${SITE_URL}/portrait/erkam-demirci.jpg`,
     jobTitle: lang === "en" ? "Full-stack developer & UI designer" : "Full-stack geliştirici ve arayüz tasarımcısı",
     worksFor: ORG_REF,
+    sameAs: ["https://github.com/erkamdemirci"],
     address: { "@type": "PostalAddress", addressLocality: "Bursa", addressCountry: "TR" },
   };
 }

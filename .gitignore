@@ -42,3 +42,6 @@ next-env.d.ts
 
 # bpud design-plan run directory (never committed)
 .bpud/
+
+# verification artifacts
+.playwright-mcp/

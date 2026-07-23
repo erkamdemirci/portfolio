@@ -12,7 +12,7 @@ export const post: Post = {
     targetQuery: "mobil uygulama yaptırma",
     serviceAnchor: "mobil-uygulama",
   },
-  body: `Bir mobil uygulama yaptırma kararı çoğu zaman tek bir cümleyle başlar: "Keşke müşterilerimiz bunu telefonlarından yapabilse." Bu fikirden mağazada indirilebilir bir uygulamaya giden yol ise birkaç net adımdan oluşur. Bu yazıda mobil uygulama yaptırma sürecini baştan sona anlatıyor; iOS ve Android'i tek kod tabanından yürütmenin ne kazandırdığını, maliyeti oluşturan kalemleri ve lansman sonrası bakımın neden kritik olduğunu ele alıyoruz. Anlatırken kendi uygulamamız [VAAZ](/isler/vaaz)'dan örnekler veriyoruz; çünkü bu süreci yalnızca müşterilerimiz için değil, kendi ürünlerimiz için de uçtan uca yürütüyoruz.
+  body: `Bir mobil uygulama yaptırma kararı çoğu zaman tek bir cümleyle başlar: "Keşke müşterilerimiz bunu telefonlarından yapabilse." Bu fikirden mağazada indirilebilir bir uygulamaya giden yol ise birkaç net adımdan oluşur. Bu yazıda mobil uygulama yaptırma sürecini baştan sona anlatıyor; iOS ve Android'i tek kod tabanından yürütmenin ne kazandırdığını, maliyeti oluşturan kalemleri ve lansman sonrası bakımın neden kritik olduğunu ele alıyoruz. Anlatırken kendi uygulamamız [VAAZ](https://getvaaz.com)'dan örnekler veriyoruz; çünkü bu süreci yalnızca müşterilerimiz için değil, kendi ürünlerimiz için de uçtan uca yürütüyoruz.
 
 ## Fikirden mağazaya: süreç adımları
 

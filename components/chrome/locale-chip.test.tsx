@@ -20,18 +20,18 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("LocaleChip", () => {
-  it("maps a TR case-study path to its EN counterpart", () => {
-    mocks.usePathname.mockReturnValue("/isler/vaaz");
+  it("maps the TR services path to its EN counterpart", () => {
+    mocks.usePathname.mockReturnValue("/hizmetler");
     mocks.useParams.mockReturnValue({ lang: "tr" });
     render(<LocaleChip dict={tr.localeChip} />);
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/en/work/vaaz");
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/en/services");
   });
 
-  it("maps an EN case-study path back to its TR counterpart", () => {
-    mocks.usePathname.mockReturnValue("/en/work/vaaz");
+  it("maps the EN services path back to its TR counterpart", () => {
+    mocks.usePathname.mockReturnValue("/en/services");
     mocks.useParams.mockReturnValue({ lang: "en" });
     render(<LocaleChip dict={tr.localeChip} />);
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/isler/vaaz");
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/hizmetler");
   });
 
   it("unknown TR path falls back to the EN home (03 §G3)", () => {

@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
 import { localePairs, type Lang } from "@/lib/i18n/routes";
-import type { CaseSlug } from "@/lib/cases";
 import { postSlugs } from "@/lib/blog/posts";
 
 /**
  * SEO source of truth (04-tasks.md T30/T31; 03-screens-and-flows.md §Meta, titles & OG).
- * The 03 table's title/description strings live here VERBATIM, once, and every page's
- * `generateMetadata` calls `pageMetadata()` instead of carrying its own copy — the six
- * page-local `META` consts this replaces were byte-identical to this table already.
+ * Title/description strings live here VERBATIM, once, and every page's `generateMetadata`
+ * calls `pageMetadata()` instead of carrying its own copy.
  *
- * `PageKey` covers exactly the 10 rows of the 03 §Locale routes table (the 20-URL sitemap
- * surface) — the 404 page is deliberately excluded (03: "G3 is noindex and excluded"; it
- * ships its own static noindex metadata directly in app/[lang]/not-found.tsx, T28).
+ * 2026-07 scroll-film rebuild: `PageKey` covers the three surviving routes (home, services,
+ * contact) — the work/case/studio rows left with their pages (next.config.ts 301s their
+ * URLs home). The surviving rows keep their ranking copy byte-identical. The 404 page is
+ * deliberately excluded (noindex; it ships its own static metadata, T28).
  */
 
 export const SITE_URL = "https://erkamdemirci.com";
 
-export type PageKey = "home" | "work" | CaseSlug | "services" | "studio" | "contact";
+export type PageKey = "home" | "services" | "contact";
 
 interface MetaEntry {
   title: string;
@@ -37,78 +36,6 @@ const META_TABLE: Record<PageKey, Record<Lang, MetaEntry>> = {
         "Bursa-based DMRC builds corporate websites, web apps, and mobile apps — with the discipline of a studio that builds its own products end to end.",
     },
   },
-  work: {
-    tr: {
-      title: "İşler — Web ve Mobil Ürünlerimiz | DMRC",
-      description:
-        "DMRC'nin geliştirdiği ürünler ve müşteri projeleri: canlı web siteleri ve mobil uygulamalar. Her kayıt ne inşa ettiğimizi ve neyin çalıştığını gösterir.",
-    },
-    en: {
-      title: "Work — Our Web & Mobile Products | DMRC",
-      description:
-        "The products and client work DMRC has built: live web and mobile apps. Each record shows what we built, what we built it with, and what runs.",
-    },
-  },
-  vaaz: {
-    tr: {
-      title: "VAAZ — Namaz Vakti Uygulaması | DMRC",
-      description:
-        "VAAZ; namaz vakitleri, günlük takip ve vaaz içeriğini tek uygulamada sunar. iOS ve Android'de canlı, iki mağazada 4,9 puan. DMRC ürünü.",
-    },
-    en: {
-      title: "VAAZ — Prayer Times App | DMRC",
-      description:
-        "VAAZ brings prayer times, daily tracking, and sermon content into one app. Live on iOS and Android, rated 4.9 on both stores. A DMRC product.",
-    },
-  },
-  akitle: {
-    tr: {
-      title: "Akitle — Kira Sözleşmesi Uygulaması | DMRC",
-      description:
-        "Akitle kira sözleşmelerini tek akışta hazırlar, imzalar ve arşivler. v3.1 üretimde, gerçek kullanıcılarla canlı. DMRC ürünü.",
-    },
-    en: {
-      title: "Akitle — Rental Contract App | DMRC",
-      description:
-        "Akitle drafts, signs, and archives rental contracts in a single flow. v3.1 in production, live with real users. A DMRC product.",
-    },
-  },
-  linkden: {
-    tr: {
-      title: "Linkden — Geliştirici Dokümantasyon Aracı | DMRC",
-      description:
-        "Linkden, dokümantasyonu yazdığı kodun yanında tutan klavye öncelikli bir araç. v1.8 üretimde. DMRC ürünü.",
-    },
-    en: {
-      title: "Linkden — Developer Docs Tool | DMRC",
-      description:
-        "Linkden keeps documentation next to the code it describes — a keyboard-first tool for dev teams. v1.8 in production. A DMRC product.",
-    },
-  },
-  characterdex: {
-    tr: {
-      title: "CharacterDex — Kişilik Tipi Uygulaması | DMRC",
-      description:
-        "CharacterDex, koleksiyonluk kart sistemiyle kişilik tiplerini keşfettiren bir web uygulaması. v2.0 canlı. DMRC ürünü.",
-    },
-    en: {
-      title: "CharacterDex — Personality Typing App | DMRC",
-      description:
-        "CharacterDex explores personality types with a collectible card system. v2.0 live on the web. A DMRC product.",
-    },
-  },
-  "oasis-and-mind": {
-    tr: {
-      title: "Oasis and Mind — Bakım Oyunu | DMRC",
-      description:
-        "Oasis and Mind, günlük sağlıklı yaşam ritüelleri etrafında kurulan bir bakım oyunu. Mobilde geliştirme aşamasında. DMRC ürünü.",
-    },
-    en: {
-      title: "Oasis and Mind — Care Game | DMRC",
-      description:
-        "Oasis and Mind is a care game built around daily wellness rituals. In development on mobile. A DMRC product.",
-    },
-  },
   services: {
     tr: {
       title: "Web Tasarım ve Geliştirme Hizmetleri | DMRC",
@@ -119,18 +46,6 @@ const META_TABLE: Record<PageKey, Record<Lang, MetaEntry>> = {
       title: "Web Design & Development Services | DMRC",
       description:
         "Corporate websites, web design and development, mobile apps, and brand identity. DMRC runs your project from design to launch — ask for a quote.",
-    },
-  },
-  studio: {
-    tr: {
-      title: "Stüdyo — DMRC Hakkında | Erkam Demirci",
-      description:
-        "DMRC, Bursa merkezli tek kuruculu bir web ve ürün stüdyosu. Erkam Demirci tasarımı, kodu ve operasyonu tek elden yürütür.",
-    },
-    en: {
-      title: "Studio — About DMRC | Erkam Demirci",
-      description:
-        "DMRC is a one-founder web and product studio based in Bursa. Erkam Demirci runs design, code, and operations end to end.",
     },
   },
   contact: {
@@ -148,18 +63,11 @@ const META_TABLE: Record<PageKey, Record<Lang, MetaEntry>> = {
 };
 
 // localePairs[] index for each PageKey — mirrors lib/i18n/routes.ts's table order 1:1
-// (Home, Work, VAAZ, Akitle, Linkden, CharacterDex, Oasis and Mind, Services, Studio, Contact).
+// (Home, Services, Contact).
 const PAGE_ROUTE_INDEX: Record<PageKey, number> = {
   home: 0,
-  work: 1,
-  vaaz: 2,
-  akitle: 3,
-  linkden: 4,
-  characterdex: 5,
-  "oasis-and-mind": 6,
-  services: 7,
-  studio: 8,
-  contact: 9,
+  services: 1,
+  contact: 2,
 };
 
 export interface PageAlternates {
@@ -236,11 +144,11 @@ export interface SitemapEntry {
 }
 
 /**
- * The 31-URL sitemap surface: the 20 frozen route URLs (10 pairs x 2 locales, each its own
+ * The 17-URL sitemap surface: the 6 frozen route URLs (3 pairs x 2 locales, each its own
  * `<url>` entry carrying the SAME tr+en alternates, per Next's localized-sitemap convention) PLUS
  * the TR-only blog (T69): `/blog` + the 10 posts, each emitting `tr` + `x-default` only — no `en`
  * pair (A11). Consumed by app/sitemap.ts; also the seo.test.ts behavior-test target directly (no
- * dev-only route, no /api, no 404, ever appears here).
+ * dev-only route, no /api, no 404, and no redirected legacy URL ever appears here).
  */
 export function sitemap(): SitemapEntry[] {
   const entries: SitemapEntry[] = [];

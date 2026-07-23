@@ -1,27 +1,19 @@
-import { Instrument_Serif, Hanken_Grotesk, Geist_Mono } from "next/font/google";
+import { Archivo, Geist_Mono } from "next/font/google";
 
-// 01-design-system.md §Typography (Loading plan). Two faces + one data mono, all
-// self-hosted via next/font/google, subsets latin + latin-ext (TR-glyph-verified in
-// 03-design-research.md). Preload exactly ONE face — the one rendering the LCP element
-// (the hero serif h1) — never two (the T32 LCP-competition lesson).
+// 2026-07 "Tek Kalemde" scroll-film system. ONE expressive family — Archivo variable with
+// BOTH axes (wght 100–900 via variable default, wdth 62–125 via `axes`) — carries the whole
+// site: colossal expanded display (font-stretch ~125%), plain body (100%), and condensed
+// caps labels (~75%). One family, many widths mirrors the brand story (one hand, many
+// trades) and keeps exactly one preloaded font file competing for the LCP. Geist Mono stays
+// as the data/figures voice. Subsets latin + latin-ext (TR İ/ı/ğ/ş verified glyph coverage).
 
-export const instrumentSerif = Instrument_Serif({
-  weight: "400",
-  style: ["normal", "italic"],
+export const archivo = Archivo({
   subsets: ["latin", "latin-ext"],
   display: "swap",
-  variable: "--font-instrument-serif",
-  preload: true, // the hero h1 = LCP text element
-  fallback: ["Georgia", "Times New Roman", "serif"],
-});
-
-export const hanken = Hanken_Grotesk({
-  // variable wght axis; CSS uses 400/500/700
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-hanken",
-  preload: false, // not the LCP element; swap + metric-matched fallback
-  fallback: ["-apple-system", "Segoe UI", "Helvetica Neue", "sans-serif"],
+  variable: "--font-archivo",
+  axes: ["wdth"],
+  preload: true, // the hero display text = LCP element; the ONLY preloaded face
+  fallback: ["-apple-system", "Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
 });
 
 export const geistMono = Geist_Mono({

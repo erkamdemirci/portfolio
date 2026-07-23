@@ -85,11 +85,12 @@ function pngToIco(pngBuffer, size) {
   return Buffer.concat([header, entry, pngBuffer]);
 }
 
-// Mirrors app/icon.svg's exact geometry (32×32 canvas; evergreen ground; a 14×14, radius-3
-// rounded-square paper mark at 9,9) — kept in sync by hand since it's a handful of numbers;
-// update both files together if the mark's proportions ever change (01 §Iconography).
-const FAVICON_BG = "#175E4B";
-const FAVICON_MARK = "#FBFAF8";
+// Mirrors app/icon.svg's exact geometry (32×32 canvas; cobalt ground; the one-stroke
+// "Tek Kalemde" swoosh M6 21.5 C12 9.5, 18 26.5, 26 11.5 at 3.2px round-cap) — kept in
+// sync by hand since it's a handful of numbers; update both files together if the mark's
+// proportions ever change.
+const FAVICON_BG = "#2B39E2";
+const FAVICON_MARK = "#F7F5F0";
 
 async function generateFavicon(browser) {
   // Drawn on a <canvas> and exported via toDataURL rather than screenshotted — a full-page
@@ -108,10 +109,13 @@ async function generateFavicon(browser) {
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, size, size);
-      ctx.fillStyle = mark;
+      ctx.strokeStyle = mark;
+      ctx.lineWidth = 3.2;
+      ctx.lineCap = "round";
       ctx.beginPath();
-      ctx.roundRect(9, 9, 14, 14, 3);
-      ctx.fill();
+      ctx.moveTo(6, 21.5);
+      ctx.bezierCurveTo(12, 9.5, 18, 26.5, 26, 11.5);
+      ctx.stroke();
       return canvas.toDataURL("image/png");
     },
     { size: FAVICON_SIZE, bg: FAVICON_BG, mark: FAVICON_MARK },

@@ -4,12 +4,16 @@ import { generateStaticParams as blogIndexParams } from "@/app/[lang]/blog/page"
 import { generateStaticParams as blogSlugParams } from "@/app/[lang]/blog/[slug]/page";
 
 describe("toInternal", () => {
-  it("maps a TR case-study path to its internal /tr route (English canonical segment)", () => {
-    expect(toInternal("/isler/vaaz")).toEqual({ lang: "tr", path: "/tr/work/vaaz" });
+  it("maps the TR services path to its internal /tr route (English canonical segment)", () => {
+    expect(toInternal("/hizmetler")).toEqual({ lang: "tr", path: "/tr/services" });
   });
 
-  it("maps an EN case-study path to its internal /en route (identity)", () => {
-    expect(toInternal("/en/work/vaaz")).toEqual({ lang: "en", path: "/en/work/vaaz" });
+  it("maps the TR contact path to its internal /tr route", () => {
+    expect(toInternal("/iletisim")).toEqual({ lang: "tr", path: "/tr/contact" });
+  });
+
+  it("maps an EN public path to its internal /en route (identity)", () => {
+    expect(toInternal("/en/services")).toEqual({ lang: "en", path: "/en/services" });
   });
 
   it("rewrites an unknown non-/en path into the tr segment, verbatim", () => {
@@ -18,10 +22,6 @@ describe("toInternal", () => {
 
   it("rewrites an unknown /en path into the en segment, verbatim", () => {
     expect(toInternal("/en/olmayan")).toEqual({ lang: "en", path: "/en/olmayan" });
-  });
-
-  it("rewrites a public-facing garbage case-study slug (/isler/<unknown>) into the tr segment, verbatim (falls through to the app/[lang]/[...rest] catch-all — 'isler' is not a real internal segment name)", () => {
-    expect(toInternal("/isler/nonexistent-product")).toEqual({ lang: "tr", path: "/tr/isler/nonexistent-product" });
   });
 
   it("maps TR root to /tr", () => {
@@ -36,20 +36,20 @@ describe("toInternal", () => {
     expect(toInternal("/tr")).toEqual({ lang: "tr", path: "/tr" });
   });
 
-  it("treats an already-internal /tr/* path (e.g. a dev-only route not in the public table) as identity, not double-prefixed", () => {
-    expect(toInternal("/tr/dev/specimen")).toEqual({ lang: "tr", path: "/tr/dev/specimen" });
+  it("treats an already-internal /tr/* path (e.g. the dev-only OG route) as identity, not double-prefixed", () => {
+    expect(toInternal("/tr/dev/og")).toEqual({ lang: "tr", path: "/tr/dev/og" });
   });
 
   const bypassPaths = [
     "/_next/static/chunks/main.js",
-    "/_next/image?url=%2Fscreens%2Fvaaz.png&w=640&q=75",
+    "/_next/image?url=%2Fportrait%2Ferkam-demirci.jpg&w=640&q=75",
     "/favicon.ico",
     "/icon.svg",
     "/robots.txt",
     "/sitemap.xml",
     "/og-tr.png",
     "/og-en.png",
-    "/screens/akitle/editor-1600.png",
+    "/portrait/erkam-demirci.jpg",
     "/some-file.pdf",
   ];
 
@@ -73,6 +73,24 @@ describe("getAlternate", () => {
   });
 });
 
+// The retired work/studio URLs never re-enter the locale table — next.config.ts owns their
+// 301s, and the proxy must keep treating them as unknown TR paths (catch-all → 404) if a
+// request ever slips past the redirect layer.
+describe("retired routes (2026-07 scroll-film rebuild)", () => {
+  it("the locale table is exactly home + services + contact", () => {
+    expect(localePairs).toEqual([
+      { tr: "/", en: "/en" },
+      { tr: "/hizmetler", en: "/en/services" },
+      { tr: "/iletisim", en: "/en/contact" },
+    ]);
+  });
+
+  it("a retired TR path is unknown to the table (falls through verbatim)", () => {
+    expect(toInternal("/isler")).toEqual({ lang: "tr", path: "/tr/isler" });
+    expect(toInternal("/studyo")).toEqual({ lang: "tr", path: "/tr/studyo" });
+  });
+});
+
 // T52 — blog is TR-only (A11). The bare-TR fall-through in toInternal already resolves /blog and
 // /blog/<slug> to the tr segment (no localePairs entry, no routes.ts change); these lock that in.
 describe("blog routing (TR-only, A11)", () => {
@@ -92,7 +110,7 @@ describe("blog routing (TR-only, A11)", () => {
     expect(getAlternate("/blog/kurumsal-web-sitesi-nasil-olmali")).toBe("/en");
   });
 
-  it("the 10 frozen pairs never include a blog path", () => {
+  it("the frozen pairs never include a blog path", () => {
     expect(localePairs.some((p) => p.tr.includes("/blog") || p.en.includes("/blog"))).toBe(false);
   });
 

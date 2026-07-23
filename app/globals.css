@@ -1,38 +1,51 @@
-/* app/globals.css — THE token source of truth (01-design-system.md §Platform mapping) */
+/* app/globals.css — THE token source of truth.
+   2026-07 "Tek Kalemde / In One Stroke" system: bone + ink + one cobalt stroke.
+   LIGHT stays canonical for the inner pages (blog / services / contact); the home
+   scroll-film runs on its own fixed night-ink scope (.film) independent of theme. */
 @import "tailwindcss";
 
-/* ---- Theme values (01 §Color tokens; LIGHT is canonical/default) ---- */
-:root {                                   /* LIGHT = canonical / default */
-  --paper:#FBFAF8; --paper-2:#F3F1EC; --ink:#1B1A17; --ink-soft:#6C685F;
-  --line:rgba(20,18,15,.10); --line-strong:rgba(20,18,15,.20);
-  --ever:#175E4B; --ever-hover:#124C3C; --focus:var(--ever); --ring-media:rgba(20,18,15,.12);
+/* ---- Theme values (LIGHT = canonical / default) ---- */
+:root {
+  --paper:#F7F5F0; --paper-2:#EDEAE2; --ink:#141310; --ink-soft:#6D695F;
+  --line:rgba(20,18,14,.11); --line-strong:rgba(20,18,14,.22);
+  --ever:#2B39E2; --ever-hover:#1F2CC7; --focus:var(--ever); --ring-media:rgba(20,18,14,.12);
   color-scheme: light;
 }
-[data-theme="dark"] {                     /* secondary */
-  --paper:#121211; --paper-2:#1C1B18; --ink:#EFEDE7; --ink-soft:#9A968C;
-  --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.16);
-  --ever:#4FB89C; --ever-hover:#46A98D; --ring-media:rgba(255,255,255,.10);
+[data-theme="dark"] {
+  --paper:#0F0E0C; --paper-2:#1A1915; --ink:#F4F1EA; --ink-soft:#9A968B;
+  --line:rgba(244,241,234,.12); --line-strong:rgba(244,241,234,.20);
+  --ever:#8A94FF; --ever-hover:#A0A8FF; --ring-media:rgba(244,241,234,.10);
   color-scheme: dark;
 }
 
-/* ---- Mode-independent tokens (01 §Typography, §Motion, §Spacing radius & depth) ---- */
+/* ---- Mode-independent tokens ---- */
 :root {
-  --font-display: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
-  --font-body:    var(--font-hanken), -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-display: var(--font-archivo), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    var(--font-archivo), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-mono:    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --ease-out: cubic-bezier(0.22,1,0.36,1); --dur-fast:150ms; --dur-reveal:240ms;
   --radius-xs:2px; --radius-ui:8px; --radius-media:10px; --radius-shot:6px;
   --pad-section:clamp(96px,10vw,160px); --pad-inline:clamp(24px,5vw,64px);
   --hero-top:clamp(60px,8vw,116px); --maxw:1180px;
+
+  /* Film world — fixed, theme-independent (the film is a night shot by design) */
+  --film-bg:#0F0E0C; --film-bg-2:#161511; --film-ink:#F4F1EA; --film-soft:#9A968B;
+  --film-line:rgba(244,241,234,.14); --film-line-strong:rgba(244,241,234,.24);
+  --film-accent:#4A58FF;        /* the stroke — graphic use */
+  --film-accent-text:#8A94FF;   /* accent as TEXT on the night ground (AA-safe) */
 }
 
-/* ---- Tailwind v4 bridge (replaces the old @theme inline block) ---- */
+/* ---- Tailwind v4 bridge ---- */
 @theme inline {
   --color-paper: var(--paper);           --color-paper-2: var(--paper-2);
   --color-ink: var(--ink);               --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);             --color-line-strong: var(--line-strong);
   --color-ever: var(--ever);             --color-ever-hover: var(--ever-hover);
   --color-ring-media: var(--ring-media);
+  --color-film-bg: var(--film-bg);       --color-film-ink: var(--film-ink);
+  --color-film-soft: var(--film-soft);   --color-film-line: var(--film-line);
+  --color-film-accent: var(--film-accent);
+  --color-film-accent-text: var(--film-accent-text);
   --font-display: var(--font-display);   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
   --radius-xs: var(--radius-xs);         --radius-ui: var(--radius-ui);
@@ -41,12 +54,16 @@
 }
 
 /* ============================================================
-   Base layer — 01 §Platform mapping wiring + §Typography + §Motion
+   Base layer
    ============================================================ */
 
 html {
   scroll-behavior: smooth;
 }
+/* Lenis drives the home film; its inline scrollTo must not fight CSS smoothness. */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
 
 body {
   background: var(--paper);
@@ -55,12 +72,8 @@ body {
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  /* NO theme-switch transition (01 §Motion no-animation list) — the background/color
-     change on theme flip is instant. */
 }
 
-/* Layered so utilities (e.g. .text-paper on primary CTAs) keep precedence — an
-   unlayered element reset outranks every @layer rule and silently ate button colors. */
 @layer base {
   a {
     color: inherit;
@@ -68,15 +81,19 @@ body {
   }
 }
 
+/* Display voice: Archivo pushed wide. (Blog/services/contact inherit this too — the
+   whole site speaks one family at different widths.) */
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.08;
+  font-weight: 640;
+  font-stretch: 112%;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 [id] {
-  scroll-margin-top: 5rem;   /* sticky header never occludes a focused/anchored heading */
+  scroll-margin-top: 5rem;
 }
 
 ::selection {
@@ -96,15 +113,23 @@ h1, h2, h3 {
   padding-inline: var(--pad-inline);
 }
 
-/* tabular-figures utility — 01 §Typography; carries no case transform (TR İ/ı casing rule) */
+/* tabular-figures utility — carries no case transform (TR İ/ı casing rule) */
 .mono {
   font-family: var(--font-mono);
   font-feature-settings: "tnum" 1;
   letter-spacing: -0.01em;
 }
 
-/* ---- Motion (01 §Motion) ---- */
-/* Entrance reveal — components/motion/reveal.tsx toggles .reveal-hidden on/off. */
+/* Condensed caps label — the film's wayfinding voice (copy carries its own casing). */
+.label-cond {
+  font-family: var(--font-display);
+  font-stretch: 78%;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+/* ---- Motion ---- */
 .reveal {
   opacity: 1;
   transform: translateY(0);
@@ -117,10 +142,332 @@ h1, h2, h3 {
   transform: translateY(8px);
 }
 
-/* Reduced motion — "gentler, not zero": keep opacity/color, remove movement (01 §Motion). */
+/* ============================================================
+   The scroll-film (home) — "Tek Kalemde / In One Stroke"
+   Default (no JS, reduced motion): every scene is a normal, fully
+   readable stacked section, every stroke fully drawn. GSAP only
+   ENHANCES: pinning, scrubbing, char rises, the traveling pen.
+   ============================================================ */
+
+.film {
+  background: var(--film-bg);
+  color: var(--film-ink);
+  overflow-x: clip; /* horizontal rail + expanded type never leak a scrollbar */
+}
+.film ::selection {
+  background: var(--film-accent);
+  color: var(--film-ink);
+}
+
+/* Cinema grain — static SVG noise, barely-there; skipped for reduced motion. */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* Scenes: full-viewport chapters in normal flow; ScrollTrigger pins them in place. */
+.film-scene {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(56px, 8vh, 96px);
+}
+
+/* Stroke SVGs — fully drawn by default; JS hides + redraws when enhancing. */
+.stroke-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* NOTE: no vector-effect here — non-scaling-stroke breaks pathLength-normalized dash
+   drawing in Chromium (the dash pattern gets computed in the wrong space and the "full"
+   dash truncates). Widths are tuned per svg below instead; the slight width modulation
+   from viewBox scaling reads as a real pen nib. */
+.stroke-svg path,
+.stroke-svg circle {
+  fill: none;
+  stroke: var(--film-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hero-stroke path { stroke-width: 2.2; }
+.scene-web .stroke-svg path,
+.scene-custom .stroke-svg path { stroke-width: 1.8; }
+.phone .stroke-svg path { stroke-width: 2.6; }
+.who-ring circle { stroke-width: 2.3; }
+
+/* The traveling pen — JS-driven; invisible until the film engine places it. */
+.film-pen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 9999px;
+  background: var(--film-accent);
+  box-shadow: 0 0 14px 2px rgba(74, 88, 255, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Colossal chapter word */
+.film-word {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 780;
+  line-height: 0.94;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+.film-word .ch {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Beat copy (the small narrative voice over the film) */
+.film-beat {
+  max-width: 46ch;
+  color: var(--film-soft);
+  font-size: clamp(1.02rem, 1.3vw, 1.18rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.film-tags {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--film-soft);
+}
+
+/* Chapter wayfinding: fixed readout + progress hairline (JS-managed). */
+.film-readout {
+  position: fixed;
+  left: var(--pad-inline);
+  bottom: 18px;
+  z-index: 7;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+}
+.film-progress {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 7;
+  height: 2px;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: var(--film-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Horizontal principles rail */
+.rail-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+.rail-track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  will-change: transform;
+}
+.rail-station {
+  width: min(74vw, 520px);
+  flex: none;
+  padding: clamp(24px, 4vh, 48px) clamp(24px, 3vw, 44px);
+  border-left: 1px solid var(--film-line);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+  min-height: min(52svh, 420px);
+}
+.rail-station .idx {
+  font-family: var(--font-mono);
+  color: var(--film-accent-text);
+  font-size: 0.85rem;
+}
+@media (max-width: 640px) {
+  .rail-station { width: 82vw; }
+}
+
+/* Portrait (small by design — the head is the whole photo) */
+.who-portrait {
+  width: clamp(116px, 15vw, 190px);
+  height: clamp(116px, 15vw, 190px);
+  border-radius: 9999px;
+  object-fit: cover;
+  filter: grayscale(0.2) contrast(1.04);
+}
+
+/* Marquee above the finale footer */
+.film-marquee {
+  overflow: hidden;
+  border-block: 1px solid var(--film-line);
+  padding-block: 14px;
+}
+.film-marquee .row {
+  display: flex;
+  width: max-content;
+  gap: 3rem;
+  white-space: nowrap;
+  will-change: transform;
+  font-family: var(--font-display);
+  font-stretch: 120%;
+  font-weight: 700;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  color: var(--film-soft);
+}
+
+/* Custom cursor — fine pointers only; hidden until first mousemove (dev contract). */
+.film-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 9999px;
+  background: var(--film-ink);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  transition: scale 160ms var(--ease-out);
+}
+@media (hover: none), (pointer: coarse) {
+  .film-cursor { display: none; }
+}
+
+/* Magnetic CTA base (JS adds the pull; CSS keeps it a button) */
+.film-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0.9rem 1.7rem;
+  border-radius: var(--radius-ui);
+  background: var(--film-accent);
+  color: var(--film-ink);
+  font-weight: 600;
+  font-size: 1rem;
+  will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) {
+  .film-cta:hover { background: #5866ff; }
+}
+
+/* Film scope — remaps the site tokens to film values so token-driven chrome
+   (header chips, mobile menu panel) restyles itself on the film page for free. */
+.film-scope {
+  --paper: var(--film-bg);
+  --paper-2: var(--film-bg-2);
+  --ink: var(--film-ink);
+  --ink-soft: var(--film-soft);
+  --line: var(--film-line);
+  --line-strong: var(--film-line-strong);
+  --ever: var(--film-accent);
+  --ever-hover: #5866ff;
+  --ring-media: rgba(244, 241, 234, 0.1);
+  color-scheme: dark;
+}
+/* Inside the film scope --paper is the night ground, so a primary CTA's `text-paper`
+   would go dark-on-cobalt; force the bone ink instead. */
+.film-scope .bg-ever.text-paper {
+  color: var(--film-ink);
+}
+
+/* Word/char split mechanics: each word is an overflow-hidden clip so chars rise into
+   view; the wrapper spans keep natural word wrapping + spaces. */
+.film .word {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em; /* keep descenders inside the clip */
+  margin-bottom: -0.06em;
+  padding-top: 0.14em; /* TR diacritics (Ö/İ dots) sit above cap height — never clip them */
+  margin-top: -0.14em;
+}
+
+/* Pre-paint JS gate (.film-js is added by an inline script BEFORE first paint, so these
+   states never un-paint content — the T71 law). ONLY the hero is CSS-gated; below-fold
+   scenes get their initial states from GSAP after hydration. */
+.film-js .film-hero .film-word .ch {
+  transform: translateY(118%);
+}
+.film-js .film-hero .hero-stroke path {
+  stroke-dasharray: 1.02 1.02;
+  stroke-dashoffset: 1.02;
+}
+.film-js .film-hero .hero-cue {
+  opacity: 0;
+}
+
+/* Scroll cue pulse */
+@keyframes cue-pulse {
+  0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+.hero-cue-line {
+  transform-origin: top;
+  animation: cue-pulse 1.9s var(--ease-out) infinite;
+}
+
+/* The rail's drawn line runs through the station field — the stations hang on it. */
+.rail-line {
+  position: absolute;
+  inset-inline: 0;
+  top: 46%;
+  height: 2px;
+  width: 100%;
+}
+
+/* Portrait ring overrides the full-bleed stroke-svg placement. */
+.who-ring {
+  position: absolute;
+  inset: -9%;
+  width: 118%;
+  height: 118%;
+}
+
+/* The film ends the page — overscroll glow must stay night, not paper. */
+html:has(.film), body:has(.film) {
+  background: var(--film-bg);
+}
+
+/* ---- Reduced motion — "gentler, not zero": film degrades to a readable editorial page. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal-hidden { transform: none; }                 /* entrance = opacity fade only */
+  .reveal-hidden { transform: none; }
   .btn:active, .figure:active, .theme-toggle:active { transform: none; }
   .ghost:hover .arw { transform: none; }
+  .film-grain, .film-pen, .film-cursor, .film-progress, .film-readout { display: none; }
+  .film-word .ch { transform: none !important; opacity: 1 !important; }
+  .film-js .film-hero .hero-stroke path,
+  .film .stroke-svg path,
+  .film .stroke-svg circle {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .film-js .film-hero .hero-cue { opacity: 1; }
+  .hero-cue-line { animation: none; }
+  .film-marquee .row { transform: none !important; }
 }

@@ -1,24 +1,21 @@
 /**
- * English dictionary — secondary locale. Authoritative de-themed copy (T24;
- * 03-screens-and-flows.md §THE AUTHORITATIVE COPY, EN columns). Mirrors tr.ts key-for-key so
- * the shared `Dictionary` type (Widen<typeof tr>) stays aligned and either locale is
- * assignable to a component prop. Where the 03 EN column gives an exact string it is used
- * verbatim; the four FAQ answers and a few labels are substance-preserving translations of the
- * TR (same register), per the copy rule "EN parity: same substance". The blog is TR-only, so
- * `nav.blog` is kept here for type parity but the EN Header never renders it (02 §Header).
+ * English dictionary — secondary locale. Mirrors tr.ts key-for-key so the shared
+ * `Dictionary` type (Widen<typeof tr>) stays aligned and either locale is assignable to a
+ * component prop. 2026-07 "In One Stroke" scroll-film rebuild: home.* is the film's copy.
+ * The blog is TR-only, so `nav.blog` is kept here for type parity but the EN chrome never
+ * renders it.
  */
 export const en = {
   lang: "en",
   skipLink: "Skip to content",
   wordmark: {
     name: "DMRC",
-    descriptor: "/ web & product studio",
+    descriptor: "/ software studio",
   },
   nav: {
-    work: "Work",
     services: "Services",
-    studio: "Studio",
     blog: "Blog",
+    contact: "Contact",
     cta: "Get a quote",
   },
   modeChip: {
@@ -31,115 +28,60 @@ export const en = {
   },
   footer: {
     copyright: "© 2026 DMRC · erkamdemirci.com",
-    brand: "DMRC — Erkam Demirci's web & product studio",
-    contact: "hello@erkamdemirci.com · Bursa, Türkiye",
-  },
-  home: {
-    eyebrow: "DMRC — a web design & product studio based in Bursa",
-    h1Lead: "We build corporate websites and mobile apps — ",
-    h1Turn: "the way we build our own products.",
-    lede: "We design and build corporate websites and mobile apps for your brand. Because we build our own products end to end, we bring the same design and engineering discipline to yours.",
+    brand: "DMRC — Erkam Demirci's software studio",
     email: "hello@erkamdemirci.com",
-    fleetReadoutAria: "Our products",
-    statRailAria: "The studio in numbers",
-    fleet: {
-      eyebrow: "Work",
-      heading: "In production.",
-      side: "Every product below runs with real users. We maintain everything we ship — client projects get the same standard.",
+    location: "Bursa, Türkiye → worldwide",
+  },
+  // Home = the scroll-film ("In One Stroke") — see tr.ts for the film's structure note.
+  home: {
+    eyebrow: "Software studio — from Bursa to the world",
+    h1: "Websites, mobile apps, and custom software — end to end, in one stroke.",
+    scrollCue: "Scroll",
+    filmAria: "DMRC studio film",
+    web: {
+      label: "01 — Web",
+      word: "WEBSITES",
+      beat: "Sites that truly carry your brand: fast, accessible, measurable. The same hand from design to launch.",
+      tags: "corporate · e-commerce · publishing",
     },
-    cards: {
-      vaaz: {
-        unitLabel: "VAAZ",
-        flag: "Live",
-        meta: "v2.4 · iOS · Android",
-        title: "VAAZ",
-        description: "Prayer times, daily tracking, and sermon content in one app.",
-        domain: "getvaaz.com",
-        rating: "4.9",
-        ratingSuffix: "store rating",
-      },
-      akitle: {
-        unitLabel: "Akitle",
-        flag: "Live",
-        meta: "v3.1 · Web",
-        title: "Akitle",
-        description: "Rental contracts drafted, signed, and archived in one flow.",
-        domain: "akitle.com",
-        telLine2: "corporate web app",
-      },
-      linkden: {
-        unitLabel: "Linkden",
-        flag: "Live",
-        meta: "v1.8 · Web",
-        title: "Linkden",
-        description: "Documentation that lives right next to the code it describes.",
-        domain: "linkden.co",
-        telLine2: "for dev teams",
-      },
-      characterdex: {
-        unitLabel: "CharacterDex",
-        flag: "Live",
-        meta: "v2.0 · Web",
-        title: "CharacterDex",
-        description: "Personality typing with a collectible card system.",
-        domain: "characterdex.com",
-        telLine2: "web app",
-      },
-      oasis: {
-        unitLabel: "Oasis and Mind",
-        flag: "In development",
-        meta: "v0.9 · Mobile",
-        title: "Oasis and Mind",
-        description: "A care game built around daily wellness rituals.",
-        telLine1: "in development",
-        telLine2: "mobile · both stores",
-        slotTitle: "Visual coming",
-        slotBody: "Oasis home screen — warm cream UI",
-      },
+    mobile: {
+      label: "02 — Mobile",
+      word: "MOBILE APPS",
+      beat: "One codebase to iOS and Android. Store submission included — from idea to installable app.",
+      tags: "iOS · Android · shipped to the stores",
     },
-    openSlot: {
-      label: "Open slot",
-      title: "The next project could be yours.",
-      body: "We take on a few client projects at a time and run each like our own — same care, same standard.",
+    custom: {
+      label: "03 — Custom software",
+      word: "CUSTOM SOFTWARE",
+      beat: "We start where templates end. Admin panels, automations, integrations — cut to fit your business.",
+      tags: "dashboards · automation · integrations",
+    },
+    how: {
+      label: "04 — How",
+      heading: "How we work",
+      stations: [
+        { idx: "01", title: "End to end", body: "Design, code, launch, and upkeep in the same hands. No layer lost in between." },
+        { idx: "02", title: "Few projects, full focus", body: "We take on little at once; each gets full attention." },
+        { idx: "03", title: "Measured promises", body: "We never promise what we don't measure. Numbers aren't decoration." },
+        { idx: "04", title: "Here after launch", body: "We run and maintain what we ship — client work included." },
+      ],
+    },
+    who: {
+      label: "05 — Who",
+      name: "Erkam Demirci",
+      role: "Founder — design, code, and operations",
+      line: "From Bursa to the world. The same signature on every line.",
+      portraitAlt: "Erkam Demirci — founder of DMRC",
+    },
+    finale: {
+      label: "06 — Your turn",
+      display: "Your project is next.",
+      lede: "Tell us what you want to build — you'll get a written reply within 48 hours.",
       cta: "Get a quote",
-    },
-    services: {
-      eyebrow: "Services",
-      heading: "Digital services, end to end.",
-      side: "Fixed scope or ongoing. Every engagement ships something that runs — not a deck.",
-      ctaLabel: "All services",
-      cellOne: {
-        index: "s/01",
-        title: "Web design & development",
-        body: "Modern websites built with a custom UI, a real backend, and a performance budget.",
-      },
-      cellTwo: {
-        index: "s/02",
-        title: "Corporate websites",
-        body: "Fast, easy-to-manage corporate sites that represent your company well — SEO and accessibility built in from day one.",
-      },
-      cellThree: {
-        index: "s/03",
-        title: "Mobile apps",
-        body: "Apps shipped to iOS and Android from one codebase, run with store processes and OTA updates.",
-      },
-      cellFour: {
-        index: "s/04",
-        title: "Brand identity & design systems",
-        body: "From logo to typography to a component library — a consistent system your team can maintain without us.",
-      },
-    },
-    studio: {
-      eyebrow: "Studio",
-      heading: "One founder, building end to end.",
-      lede: "DMRC is Erkam Demirci's web & product studio. It stays small, builds end to end, and operates what it ships.",
-      ctaLabel: "Meet the studio",
-    },
-    statRail: {
-      products: { value: "05", caption: "products" },
-      platforms: { value: "02", caption: "platforms — web & mobile" },
-      response: { value: "<48", suffix: "h", caption: "reply on new projects" },
-      openSlot: { value: "01", caption: "open project slot" },
+      emailLead: "or write directly:",
+      email: "hello@erkamdemirci.com",
+      capacity: "01 open project slot",
+      marquee: "websites — mobile apps — custom software —",
     },
     contactBand: {
       eyebrow: "Contact",
@@ -147,41 +89,13 @@ export const en = {
       headingTurn: "your next project.",
       lede: 'Tell us what you want to build — stage, platform, and what "done" means to you. We read every message and reply within 48 hours.',
       accentLabel: "Get a quote",
-      ghostLabel: "See the work",
+      ghostLabel: "See the services",
       kvAriaLabel: "Contact details",
       kvEmail: { key: "email", value: "hello@erkamdemirci.com" },
       kvBase: { key: "location", value: "Bursa, Türkiye → worldwide" },
       kvResponse: { key: "response", value: "< 48h · working days" },
       kvStack: { key: "stack", value: "Next.js · Expo · Convex" },
     },
-  },
-  workIndex: {
-    eyebrow: "Work",
-    heading: "The work we've built.",
-    side: "Five products, two platforms. Each record shows what we built, what we built it with, and what runs.",
-    extended: {
-      vaaz: "Time calculation, location, and notifications on one Expo base.",
-      akitle: "One product from editor to signature to archive.",
-      linkden: "Search, save, and organize — keyboard first.",
-      characterdex: "Type profiles, tests, and the collection in one panel.",
-      oasis: "Real screens will be added here as they're ready.",
-    },
-  },
-  caseTemplate: {
-    statusFlag: { live: "Live", inDev: "In development" },
-    sections: {
-      context: { eyebrow: "Context", heading: "Context" },
-      build: { eyebrow: "Build", heading: "What we built" },
-      telemetry: { eyebrow: "Details", heading: "Details" },
-      outcome: { eyebrow: "Outcome", heading: "Outcome" },
-      roadStatus: { eyebrow: "Road status", heading: "Road status" },
-      contact: { eyebrow: "Contact" },
-    },
-    metaRailKeys: { status: "status", version: "version", platform: "platform", stack: "stack" },
-    telemetryKeys: { status: "status" },
-    pager: { prevCaption: "Previous", nextCaption: "Next" },
-    metaRailAria: "Product summary",
-    telemetryAria: "Product details",
   },
   servicesPage: {
     eyebrow: "Services",
@@ -250,24 +164,6 @@ export const en = {
       },
     ],
   },
-  studioPage: {
-    eyebrow: "Studio",
-    heading: "One founder. Five products. End to end.",
-    lede: "DMRC is a one-founder web & product studio working from Bursa for anywhere. Erkam Demirci — full-stack developer and UI designer — runs design, code, and operations end to end.",
-    principlesEyebrow: "Principles",
-    principles: [
-      { index: "p/01", title: "End to end", body: "Design, code, launch, and maintenance in one pair of hands; no middle layer." },
-      { index: "p/02", title: "Few, but live", body: "We take little on at once; everything we take on lives in production." },
-      { index: "p/03", title: "We speak to what we measure", body: "We don't claim what we don't measure; numbers aren't decoration." },
-      { index: "p/04", title: "Ship it, keep it", body: "What we ship, we maintain — client work included." },
-    ],
-    registerEyebrow: "Products",
-    registerAria: "Products",
-    statsEyebrow: "The numbers",
-    statsAria: "The studio in numbers",
-    founderStat: { value: "01", caption: "founder — on every line" },
-    contactEyebrow: "Contact",
-  },
   contactPage: {
     eyebrow: "Contact",
     heading: "Get a quote for your project.",
@@ -309,6 +205,6 @@ export const en = {
     genericPath: "/requested-path",
     readoutNote: "",
     homeLabel: "Back to home",
-    workLabel: "See the work",
+    servicesLabel: "See the services",
   },
 } as const;

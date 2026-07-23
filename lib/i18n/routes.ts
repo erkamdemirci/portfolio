@@ -17,17 +17,15 @@ export interface RoutePair {
   en: string;
 }
 
-/** The full 03 §Locale routes URL table — TR canonical (root) <-> EN (/en prefix). */
+/**
+ * The locale-routes URL table — TR canonical (root) <-> EN (/en prefix).
+ * The 2026-07 scroll-film rebuild retires the work/case/studio surface (no projects shown
+ * for now — they return later); those public URLs 301 to the locale home via
+ * next.config.ts `redirects()`, which runs before this proxy ever sees them.
+ */
 export const localePairs: RoutePair[] = [
-  { tr: "/", en: "/en" }, // Home
-  { tr: "/isler", en: "/en/work" }, // Work index
-  { tr: "/isler/vaaz", en: "/en/work/vaaz" }, // Case — VAAZ
-  { tr: "/isler/akitle", en: "/en/work/akitle" }, // Case — Akitle
-  { tr: "/isler/linkden", en: "/en/work/linkden" }, // Case — Linkden
-  { tr: "/isler/characterdex", en: "/en/work/characterdex" }, // Case — CharacterDex
-  { tr: "/isler/oasis-and-mind", en: "/en/work/oasis-and-mind" }, // Case — Oasis and Mind
+  { tr: "/", en: "/en" }, // Home — the scroll-film
   { tr: "/hizmetler", en: "/en/services" }, // Services
-  { tr: "/studyo", en: "/en/studio" }, // Studio
   { tr: "/iletisim", en: "/en/contact" }, // Contact
 ];
 

@@ -1,19 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Lang } from "@/lib/i18n/routes";
 import { TextLink } from "@/components/ui/text-link";
 
 /**
- * Footer (02-components.md §Footer; 03 §G2). A designed block, not a strip: brand
- * restatement + a contact line (email) on the left, footer nav on the right (Blog is
- * TR-only, A11), closed by a top-bordered copyright line with the domain in Geist Mono.
- * The old six-cell kv-grid and the printed-sheet metadata line are removed — this footer
- * is fully de-themed.
+ * Footer. Brand restatement + contact (email link, location line) on the left, footer nav
+ * on the right (Blog is TR-only, A11), closed by a top-bordered copyright line with the
+ * domain in Geist Mono. Hidden on the home scroll-film — the film ends in its own designed
+ * finale block (contact CTA + mini-nav + copyright), and a second footer under a film is a
+ * seam. Client component only for the pathname check.
  */
 
-const NAV_ROUTES: Record<Lang, { work: string; services: string; studio: string }> = {
-  tr: { work: "/isler", services: "/hizmetler", studio: "/studyo" },
-  en: { work: "/en/work", services: "/en/services", studio: "/en/studio" },
+const NAV_ROUTES: Record<Lang, { services: string; contact: string }> = {
+  tr: { services: "/hizmetler", contact: "/iletisim" },
+  en: { services: "/en/services", contact: "/en/contact" },
 };
 
 // The blog is TR-only (A11); its index lives at /blog.
@@ -25,16 +28,18 @@ interface FooterProps {
 }
 
 export function Footer({ lang, dict }: FooterProps) {
+  const pathname = usePathname();
+  const isFilm = pathname === "/" || pathname === "/en" || pathname === "/tr";
+  if (isFilm) return null;
+
   const routes = NAV_ROUTES[lang];
   const navItems = [
-    { href: routes.work, label: dict.nav.work },
     { href: routes.services, label: dict.nav.services },
-    { href: routes.studio, label: dict.nav.studio },
+    ...(lang === "tr" ? [{ href: BLOG_HREF, label: dict.nav.blog }] : []),
+    { href: routes.contact, label: dict.nav.contact },
   ];
-  const footerNav =
-    lang === "tr" ? [...navItems, { href: BLOG_HREF, label: dict.nav.blog }] : navItems;
 
-  // "© 2026 DMRC · erkamdemirci.com" → render the domain in Geist Mono (mockup .foot-copy).
+  // "© 2026 DMRC · erkamdemirci.com" → render the domain in Geist Mono.
   const [copyLead, copyDomain] = dict.footer.copyright.split(" · ");
 
   return (
@@ -43,16 +48,16 @@ export function Footer({ lang, dict }: FooterProps) {
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div>
             <p className="text-[1rem] text-ink">{dict.footer.brand}</p>
-            <TextLink
-              href={`mailto:${dict.footer.contact}`}
-              className="mt-2 inline-block text-[0.92rem]"
-            >
-              {dict.footer.contact}
-            </TextLink>
+            <p className="mt-2 text-[0.92rem]">
+              <TextLink href={`mailto:${dict.footer.email}`} className="inline-block">
+                {dict.footer.email}
+              </TextLink>
+              <span className="text-ink-soft"> · {dict.footer.location}</span>
+            </p>
           </div>
 
           <nav aria-label="Footer" className="flex gap-[1.4rem]">
-            {footerNav.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

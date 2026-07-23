@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 const HOME_HREF: Record<Lang, string> = { tr: "/", en: "/en" };
-const WORK_HREF: Record<Lang, string> = { tr: "/isler", en: "/en/work" };
+const SERVICES_HREF: Record<Lang, string> = { tr: "/hizmetler", en: "/en/services" };
 
 export default function NotFoundPage() {
   const lang = getRequestLang();
@@ -44,8 +44,8 @@ export default function NotFoundPage() {
       path={n.genericPath}
       homeHref={HOME_HREF[lang]}
       homeLabel={n.homeLabel}
-      workHref={WORK_HREF[lang]}
-      workLabel={n.workLabel}
+      secondaryHref={SERVICES_HREF[lang]}
+      secondaryLabel={n.servicesLabel}
     />
   );
 }

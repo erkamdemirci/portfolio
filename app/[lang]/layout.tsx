@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { instrumentSerif, hanken, geistMono } from "@/app/fonts";
+import { archivo, geistMono } from "@/app/fonts";
 import { Footer } from "@/components/chrome/footer";
 import { Header } from "@/components/chrome/header";
 import { SkipLink } from "@/components/chrome/skip-link";
@@ -18,7 +18,8 @@ import "../globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "DMRC",
-  description: "DMRC — Erkam Demirci's product studio.",
+  description:
+    "DMRC — Erkam Demirci's software studio. Websites, mobile apps, and custom software — end to end.",
 };
 
 export function generateStaticParams() {
@@ -32,7 +33,13 @@ export default async function RootLayout({
   children: ReactNode;
   params: Promise<{ lang: string }>;
 }) {
-  const { lang } = (await params) as { lang: Lang };
+  const { lang: rawLang } = await params;
+  // Unmatched asset-extension paths bypass the locale proxy (matcher excludes dotted
+  // paths), so the router matches [lang] with e.g. "foo.txt" — getDictionary(undefined)
+  // then 500'd every junk probe (/wp-login.php, /foo.txt). The layout falls back to TR
+  // chrome; the PAGE throws notFound() (a layout-thrown notFound bubbles PAST this
+  // segment's boundary to the nonexistent root one — that's the 500, see T28).
+  const lang: Lang = rawLang === "en" ? "en" : "tr";
   const dict = getDictionary(lang);
   // Relay lang to app/[lang]/not-found.tsx, which receives no params of its own (T28
   // deviation, see DEVIATIONS.md and lib/i18n/request-lang.ts).
@@ -43,7 +50,7 @@ export default async function RootLayout({
       lang={lang}
       data-theme="light"
       suppressHydrationWarning
-      className={`${instrumentSerif.variable} ${hanken.variable} ${geistMono.variable}`}
+      className={`${archivo.variable} ${geistMono.variable}`}
     >
       <body>
         {/*

@@ -10,25 +10,17 @@ import { LocaleChip } from "./locale-chip";
 import { MobileMenu } from "./mobile-menu";
 
 /**
- * Header (02-components.md §Header; 03 §Navigation). Sticky paper bar, border-bottom
- * --line, min-height 68px: Wordmark (name + descriptor) · nav (İşler / Hizmetler / Stüdyo,
- * plus Blog when lang === "tr") · LocaleChip · ThemeToggle · primary CTA "Teklif al" →
- * /iletisim. aria-current marks the active route (a persistent --ink-soft underline).
- *
- * Below the collapse breakpoint the nav + LocaleChip + CTA move into the MobileMenu; the
- * bar keeps Wordmark + ThemeToggle + the menu trigger. Breakpoint is 850px, not the
- * mockup's 620px: the shipped header carries the theme + locale controls the mockup
- * offloaded to a fixed corner button, so the single-row composition needs more room (the
- * prior T29 measurement put the full row at ~805px). Collapsing at 850 keeps the 768px
- * shot width on the mobile-menu side of the cutover — no overflow — while 1440 gets the
- * full nav.
+ * Header. Two modes by route:
+ * - Inner pages (services / blog / contact): the sticky paper bar — wordmark + nav
+ *   (Hizmetler, Blog when TR) + LocaleChip + ModeChip + primary CTA.
+ * - Home (the scroll-film): a transparent absolute bar over the night world — the film
+ *   owns the viewport, so the bar scrolls away with the opening shot. `.film-scope`
+ *   remaps the tokens so every chip/menu restyles itself; ModeChip is hidden (the film's
+ *   palette is fixed by design).
+ * Below 850px the nav + LocaleChip + CTA move into the MobileMenu.
  */
 
-const NAV_ROUTES: Record<Lang, { work: string; services: string; studio: string }> = {
-  tr: { work: "/isler", services: "/hizmetler", studio: "/studyo" },
-  en: { work: "/en/work", services: "/en/services", studio: "/en/studio" },
-};
-
+const SERVICES_HREF: Record<Lang, string> = { tr: "/hizmetler", en: "/en/services" };
 const HOME_HREF: Record<Lang, string> = { tr: "/", en: "/en" };
 const CONTACT_HREF: Record<Lang, string> = { tr: "/iletisim", en: "/en/contact" };
 // The blog is TR-only (A11); its index lives at /blog.
@@ -41,19 +33,22 @@ interface HeaderProps {
 
 export function Header({ lang, dict }: HeaderProps) {
   const pathname = usePathname();
-  const routes = NAV_ROUTES[lang];
+  const isFilm = pathname === "/" || pathname === "/en" || pathname === "/tr";
 
-  const navItems = [
-    { href: routes.work, label: dict.nav.work },
-    { href: routes.services, label: dict.nav.services },
-    { href: routes.studio, label: dict.nav.studio },
-  ];
+  const navItems = [{ href: SERVICES_HREF[lang], label: dict.nav.services }];
   // Blog is rendered only for TR (render-time rule; en.ts keeps the key for type parity).
   const desktopNav =
     lang === "tr" ? [...navItems, { href: BLOG_HREF, label: dict.nav.blog }] : navItems;
 
   return (
-    <header role="banner" className="sticky top-0 z-40 border-b border-line bg-paper">
+    <header
+      role="banner"
+      className={
+        isFilm
+          ? "film-scope absolute inset-x-0 top-0 z-40 bg-transparent"
+          : "sticky top-0 z-40 border-b border-line bg-paper"
+      }
+    >
       <div className="wrap flex min-h-[68px] items-center justify-between gap-6">
         <Link
           href={HOME_HREF[lang]}
@@ -89,12 +84,12 @@ export function Header({ lang, dict }: HeaderProps) {
           </nav>
 
           <LocaleChip dict={dict.localeChip} className="max-[849px]:hidden" />
-          <ModeChip dict={dict.modeChip} />
+          {!isFilm && <ModeChip dict={dict.modeChip} />}
           <Button variant="primary" href={CONTACT_HREF[lang]} className="max-[849px]:hidden">
             {dict.nav.cta}
           </Button>
 
-          <MobileMenu lang={lang} dict={dict} navItems={navItems} contactHref={CONTACT_HREF[lang]} />
+          <MobileMenu lang={lang} dict={dict} navItems={navItems} contactHref={CONTACT_HREF[lang]} film={isFilm} />
         </div>
       </div>
     </header>
